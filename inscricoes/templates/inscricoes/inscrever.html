@@ -1,0 +1,92 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Inscrição</title>
+</head>
+<body class="bg-light">
+    <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <!-- Usando container-fluid para a responsividade -->
+        <div class="p-4 bg-white shadow rounded" style="max-width: 600px; width: 100%;">
+            <h1 class="text-center mb-4" id="titulo">Formulário de Inscrição</h1>
+
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_nome_completo" class="form-label">Nome Completo</label>
+                    {{ form.nome_completo }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_cpf" class="form-label">CPF</label>
+                    {{ form.cpf }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_rua" class="form-label">Rua</label>
+                    {{ form.rua }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_bairro" class="form-label">Bairro</label>
+                    {{ form.bairro }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_numero" class="form-label">Número</label>
+                    {{ form.numero }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_telefone_whatsapp" class="form-label">Telefone (WhatsApp)</label>
+                    {{ form.telefone_whatsapp }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_data_nascimento" class="form-label">Data de Nascimento</label>
+                    {{ form.data_nascimento }}
+                    <small class="form-text text-muted">Formato: DD/MM/YYYY</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Cursos</label>
+                    <div class="row">
+                        <!-- O campo de cursos já tem o widget de checkboxes, então apenas renderize diretamente -->
+                        <div class="col-4">
+                            {{ form.cursos }}  <!-- Renderiza automaticamente os checkboxes para cada curso -->
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">Inscrever</button>
+            </form>
+
+            <!-- Botão para voltar à página inicial -->
+            <div class="mt-3">
+                <a href="{% url 'inscricoes:pagina_inicial' %}" class="btn btn-secondary w-100">Voltar para a Página Inicial</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'inscricoes/js/mascara_telefone.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<!-- templates/admin/base_site.html -->
+{% extends "admin/base_site.html" %}
+{% block title %}Administração Personalizada{% endblock %}
+{% block content %}
+    <div class="custom-admin-header">
+        <h1>Bem-vindo ao painel de administração</h1>
+    </div>
+    {{ block.super }}
+{% endblock %}

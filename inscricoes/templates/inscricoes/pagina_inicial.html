@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial - Escola de Artes</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}">
+
+    <style>
+        /* Estilização personalizada */
+        .banner {
+            background: url('/static/inscricoes/img/background_escola.png') no-repeat center center;
+            background-size: cover;
+            height: 40vh;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .curso-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container" id="cabecalho">
+            <a class="navbar-brand" href="#" id="titulo">Escola de Artes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#cursos">Cursos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:password_reset' %}">Alterar Senha</a></li>
+                </ul>
+                 <!-- Formulário de Logout -->
+                <form method="post" action="{% url 'accounts:logout' %}" class="d-flex ms-auto sair">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sair</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Seção Banner -->
+    <section class="banner">
+        <div class="container">
+            <img src="{% static 'inscricoes/img/logo_escola.png' %}" class="img-fluid" id="logo_escola" alt="Logo da Escola de Artes">
+            <h1 class="titulo_banner" id="titulo">Bem-vindo à Escola de Artes</h1>
+            <p>Transforme sua criatividade em realidade.</p>
+            <a href="{% url 'inscricoes:inscrever' %}" class="btn btn-primary btn-lg inscrever" id="botao_inscrever">Inscreva-se</a>
+        </div>
+    </section>
+    {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Seção Sobre a Escola -->
+    <section class="container my-5">
+        <div class="description-box p-4 rounded shadow mt-4 d-flex">
+            <div>
+                <h2 class="mb-3" id="titulo">Sobre a Escola</h2>
+                <p>
+                    O Grupo Cultura de Rua foi fundado em 2005 por jovens de Floriano, Piauí, e ao longo de quase 19 anos, tem contribuído culturalmente para a região com atividades socioculturais, montagens teatrais e espetáculos de dança.
+                </p>
+                <p>
+                    A Escola de Artes Cultura de Rua foi criada para promover a cultura no Piauí, oferecendo oficinas de capoeira, violão, ballet, dança do ventre, teclado, bateria, percussão e teatro no Espaço Cultural Maria Bonita.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Cursos -->
+    <section id="cursos" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center" id="titulo">Nossos Cursos</h2>
+            <div class="row">
+                <!-- Curso 1 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/capoeira.jpg' %}" class="card-img-top" alt="Capoeira">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Capoeira</h5>
+                            <p class="card-text">
+                                O curso de Capoeira forma profissionais qualificados ao longo do projeto. Os alunos se aprofundam na história da capoeira, compreendendo a importância da Capoeira no contexto brasileiro.</p>
+                            <p><strong>Dias:</strong> Segunda e Quarta</p>
+                            <p><strong>Horário:</strong> 14:00 - 16:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 2 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/teatro.jpg' %}" class="card-img-top" alt="Teatro">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Teatro</h5>
+                            <p class="card-text">O curso de Teatro forma profissionais qualificados para atuar, dirigir, produzir e ensinar performances teatrais. Ao longo do curso, os alunos se aprofundam na história da arte, teoria e prática da atuação, direção, cenografia, dramaturgia, iluminação, figurino e produção teatral.</p>
+                            <p><strong>Dia:</strong> Terça e Quinta</p>
+                            <p><strong>Horário:</strong> 18:00 - 20:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 3 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/danca_ventre.jpg' %}" class="card-img-top" alt="Dança do Ventre">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Dança do Ventre</h5>
+                            <p class="card-text">O curso de dança do ventre forma profissionais qualificadas na dança árabe e contemporânea. Ao longo do curso, os alunos se aprofundam na história da música e do ritmo com aulas teóricas e práticas.</p>
+                            <p><strong>Dias:</strong> Segunda e Sexta</p>
+                            <p><strong>Horário:</strong> 16:00 - 18:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 4 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/ballet.jpg' %}" class="card-img-top" alt="Ballet">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Ballet</h5>
+                            <p class="card-text">O curso de Ballet forma profissionais qualificadas atuar na área da dança. Ao longo do curso, os alunos se aprofundam na história da dança, teoria e prática da atuação, figurino e produção.</p>
+                            <p><strong>Dias:</strong> Quarta e Sábado</p>
+                            <p><strong>Horário:</strong> 10:00 - 12:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 5 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/violao.jpg' %}" class="card-img-top" alt="Violão">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Violão</h5>
+                            <p class="card-text">O curso de violão forma profissionais qualificados para tocar em grupos musicais. Ao longo do curso, os alunos se aprofundam na história do violão e acordes com teoria e prática.</p>
+                            <p><strong>Dias:</strong> Terça e Sexta</p>
+                            <p><strong>Horário:</strong> 14:00 - 16:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 6 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/teclado.jpg' %}" class="card-img-top" alt="Teclado">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Teclado</h5>
+                            <p class="card-text">Aprenda os fundamentos do teclado e desenvolva habilidades para tocar músicas em diferentes estilos. O curso foca em acordes, escalas e técnicas de improvisação, perfeito para iniciantes que querem evoluir no instrumento e aprimorar a musicalidade.</p>
+                            <p><strong>Dias:</strong> Segunda e Quarta</p>
+                            <p><strong>Horário:</strong> 18:00 - 20:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 7 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/bateria.jpg' %}" class="card-img-top" alt="Bateria">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Bateria</h5>
+                            <p class="card-text">Curso de Bateria: Aprenda a tocar bateria e desenvolva habilidades rítmicas essenciais para tocar diversos estilos musicais. Ideal para iniciantes e alunos que buscam aprimorar sua técnica, o curso oferece fundamentos de leitura de partituras, coordenação motora e desenvolvimento de velocidade e precisão.</p>
+                            <p><strong>Dias:</strong> Quinta e Sábado</p>
+                            <p><strong>Horário:</strong> 13:00 - 15:00</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Curso 8 -->
+                <div class="col-12 col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{% static 'inscricoes/img/percussao.jpg' %}" class="card-img-top" alt="Percussão">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Percussão</h5>
+                            <p class="card-text">O curso de Percussão forma profissionais qualificados para tocar em grupos musicais e bandas. Ao longo do curso, os alunos se aprofundam na percussão, podendo ser uma ferramenta valiosa para ensinar habilidades musicais, como ritmo, tempo, dinâmica e harmonia.</p>
+                            <p><strong>Dias:</strong> Terça e Quinta</p>
+                            <p><strong>Horário:</strong> 10:00 - 12:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer class="text-center py-4 bg-dark text-light">
+        <p>&copy; 2025 Escola de Artes - Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

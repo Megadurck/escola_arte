@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head class="painel-administrativo">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <!-- Link do CSS -->
+    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard">
+    <h1 id="titulo">Painel Administrativo</h1>
+    <div class="grafico-container">
+        <div class="grafico-box">
+            <h3>Total de Inscrições por Curso</h3>
+            <canvas id="barChart"></canvas>
+        </div>
+        <div class="grafico-box">
+            <h3>Distribuição Percentual de Inscrições por Curso</h3>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Link do JS -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

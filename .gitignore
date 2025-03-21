@@ -1,0 +1,35 @@
+# 1️⃣ Arquivos de credenciais e configurações sensíveis
+.env
+config.json
+secrets.json
+settings_local.py  # Caso tenha um settings separado para produção
+
+# 2️⃣ Arquivos de banco de dados locais
+*.sqlite3
+*.db
+db.sqlite3
+
+# 3️⃣ Arquivos de cache e compilação do Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# 4️⃣ Logs e arquivos temporários
+*.log
+*.bak
+tmp/
+logs/
+
+# 5️⃣ Pastas do Django que podem ser regeneradas
+staticfiles/       # Arquivos estáticos compilados do Django (Coletados com 'collectstatic')
+media/             # Arquivos de mídia carregados pelos usuários
+node_modules/      # Caso use npm ou yarn para dependências de front-end
+venv/              # Ambiente Virtual (não versionar)
+
+# 6️⃣ Arquivos do editor de código
+.vscode/           # Editor Visual Studio Code
+.idea/             # Configurações do JetBrains
+*.swp              # Arquivos temporários do Vim
+*.swo
+*.swn
