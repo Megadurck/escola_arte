@@ -33,3 +33,5 @@ venv/              # Ambiente Virtual (não versionar)
 *.swp              # Arquivos temporários do Vim
 *.swo
 *.swn
+
+teste
