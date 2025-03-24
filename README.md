@@ -33,7 +33,7 @@ Agora, o projeto conta com uma **galeria interativa** para visualização das im
 3.  Clique nas imagens para alterá a visualização na galeria.
     
 
-### Tecnologias Usadas:
+### Tecnologias Usadas nesta vova interação:
 
 -   HTML
     
