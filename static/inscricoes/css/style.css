@@ -188,7 +188,7 @@ header {
 /* ===== Estilos do Dashboard ===== */
 .dashboard-container {
     max-width: 900px;
-    margin: 40px auto;
+    margin: 30px auto;
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -202,16 +202,16 @@ header {
     gap: 20px;
     padding: 20px;
     max-width: 100%;
-    overflow: hidden;
 }
 
 .grafico-box {
     background: #ffffff;
-    height: auto;
-    width: 60%;
+    height: 100%; 
+    width: 50%;
     padding: 15px;
     border-radius: 10px;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 canvas {
@@ -221,6 +221,8 @@ canvas {
     height: 300px; /* A altura será ajustada automaticamente */
     max-height: 500px; /* Limitar a altura máxima do gráfico */
     border-radius: 8px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
 }
 
 /* ===== Ajuste para telas pequenas (celular) ===== */
