@@ -14,6 +14,33 @@ Este é um projeto para gerenciar as inscrições e usuários de uma escola de a
 
 ----------
 
+## Novidade: Galeria Interativa
+
+Agora, o projeto conta com uma **galeria interativa** para visualização das imagens de cada curso! Os alunos podem clicar nas fotos dos cursos para visualizá-las em um formato de galeria, e navegar entre as imagens clicando nas fotos do roda-pé.
+
+### Como funciona:
+
+1.  **Visualização das Imagens**: Ao clicar em uma imagem de um curso, uma galeria se abrirá exibindo a imagem selecionada.
+    
+2.  **Navegação entre as Imagens**: O usuário pode navegar entre as imagens clicando nas imagens do roda-pé.
+    
+### Como testar a funcionalidade:
+
+1.  Acesse a página do curso.
+    
+2.  Clique em qualquer imagem para abrir a galeria.
+    
+3.  Clique nas imagens para alterá a visualização na galeria.
+    
+
+### Tecnologias Usadas:
+
+-   HTML
+    
+-   CSS (com uso do Bootstrap para o layout responsivo)
+    
+-   JavaScript (para a interatividade da galeria)
+
 ## Tecnologias Usadas
 
 -   **Django**: Framework web Python para desenvolvimento rápido.
