@@ -476,4 +476,109 @@ footer {
     font-size: 1rem;
     box-sizing: border-box; /* Faz com que o padding não afete a largura total */
 }
+/* Estilo para a galeria */
+.gallery-container {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; /* Reduzindo a largura do container */
+    max-width: 1000px; /* Definindo um limite máximo de largura */
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro */
+    display: none; /* Inicialmente oculta */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Imagem principal */
+.main-image {
+    max-width: 90%;
+    max-height: 70vh;
+    margin: 20px 0;
+}
+
+.main-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    max-width: 1080px; /* Limita a largura da imagem principal a 1080px */
+}
+
+
+.nav-arrow.prev {
+    left: 10px;
+}
+
+.nav-arrow.next {
+    right: 10px;
+}
+
+/* Estilo para os itens da galeria (miniaturas) */
+#galleryImages {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.gallery-item {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.1); /* Efeito de zoom ao passar o mouse */
+}
+
+/* Limita as imagens da galeria a 1080px de largura */
+.gallery-item, .main-image img {
+    max-width: 1080px;
+    width: 100%; /* Garante que as imagens não ultrapassem o limite */
+}
+
+/* Botão de fechar */
+.close-gallery {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Ajuste da posição do botão */
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .gallery-container {
+        width: 90%; /* Aumenta a largura do container em telas pequenas */
+        top: 15%;
+    }
+
+    .main-image {
+        max-width: 80%;
+        max-height: 60vh;
+    }
+
+    .gallery-item {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+
+
+
 

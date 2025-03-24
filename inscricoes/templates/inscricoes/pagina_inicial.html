@@ -8,7 +8,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}">
-
+    <!-- Outros links e metadados -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    
     <style>
         /* Estilização personalizada */
         .banner {
@@ -88,58 +90,148 @@
         <div class="container">
             <h2 class="text-center" id="titulo">Nossos Cursos</h2>
             <div class="row">
-                <!-- Curso 1 -->
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
-                        <img src="{% static 'inscricoes/img/capoeira.jpg' %}" class="card-img-top" alt="Capoeira">
-                        <div class="card-body">
-                            <h5 class="card-title">Curso de Capoeira</h5>
-                            <p class="card-text">
-                                O curso de Capoeira forma profissionais qualificados ao longo do projeto. Os alunos se aprofundam na história da capoeira, compreendendo a importância da Capoeira no contexto brasileiro.</p>
-                            <p><strong>Dias:</strong> Segunda e Quarta</p>
-                            <p><strong>Horário:</strong> 14:00 - 16:00</p>
-                        </div>
+            <!-- Card do Curso -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="card course-card" data-course-id="capoeira">
+                    <img src="{% static 'inscricoes/img/capoeira.jpg' %}" class="card-img-top" alt="Capoeira">
+                    <div class="card-body">
+                        <h5 class="card-title">Curso de Capoeira</h5>
+                        <p class="card-text">
+                            O curso de Capoeira forma profissionais qualificados ao longo do projeto. Os alunos se aprofundam na história da capoeira, compreendendo a importância da Capoeira no contexto brasileiro.
+                        </p>
+                        <p><strong>Dias:</strong> Segunda e Quarta</p>
+                        <p><strong>Horário:</strong> 14:00 - 16:00</p>
                     </div>
                 </div>
+            </div>
+
+                    <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div id="capoeira-gallery" class="gallery-container" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('capoeira')">Fechar</button>
+
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-capoeira" src="{% static 'inscricoes/img/capoeira/capoeira1.jpg' %}" alt="Imagem Principal do Curso Capoeira" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'capoeira')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'capoeira')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'capoeira')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'capoeira')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'capoeira')">
+                </div>
+
+            </div>
+
                 <!-- Curso 2 -->
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
-                        <img src="{% static 'inscricoes/img/teatro.jpg' %}" class="card-img-top" alt="Teatro">
-                        <div class="card-body">
-                            <h5 class="card-title">Curso de Teatro</h5>
-                            <p class="card-text">O curso de Teatro forma profissionais qualificados para atuar, dirigir, produzir e ensinar performances teatrais. Ao longo do curso, os alunos se aprofundam na história da arte, teoria e prática da atuação, direção, cenografia, dramaturgia, iluminação, figurino e produção teatral.</p>
-                            <p><strong>Dia:</strong> Terça e Quinta</p>
-                            <p><strong>Horário:</strong> 18:00 - 20:00</p>
-                        </div>
+            <div class="col-12 col-md-3 mb-4">
+                <div class="card course-card" data-course-id="teatro">
+                    <img src="{% static 'inscricoes/img/teatro.jpg' %}" class="card-img-top" alt="Teatro">
+                    <div class="card-body">
+                        <h5 class="card-title">Curso de Teatro</h5>
+                        <p class="card-text">O curso de Teatro forma profissionais qualificados para atuar, dirigir, produzir e ensinar performances teatrais. Ao longo do curso, os alunos se aprofundam na história da arte, teoria e prática da atuação, direção, cenografia, dramaturgia, iluminação, figurino e produção teatral.</p>
+                        <p><strong>Dia:</strong> Terça e Quinta</p>
+                        <p><strong>Horário:</strong> 18:00 - 20:00</p>
                     </div>
+                </div>
+            </div>
+
+                      <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div class="gallery-container" id="teatro-gallery" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('teatro')">Fechar</button>
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-teatro" src="{% static 'inscricoes/img/teatro/teatro1.jpg' %}" alt="Imagem Principal do Curso Teatro" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teatro/teatro1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'teatro')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teatro/teatro2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'teatro')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teatro/teatro3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'teatro')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teatro/teatro4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'teatro')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teatro/teatro5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'teatro')">
+                    
+                </div>
+
                 </div>
                 <!-- Curso 3 -->
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
-                        <img src="{% static 'inscricoes/img/danca_ventre.jpg' %}" class="card-img-top" alt="Dança do Ventre">
-                        <div class="card-body">
-                            <h5 class="card-title">Curso de Dança do Ventre</h5>
-                            <p class="card-text">O curso de dança do ventre forma profissionais qualificadas na dança árabe e contemporânea. Ao longo do curso, os alunos se aprofundam na história da música e do ritmo com aulas teóricas e práticas.</p>
-                            <p><strong>Dias:</strong> Segunda e Sexta</p>
-                            <p><strong>Horário:</strong> 16:00 - 18:00</p>
-                        </div>
+            <div class="col-12 col-md-3 mb-4">
+                <div class="card course-card" data-course-id="danca_ventre">
+                    <img src="{% static 'inscricoes/img/danca_ventre.jpg' %}" class="card-img-top" alt="Dança do Ventre">
+                    <div class="card-body">
+                        <h5 class="card-title">Curso de Dança do Ventre</h5>
+                        <p class="card-text">O curso de dança do ventre forma profissionais qualificadas na dança árabe e contemporânea. Ao longo do curso, os alunos se aprofundam na história da música e do ritmo com aulas teóricas e práticas.</p>
+                        <p><strong>Dias:</strong> Segunda e Sexta</p>
+                        <p><strong>Horário:</strong> 16:00 - 18:00</p>
                     </div>
                 </div>
-                <!-- Curso 4 -->
-                <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
-                        <img src="{% static 'inscricoes/img/ballet.jpg' %}" class="card-img-top" alt="Ballet">
-                        <div class="card-body">
-                            <h5 class="card-title">Curso de Ballet</h5>
-                            <p class="card-text">O curso de Ballet forma profissionais qualificadas atuar na área da dança. Ao longo do curso, os alunos se aprofundam na história da dança, teoria e prática da atuação, figurino e produção.</p>
-                            <p><strong>Dias:</strong> Quarta e Sábado</p>
-                            <p><strong>Horário:</strong> 10:00 - 12:00</p>
-                        </div>
+            </div>
+
+              <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div class="gallery-container" id="danca_ventre-gallery" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('danca_ventre')">Fechar</button>
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-danca_ventre" src="{% static 'inscricoes/img/danca_ventre/danca1.jpg' %}" alt="Imagem Principal do Curso Teatro" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'danca_ventre')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'danca_ventre')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'danca_ventre')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'danca_ventre')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'danca_ventre')">
+                    
+                </div>
+
+                </div>
+
+
+                    <!-- Curso 4 -->
+            <div class="col-12 col-md-3 mb-4">
+                <div class="card course-card" data-course-id="ballet">
+                    <img src="{% static 'inscricoes/img/ballet.jpg' %}" class="card-img-top" alt="Ballet">
+                    <div class="card-body">
+                        <h5 class="card-title">Curso de Ballet</h5>
+                        <p class="card-text">O curso de Ballet forma profissionais qualificadas atuar na área da dança. Ao longo do curso, os alunos se aprofundam na história da dança, teoria e prática da atuação, figurino e produção.</p>
+                        <p><strong>Dias:</strong> Quarta e Sábado</p>
+                        <p><strong>Horário:</strong> 10:00 - 12:00</p>
                     </div>
                 </div>
+            </div>
+
+                <div class="gallery-container" id="ballet-gallery"  style="display: none;">
+                    <!-- Botão para fechar a galeria -->
+                    <button class="close-gallery" onclick="closeGallery('ballet')">Fechar</button>
+                
+                    <!-- Imagem principal -->
+                    <div class="main-image">
+                        <img id="mainImage-ballet" src="{% static 'inscricoes/img/ballet/ballet1.jpg' %}" alt="Imagem Principal do Curso Ballet" class="img-fluid">
+                    </div>
+                
+                    <!-- Galeria de imagens -->
+                    <div id="galleryImages">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'ballet')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'ballet')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'ballet')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'ballet')">
+                    </div>
+                
+                </div>
+                
                 <!-- Curso 5 -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card course-card" data-course-id="violao">
                         <img src="{% static 'inscricoes/img/violao.jpg' %}" class="card-img-top" alt="Violão">
                         <div class="card-body">
                             <h5 class="card-title">Curso de Violão</h5>
@@ -149,9 +241,31 @@
                         </div>
                     </div>
                 </div>
+
+                  <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div class="gallery-container" id="violao-gallery" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('violao')">Fechar</button>
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-violao" src="{% static 'inscricoes/img/violao/violao1.jpg' %}" alt="Imagem Principal do Curso Teatro" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/violao/violao1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/violao/violao2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/violao/violao3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/violao/violao4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/violao/violao5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'violao')">
+                    
+                </div>
+
+                </div>
                 <!-- Curso 6 -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card course-card" data-course-id="teclado">
                         <img src="{% static 'inscricoes/img/teclado.jpg' %}" class="card-img-top" alt="Teclado">
                         <div class="card-body">
                             <h5 class="card-title">Curso de Teclado</h5>
@@ -161,9 +275,30 @@
                         </div>
                     </div>
                 </div>
+
+                     <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div class="gallery-container" id="teclado-gallery" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('teclado')">Fechar</button>
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-teclado" src="{% static 'inscricoes/img/teclado/teclado1.jpg' %}" alt="Imagem Principal do Curso Teatro" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'teclado')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'teclado')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'teclado')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'teclado')">
+                    
+                </div>
+
+                </div>
                 <!-- Curso 7 -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card course-card" data-course-id="bateria">
                         <img src="{% static 'inscricoes/img/bateria.jpg' %}" class="card-img-top" alt="Bateria">
                         <div class="card-body">
                             <h5 class="card-title">Curso de Bateria</h5>
@@ -173,9 +308,30 @@
                         </div>
                     </div>
                 </div>
+
+                     <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div class="gallery-container" id="bateria-gallery" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('bateria')">Fechar</button>
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-bateria" src="{% static 'inscricoes/img/bateria/bateria1.jpg' %}" alt="Imagem Principal do Curso Teatro" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'violao')">
+                    
+                </div>
+
+                </div>
                 <!-- Curso 8 -->
                 <div class="col-12 col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card course-card" data-course-id="percussao">
                         <img src="{% static 'inscricoes/img/percussao.jpg' %}" class="card-img-top" alt="Percussão">
                         <div class="card-body">
                             <h5 class="card-title">Curso de Percussão</h5>
@@ -184,6 +340,25 @@
                             <p><strong>Horário:</strong> 10:00 - 12:00</p>
                         </div>
                     </div>
+                </div>
+
+                     <!-- Galeria de Imagens (Oculta inicialmente) -->
+            <div class="gallery-container" id="percussao-gallery" style="display: none;">
+                <!-- Botão para fechar a galeria -->
+                <button class="close-gallery" onclick="closeGallery('percussao')">Fechar</button>
+
+                <!-- Imagem principal -->
+                <div class="main-image">
+                    <img id="mainImage-percussao" src="{% static 'inscricoes/img/percussao/percussao1.jpg' %}" alt="Imagem Principal do Curso Teatro" class="img-fluid">
+                </div>
+
+                <!-- Galeria de imagens -->
+                <div id="galleryImages">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'violao')">
+                    <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'violao')">
+                    
+                </div>
+
                 </div>
             </div>
         </div>
@@ -196,5 +371,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'inscricoes/js/galeria.js' %}"></script>
+
 </body>
 </html>

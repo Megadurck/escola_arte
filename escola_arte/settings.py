@@ -138,3 +138,11 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
+# settings.py
+
+SESSION_COOKIE_SAMESITE = 'None'  # Necessário para cookies cross-site
+SESSION_COOKIE_SECURE = True      # Exige HTTPS
+CSRF_COOKIE_SAMESITE = 'None'     # Necessário para CSRF em cross-site
+CSRF_COOKIE_SECURE = True         # Exige HTTPS
+
+
