@@ -23,6 +23,17 @@ Agora, o projeto conta com uma **galeria interativa** para visualização das im
 1.  **Visualização das Imagens**: Ao clicar em uma imagem de um curso, uma galeria se abrirá exibindo a imagem selecionada.
     
 2.  **Navegação entre as Imagens**: O usuário pode navegar entre as imagens clicando nas imagens do roda-pé.
+
+## Imagens da Galeria:
+
+1. **Imagem Principal Inicial**:
+   ![Galeria Inicial](prints/galeria_inicial.jpg)
+
+2. **Miniaturas da Galeria**:
+   ![Miniaturas](prints/miniaturas_galeria.jpg)
+
+3. **Imagem Atualizada ao Clicar na Miniatura**:
+   ![Imagem Atualizada](prints/galeria_atualizada.jpg)
     
 ### Como testar a funcionalidade:
 
