@@ -41,7 +41,7 @@ Agora, o projeto conta com uma **galeria interativa** para visualização das im
     
 2.  Clique em qualquer imagem para abrir a galeria.
     
-3.  Clique nas imagens para alterá a visualização na galeria.
+3.  Clique nas imagens para alterar a visualização na galeria.
     
 
 ### Tecnologias Usadas nesta vova interação:
