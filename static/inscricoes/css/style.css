@@ -186,30 +186,32 @@ header {
 }
 
 /* ===== Estilos do Dashboard ===== */
-.dashboard{
+body .dashboard{
+    display: grid;
     margin: 0;
     padding: 0;
     text-align: center;
+    overflow-y: auto; /* evita que a tela estoure na vertical */
 }
 .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     max-width: 1400px;
     margin: 30px auto;
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    text-align: center;
-    display: flex;
-    o
 }
 
 .grafico-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 20px;
     padding: 20px;
-    flex-wrap: wrap;  /* Permite que os gráficos se movam para a linha seguinte se necessário */
-    margin-top: -35px;
+    margin-top: calc(-35px - 20px); /* Desloca para cima considerando a soma do padding e do gap */
 }
 
 .grafico-box {
@@ -219,7 +221,7 @@ header {
     border-radius: 5px;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    width: 48%;  /* Gráficos de barra e pizza terão 48% de largura em telas grandes */
+    width: calc(48% - 10px);  /* Gráficos de barra e pizza terão 50% de largura em telas grandes */
     text-align: center;
     margin-bottom: -10px;
 }
@@ -235,6 +237,10 @@ header {
     font-size: 1.5rem;
     color: #333;
     margin-bottom: 1px;
+    position: absolute; /* Posiciona o título acima do gráfico */
+    top: -30px; /* Posiciona o título 30px acima do gráfico */
+    left: 50%; /* Centraliza o título */
+    transform: translateX(-50%); /* Centraliza o título */
 }
 
 /* Gráfico de linha ocupará 100% da largura disponível, se necessário */
@@ -254,18 +260,20 @@ canvas {
     margin: 0 auto; /* Centraliza o gráfico */
 }
 
-
-
-
-/* ===== Ajuste para telas pequenas (celular) ===== */
 @media (max-width: 768px) {
     .grafico-container {
         flex-direction: column; /* Alinha os gráficos um em cima do outro */
         gap: 10px; /* Menor espaço entre os gráficos */
     }
+    
+    .grafico-box {
+        width: 100%; /* Garante que os gráficos ocupem a largura total do contêiner */
+        margin-bottom: 20px; /* Espaço entre os gráficos */
+    }
 
     .grafico-container > div {
         width: 100%; /* Garante que os gráficos ocupem a largura total do contêiner */
+        margin-bottom: 20px; /* Espaço entre os gráficos */
     }
 
     canvas {

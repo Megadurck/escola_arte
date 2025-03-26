@@ -35,20 +35,23 @@ def inscrever(request):
 # Função para exibir dados do dashboard (somente para administradores ou usuários com permissões)
 @login_required
 def dashboard_data(request):
-    """Retorna os dados do dashboard em formato JSON para o frontend."""
     total_inscricoes = Inscricao.objects.count()
     cursos = Curso.objects.annotate(total_inscricoes=Count('inscricao')).all()
 
-    # Inscri es por curso
+    # Inscrições por curso
     inscricoes_por_curso = [
-        {'curso': curso.nome, 'total': curso.total_inscricoes, 'porcentagem': round(curso.total_inscricoes / total_inscricoes * 100, 2) if total_inscricoes > 0 else 0}
+        {
+            'curso': curso.nome,
+            'total': curso.total_inscricoes,
+            'porcentagem': (curso.total_inscricoes / total_inscricoes * 100) if total_inscricoes > 0 else 0
+        }
         for curso in cursos
     ]
 
-    # Inscri es por data
+    # Inscrições por data
     data_inscricao = Inscricao.objects.values('data_inscricao').annotate(count=Count('id')).order_by('data_inscricao')
-
-    # Preparar os dados de inscri es por data para o gr fico de linha
+    
+    # Preparar os dados de inscrições por data para o gráfico de linha
     datas = [entry['data_inscricao'].strftime('%Y-%m-%d') for entry in data_inscricao]
     quantidades = [entry['count'] for entry in data_inscricao]
 
@@ -56,8 +59,7 @@ def dashboard_data(request):
     return JsonResponse({
         'inscricoes_por_curso': inscricoes_por_curso,
         'total_inscricoes': total_inscricoes,
-        'data_inscricao': datas,
-        'quantidade_inscricao': quantidades,
+        'data_inscricao': [{'data_inscricao': data, 'count': quantidades} for data, quantidades in zip(datas, quantidades)],  # Dados para o gráfico de linha datas,  # Dados para o gráfico de linha
     })
 
 # Função para painel administrativo

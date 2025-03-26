@@ -18,19 +18,16 @@ document.addEventListener("DOMContentLoaded", function() {
             const cursos = data.inscricoes_por_curso.map(item => item.curso);
             const totais = data.inscricoes_por_curso.map(item => item.total);
             const porcentagens = data.inscricoes_por_curso.map(item => item.porcentagem);
+            const datas = data.data_inscricao.map(item => item.data_inscricao ? new Date(item.data_inscricao).toLocaleDateString() : ''); // lista de datas
+            const quantidades = data.data_inscricao.map(item => item.count || 0); // Adicionado para verificar as quantidades
 
             // Verifique as variáveis para garantir que estão corretas
             console.log("Cursos:", cursos);
             console.log("Totais:", totais);
             console.log("Porcentagens:", porcentagens);
 
-            // Garantir que as datas estão no formato correto
-            const datas = data.data_inscricao.map(item => new Date(item.data_inscricao));  // Converter para Date
-            const totalPorData = data.data_inscricao.map(item => item.count);
-
-            // Verifique as datas e os totais por data
             console.log("Datas (formato Date):", datas);
-            console.log("Total por Data:", totalPorData);
+            console.log("Quantidades:", quantidades); // Adicionado para verificar as quantidades
 
             const backgroundColors = [
                 'rgba(23, 213, 197, 0.5)',
@@ -118,16 +115,21 @@ document.addEventListener("DOMContentLoaded", function() {
                     labels: datas,
                     datasets: [{
                         label: 'Inscrições ao Longo do Tempo',
-                        data: totalPorData,
+                        data: quantidades,
                         fill: true,
                         borderColor: 'rgb(2, 19, 19)',
-                        tension: 0.1
+                        backgroundColor: 'rgba(2, 19, 19, 0.2)', // Adiciona uma cor de fundo ao gráfico de linha
+                        tension: 0.4, // Aumenta a tensão para suavizar as curvas
+                        pointRadius: 3,
+                        pointHoverRadius: 8,
+                        showLine: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        legend: { display: true }, // Adiciona uma legenda ao gráfico
                         tooltip: {
                             enabled: true,
                             callbacks: {
@@ -137,18 +139,18 @@ document.addEventListener("DOMContentLoaded", function() {
                     },
                     scales: {
                         x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day',
-                                tooltipFormat: 'll'
-                            },
+                            type: 'category',
                             title: {
                                 display: true,
                                 text: 'Data'
                             }
                         },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Inscrições' // Adiciona título ao eixo Y
+                            }
                         }
                     }
                 }
@@ -158,3 +160,4 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('Erro ao buscar dados para os gráficos:', error);
         });
 });
+
