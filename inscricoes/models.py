@@ -30,6 +30,8 @@ class Inscricao(models.Model):
     data_nascimento = models.DateField()
     cursos = models.ManyToManyField(Curso)
     usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE,)
+    data_inscricao = models.DateTimeField(auto_now_add=True)  # Adicionando esse campo
+
 
     class Meta:
         unique_together = ('usuario',)  # Isso vai garantir que o usuário só possa se inscrever uma vez

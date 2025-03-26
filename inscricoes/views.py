@@ -7,6 +7,8 @@ from .forms import InscricaoForm
 from .models import Curso, Inscricao
 from django.contrib.auth import logout
 from django.db.models import Count
+from datetime import datetime
+
 
 # Função para inscrever usuário
 @login_required
@@ -36,6 +38,7 @@ def dashboard_data(request):
     total_inscricoes = Inscricao.objects.count()
     cursos = Curso.objects.annotate(total_inscricoes=Count('inscricao')).all()
 
+    # Inscrições por curso
     inscricoes_por_curso = [
         {
             'curso': curso.nome,
@@ -45,9 +48,19 @@ def dashboard_data(request):
         for curso in cursos
     ]
 
+    # Inscrições por data
+    data_inscricao = Inscricao.objects.values('data_inscricao').annotate(count=Count('id')).order_by('data_inscricao')
+    
+    # Preparar os dados de inscrições por data para o gráfico de linha
+    datas = [entry['data_inscricao'].strftime('%Y-%m-%d') for entry in data_inscricao]
+    quantidades = [entry['count'] for entry in data_inscricao]
+
+    # Retornar os dados no formato JSON para o frontend
     return JsonResponse({
         'inscricoes_por_curso': inscricoes_por_curso,
-        'total_inscricoes': total_inscricoes
+        'total_inscricoes': total_inscricoes,
+        'data_inscricao': datas,  # Dados para o gráfico de linha
+        'quantidade_inscricao': quantidades  # Quantidade de inscrições para o gráfico de linha
     })
 
 # Função para painel administrativo

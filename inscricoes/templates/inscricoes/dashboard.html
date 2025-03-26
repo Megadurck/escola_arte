@@ -10,20 +10,26 @@
     <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="dashboard">
-    <h1 id="titulo">Painel Administrativo</h1>
+<body class="dashboard">  
+         <h1 class="title-dashboard">Painel Administrativo</h1>
     <div class="grafico-container">
-        <div class="grafico-box">
-            <h3>Total de Inscrições por Curso</h3>
+        <div class="grafico-box" id="grafico-barras">
+            <h3 class="grafico-titulo">Total de Inscrições por Curso</h3>
             <canvas id="barChart"></canvas>
         </div>
-        <div class="grafico-box">
-            <h3>Distribuição Percentual de Inscrições por Curso</h3>
+        <div class="grafico-box" id="grafico-pizza">
+            <h3 class="grafico-titulo">Distribuição Percentual de Inscrições por Curso</h3>
             <canvas id="pieChart"></canvas>
+        </div>
+    
+        <div class="grafico-box" id="grafico-linha">
+            <h3 class="grafico-titulo">Inscrições ao Longo do Tempo</h3>
+            <canvas id="lineChart"></canvas>
         </div>
     </div>
 
     <!-- Link do JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@1.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="{% static 'inscricoes/js/dashboard.js' %}"></script>
 </body>
 </html>

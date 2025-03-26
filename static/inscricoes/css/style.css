@@ -186,44 +186,76 @@ header {
 }
 
 /* ===== Estilos do Dashboard ===== */
+.dashboard{
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
 .dashboard-container {
-    max-width: 900px;
+    max-width: 1400px;
     margin: 30px auto;
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     text-align: center;
+    display: flex;
+    o
 }
 
 .grafico-container {
-    display: flex; 
-    justify-content: space-around;
+    display: flex;
+    justify-content: space-between;
     gap: 20px;
     padding: 20px;
-    max-width: 100%;
+    flex-wrap: wrap;  /* Permite que os gráficos se movam para a linha seguinte se necessário */
+    margin-top: -35px;
 }
 
 .grafico-box {
+    display: grid;
     background: #ffffff;
-    height: 100%; 
-    width: 50%;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 10px;
+    border-radius: 5px;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    width: 48%;  /* Gráficos de barra e pizza terão 48% de largura em telas grandes */
+    text-align: center;
+    margin-bottom: -10px;
+}
+
+.grafico-titulo {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#titulo-dashboard {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1px;
+}
+
+/* Gráfico de linha ocupará 100% da largura disponível, se necessário */
+#grafico-linha {
+    width: 100%;  /* O gráfico de linha ocupará toda a largura disponível */
+    margin-top: 5px; /* Espaço superior entre o gráfico de linha e os outros */
 }
 
 canvas {
     background-color: #f6f6f6;
     width: 100%; /* O gráfico ocupará 100% da largura do contêiner */
-    max-width: 100%; /* Garantir que o gráfico não ultrapasse o contêiner */
-    height: 300px; /* A altura será ajustada automaticamente */
-    max-height: 500px; /* Limitar a altura máxima do gráfico */
+    max-width: 100% !important; /* Garante que o gráfico nunca ultrapasse a largura da tela */
+    height: auto; /* Permite que a altura seja ajustada proporcionalmente */
+    max-height: 400px; /* Limita a altura máxima do gráfico para evitar que ele fique muito grande */
     border-radius: 8px;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
+    margin: 0 auto; /* Centraliza o gráfico */
 }
+
+
+
 
 /* ===== Ajuste para telas pequenas (celular) ===== */
 @media (max-width: 768px) {
