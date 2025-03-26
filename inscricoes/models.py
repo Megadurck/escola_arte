@@ -28,7 +28,7 @@ class Inscricao(models.Model):
     numero = models.CharField(max_length=10)
     telefone_whatsapp = models.CharField(max_length=15, validators=[telefone_validator])
     data_nascimento = models.DateField()
-    cursos = models.ManyToManyField(Curso)
+    cursos = models.ManyToManyField(Curso, related_name='inscricoes')
     usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE,)
     data_inscricao = models.DateTimeField(auto_now_add=True)  # Adicionando esse campo
 

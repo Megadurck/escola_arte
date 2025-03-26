@@ -6,15 +6,15 @@ from django.contrib.auth.models import User
 
 # Definir o Inline para Inscrição
 class InscricaoInline(admin.TabularInline):
-    model = Inscricao.cursos.through  # Usa o modelo intermediário ManyToMany
+    model = Inscricao.cursos.through  # Usa o modelo intermediário
     extra = 0
-
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
     list_display = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'painel_link']
     search_fields = ['nome_completo', 'cpf']
     list_filter = ['data_nascimento']
+    filter_horizontal = ['cursos']
 
     # Adiciona um botão/link para acessar o painel
     def painel_link(self, obj):
@@ -50,3 +50,5 @@ class UserAdmin(admin.ModelAdmin):
 # Registra o modelo User no admin com a personalização
 admin.site.unregister(User)  # Desregistra a versão padrão
 admin.site.register(User, UserAdmin)  # Registra a versão personalizada
+
+
