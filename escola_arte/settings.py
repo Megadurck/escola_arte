@@ -123,9 +123,15 @@ STATIC_URL = '/static/'
 # Diretório onde os arquivos estáticos serão coletados durante o deploy
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Pastas adicionais onde o Django irá procurar arquivos estáticos durante o desenvolvimento
+# Pastas adicionais onde o Django irá procurar arquivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
+]
+
+# Para garantir que arquivos estáticos de apps específicos sejam encontrados
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
 # Default primary key field type
