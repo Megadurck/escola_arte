@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-from django.utils.deprecation import MiddlewareMixin
 from dotenv import load_dotenv
 
 # Carregar variáveis do .env
