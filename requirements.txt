@@ -1,6 +1,8 @@
 Django==5.0.2
-django-extensions
-django-widget-tweaks
-python-dotenv
+django-extensions==3.2.3
+django-widget-tweaks==1.5.0
 gunicorn
-psycopg2-binary>=2.9.9
+python-dotenv==1.0.1
+requests==2.32.3
+beautifulsoup4==4.12.3
+psycopg2-binary
