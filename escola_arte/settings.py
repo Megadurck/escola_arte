@@ -76,11 +76,11 @@ load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  # Usando PostgreSQL como o banco de dados
-        'NAME': os.getenv('DB_NAME'),  # Nome do banco de dados
-        'USER': os.getenv('DB_USER'),  # Usuário do banco de dados
-        'PASSWORD': os.getenv('DB_PASSWORD'),  # Senha do banco de dados
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', '5432'),  # Porta do banco de dados (padrão do PostgreSQL)
+        'NAME': 'escola_arte_db',
+        'USER': 'escola_arte_db_user',
+        'PASSWORD': 'JlXZp2U8dcJMskXGb5DfUTdHOGAxvB7t',
+        'HOST': 'dpg-cvianl15pdvs73beten0-a',
+        'PORT': '5432',
     }
 }
 
