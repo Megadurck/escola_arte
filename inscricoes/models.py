@@ -18,7 +18,7 @@ class Curso(models.Model):
 
     def __str__(self):
         return self.nome
-    
+     
 
 class Inscricao(models.Model):
     nome_completo = models.CharField(max_length=200)
