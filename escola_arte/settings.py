@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^)x_@f6=eqae8$s4kz0f+bq(_!cfg5ub2h^oa*%vh+2co85)gh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['escola-arte.onrender.com', 'localhost']
 
@@ -120,19 +120,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Diretório onde os arquivos estáticos serão coletados durante o deploy
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 # Pastas adicionais onde o Django irá procurar arquivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Para garantir que arquivos estáticos de apps específicos sejam encontrados
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
+# Diretório onde os arquivos estáticos serão coletados durante o deploy
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -160,5 +154,6 @@ SESSION_COOKIE_SAMESITE = 'None'  # Necessário para cookies cross-site
 SESSION_COOKIE_SECURE = True      # Exige HTTPS
 CSRF_COOKIE_SAMESITE = 'None'     # Necessário para CSRF em cross-site
 CSRF_COOKIE_SECURE = True         # Exige HTTPS
+
 
 
