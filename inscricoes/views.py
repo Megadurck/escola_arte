@@ -20,17 +20,28 @@ def inscrever(request):
     if request.method == 'POST':
         form = InscricaoForm(request.POST)
         if form.is_valid():
+            cursos_selecionados = form.cleaned_data.get('cursos')
+
+            for curso in cursos_selecionados:
+                if curso.inscricoes.count() >= curso.limite_inscricoes:
+                    messages.error(request, f'O curso "{curso.nome}" atingiu o limite de inscrições.')
+                    return redirect('inscricoes:inscrever')
+
             inscricao = form.save(commit=False)
             inscricao.usuario = request.user
             inscricao.save()
-            form.save_m2m()
+            form.save_m2m()  # Salva a relação ManyToMany
 
             messages.success(request, 'Inscrição realizada com sucesso!')
-            return redirect('inscricoes:inscrever')
+            return redirect('inscricoes:pagina_inicial')
     else:
         form = InscricaoForm()
 
     return render(request, 'inscricoes/inscrever.html', {'form': form})
+
+
+
+
 
 # Função para exibir dados do dashboard (somente para administradores ou usuários com permissões)
 @login_required

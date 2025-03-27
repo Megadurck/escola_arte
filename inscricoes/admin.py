@@ -26,16 +26,14 @@ class InscricaoAdmin(admin.ModelAdmin):
 # Registrar o modelo de Curso no admin
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'descricao', 'limite_inscricoes']
-    search_fields = ('nome',)  # Permite buscar por nome do curso (opcional)
-    list_editable = ('limite_inscricoes',)  # Permite editar o limite diretamente na lista
-    inlines = [InscricaoInline]
-
-admin.site.register(Curso, CursoAdmin)
+    list_display = ['nome', 'descricao', 'limite_inscricoes']  # Exibe o nome, descrição e limite na lista
+    search_fields = ('nome',)  # Permite buscar por nome do curso
+    list_editable = ['limite_inscricoes']  # Permite editar diretamente o limite de inscrições na lista
+    inlines = [InscricaoInline]  # Supondo que você tenha um Inline para Inscrições
 
 # Registrar o modelo de Funcionario no admin
 @admin.register(Funcionario)
-class FuncionarioAdmin(admin.ModelAdmin):
+class FuncionarioAdmin(admin.ModelAdmin):   
     list_display = ['nome', 'cargo', 'email', 'telefone']
     search_fields = ['nome', 'cargo']
     list_filter = ['cargo']

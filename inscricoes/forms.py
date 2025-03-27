@@ -8,6 +8,9 @@ from django.contrib.auth.models import User
 
 
 class InscricaoForm(forms.ModelForm):
+    
+    cursos = forms.ModelMultipleChoiceField(queryset=Curso.objects.all())  # Múltiplos cursos podem ser selecionados
+
     class Meta:
         model = Inscricao
         fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'cursos']

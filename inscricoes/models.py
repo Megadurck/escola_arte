@@ -13,12 +13,12 @@ telefone_validator = RegexValidator(
 )
 
 class Curso(models.Model):
-    nome = models.CharField(max_length=255)
-    descricao = models.TextField()
+    nome = models.CharField(max_length=255, verbose_name="Nome do Curso")
+    limite_inscricoes = models.PositiveIntegerField(null=True)  # Permite inscrições vazias
+    descricao = models.TextField(verbose_name="Descrição", blank=True, null=True)  # Permite descrição vazia
 
     def __str__(self):
         return self.nome
-     
 
 class Inscricao(models.Model):
     nome_completo = models.CharField(max_length=200)
