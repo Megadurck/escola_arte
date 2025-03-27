@@ -2,8 +2,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Carregar variáveis do .env
-load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -72,14 +71,15 @@ WSGI_APPLICATION = 'escola_arte.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+# Carregar variáveis do .env
+load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  # Usando PostgreSQL como o banco de dados
         'NAME': os.getenv('DB_NAME'),  # Nome do banco de dados
         'USER': os.getenv('DB_USER'),  # Usuário do banco de dados
         'PASSWORD': os.getenv('DB_PASSWORD'),  # Senha do banco de dados
-        'HOST': 'dpg-cvianl15pdvs73beten0-a',  # Substitua pelo nome correto do host
+        'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT', '5432'),  # Porta do banco de dados (padrão do PostgreSQL)
     }
 }
