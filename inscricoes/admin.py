@@ -26,8 +26,12 @@ class InscricaoAdmin(admin.ModelAdmin):
 # Registrar o modelo de Curso no admin
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'descricao']
+    list_display = ['nome', 'descricao', 'limite_inscricoes']
+    search_fields = ('nome',)  # Permite buscar por nome do curso (opcional)
+    list_editable = ('limite_inscricoes',)  # Permite editar o limite diretamente na lista
     inlines = [InscricaoInline]
+
+admin.site.register(Curso, CursoAdmin)
 
 # Registrar o modelo de Funcionario no admin
 @admin.register(Funcionario)
