@@ -76,14 +76,15 @@ WSGI_APPLICATION = 'escola_arte.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Usando PostgreSQL 
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-
+        'ENGINE': 'django.db.backends.postgresql',  # Usando PostgreSQL como o banco de dados
+        'NAME': os.getenv('DB_NAME'),  # Nome do banco de dados
+        'USER': os.getenv('DB_USER'),  # Usuário do banco de dados
+        'PASSWORD': os.getenv('DB_PASSWORD'),  # Senha do banco de dados
+        'HOST': os.getenv('DB_HOST'),  # Endereço do host do banco de dados
+        'PORT': os.getenv('DB_PORT', '5432'),  # Porta do banco de dados (padrão do PostgreSQL)
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
