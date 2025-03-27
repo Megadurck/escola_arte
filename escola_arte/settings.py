@@ -79,7 +79,7 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME'),  # Nome do banco de dados
         'USER': os.getenv('DB_USER'),  # Usuário do banco de dados
         'PASSWORD': os.getenv('DB_PASSWORD'),  # Senha do banco de dados
-        'HOST': os.getenv('DB_HOST'),  # Endereço do host do banco de dados
+        'HOST': 'dpg-cvianl15pdvs73beten0-a',  # Substitua pelo nome correto do host
         'PORT': os.getenv('DB_PORT', '5432'),  # Porta do banco de dados (padrão do PostgreSQL)
     }
 }
