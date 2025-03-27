@@ -6,25 +6,29 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm
 
 def user_login(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
+    try:
+        if request.method == 'POST':
+            form = AuthenticationForm(request, data=request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
+                user = authenticate(request, username=username, password=password)
 
-            if user is not None:
-                if user.is_staff:
-                    messages.error(request, 'Você não tem permissão para acessar esta área.')
-                    return redirect('login')
-                auth_login(request, user)
-                messages.success(request, 'Login bem-sucedido!')
-                return redirect('inscricoes:pagina_inicial')  # Redirecionar para a página inicial
+                if user:
+                    if user.is_staff:
+                        messages.error(request, 'Você não tem permissão para acessar esta área.')
+                        return redirect('login')
+                    auth_login(request, user)
+                    messages.success(request, 'Login bem-sucedido!')
+                    return redirect('inscricoes:pagina_inicial')  # Redirecionar para a página inicial
+                else:
+                    messages.error(request, 'Usuário ou senha inválidos.')
             else:
-                messages.error(request, 'Usuário ou senha inválidos.')
+                messages.error(request, 'Por favor, preencha o formulário corretamente.')
         else:
-            messages.error(request, 'Por favor, preencha o formulário corretamente.')
-    else:
+            form = AuthenticationForm()
+    except Exception as e:
+        messages.error(request, f'Ocorreu um erro inesperado: {str(e)}')
         form = AuthenticationForm()
 
     return render(request, 'registration/login.html', {'form': form})
