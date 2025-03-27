@@ -3,6 +3,9 @@ import os
 from django.utils.deprecation import MiddlewareMixin
 from dotenv import load_dotenv
 
+# Carregar variáveis do .env
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -74,7 +77,12 @@ WSGI_APPLICATION = 'escola_arte.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+
     }
 }
 
@@ -127,8 +135,6 @@ AUTHENTICATION_BACKENDS = [
 SESSION_COOKIE_NAME = 'sessionid_user'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-# Carregar variáveis do .env
-load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Configurações de e-mail para enviar o link de recuperação de senha
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
