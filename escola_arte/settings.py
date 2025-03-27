@@ -150,3 +150,5 @@ CSRF_COOKIE_SECURE = True         # Exige HTTPS
 
 
 
+print(config('DATABASE_URL'))  # Isso deve exibir a URL do banco de dados
+
