@@ -1,0 +1,626 @@
+/* ===== Estilos Globais ===== */
+body {
+    background-color: #f4f3d3;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    min-height: 100vh; /* Adicionando altura mínima para garantir que o conteúdo ocupe toda a tela */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+body.bg-light, body.pagina-inicial {
+    background-image: url('/static/inscricoes/img/background_escola.png');
+}
+
+body.dashboard {
+    background-image: none;
+    background-color: #d6f9f7;
+}
+
+/* ===== Estilos do Header ===== */
+header {
+    width: 100%;
+    min-height: 100px;
+    text-align: center;
+}
+
+.logo {
+    max-width: 1000px;
+    height: auto;
+}
+
+/* ===== Estilos do Banner ===== */
+.banner {
+    text-align: center;
+    padding: 30px 20px; /* Reduz o padding para evitar deslocamento */
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    margin: 5px auto;
+    max-width: 2440px;
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.banner h1 {
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
+    color: #fbf9f9;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.banner p {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);  /* Adiciona sombra ao texto */
+}
+
+#logo_escola {
+    max-width: 470px; /* Define um tamanho máximo mais controlado */
+    height: auto; /* Mantém a proporção correta */
+    margin-top: 50px; /* Reduz o espaço acima da logo */
+    margin-bottom: -45px; /* Reduz ainda mais o espaço entre a logo e o texto */
+    object-fit: contain; /* Mantém a proporção da imagem */
+}
+
+@media (max-width: 480px) {
+    /* Estilos específicos para tela de celular de 480px */
+    #logo_escola {
+      max-width: 60%; /* Diminui a largura da logo em telas menores */
+      margin-top: 40px; /* Reduz o espaço acima da logo */
+      margin-bottom: -10px; /* Reduz ainda mais o espaço entre a logo e o texto */
+    }
+    .banner {
+      padding: 20px 10px;
+    }
+  
+    .banner h1 {
+      font-size: 1.5rem;
+    }
+  
+    .banner p {
+      font-size: 1rem;
+    }
+  
+    .description-box {
+      margin: 10px auto;
+      padding: 10px;
+    }
+  
+    .btn {
+      padding: 5px 15px;
+    }
+  }
+
+  @media (max-width: 768px) and (orientation: landscape) {
+    #logo_escola {
+        max-width: 25vw; /* Diminui um pouco a logo em telas menores */
+        height: auto;
+        margin-top: 60px;
+        margin-bottom: -5px;
+    }
+
+    .banner {
+        padding: 10px; /* Reduz ainda mais o padding */
+    }
+
+    .banner h1 {
+        font-size: 2rem;
+        margin-bottom: -3px;
+        margin-top: -5px;
+    }
+
+    .banner p {
+        font-size: 1rem;
+        margin-bottom: -10px;
+    }
+
+    .inscrever {
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-bottom: -10px;
+    }
+}
+
+/* ===== Botões ===== */
+.btn-primary {
+    background-color: #FFA500;
+    border-color: #FFA500;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #FF8C00;
+    border-color: #FF8C00;
+    transform: scale(1.05);
+}
+
+@media (max-width: 1024px) {
+    .btn-primary {
+        padding: 12px 25px; /* Garante que o botão continue visível e clicável */
+        font-size: 1rem; /* Ajusta o tamanho da fonte para telas menores */
+    }
+}
+
+#botao_inscrever {
+    margin-top: 20px;
+    margin-bottom: 60px;
+
+}
+
+/* ===== Seção Sobre a Escola ===== */
+.description-box {
+    max-width: 1400px;
+    margin: 40px auto;
+    background: rgba(243, 219, 174, 0.9);
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-left: 5px solid #FFA500;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-radius: 10px;
+}
+
+.description-box img {
+    max-width: 250px;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .description-box {
+        flex-direction: column;
+        text-align: center;
+    }
+    .description-box img {
+        margin-bottom: 15px;
+    }
+}
+
+/* ===== Estilos do Dashboard ===== */
+body .dashboard{
+    display: grid;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    overflow-y: auto; /* evita que a tela estoure na vertical */
+}
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1400px;
+    margin: 30px auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.grafico-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    margin-top: calc(-35px - 20px); /* Desloca para cima considerando a soma do padding e do gap */
+}
+
+.grafico-box {
+    display: grid;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: calc(48% - 10px);  /* Gráficos de barra e pizza terão 50% de largura em telas grandes */
+    text-align: center;
+    margin-bottom: -10px;
+}
+
+.grafico-titulo {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+#titulo-dashboard {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1px;
+    position: absolute; /* Posiciona o título acima do gráfico */
+    top: -30px; /* Posiciona o título 30px acima do gráfico */
+    left: 50%; /* Centraliza o título */
+    transform: translateX(-50%); /* Centraliza o título */
+}
+
+/* Gráfico de linha ocupará 100% da largura disponível, se necessário */
+#grafico-linha {
+    width: 100%;  /* O gráfico de linha ocupará toda a largura disponível */
+    margin-top: 5px; /* Espaço superior entre o gráfico de linha e os outros */
+}
+
+canvas {
+    background-color: #f6f6f6;
+    width: 100%; /* O gráfico ocupará 100% da largura do contêiner */
+    max-width: 100% !important; /* Garante que o gráfico nunca ultrapasse a largura da tela */
+    height: auto; /* Permite que a altura seja ajustada proporcionalmente */
+    max-height: 400px; /* Limita a altura máxima do gráfico para evitar que ele fique muito grande */
+    border-radius: 8px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 auto; /* Centraliza o gráfico */
+}
+
+@media (max-width: 768px) {
+    .grafico-container {
+        flex-direction: column; /* Alinha os gráficos um em cima do outro */
+        gap: 10px; /* Menor espaço entre os gráficos */
+    }
+    
+    .grafico-box {
+        width: 100%; /* Garante que os gráficos ocupem a largura total do contêiner */
+        margin-bottom: 20px; /* Espaço entre os gráficos */
+    }
+
+    .grafico-container > div {
+        width: 100%; /* Garante que os gráficos ocupem a largura total do contêiner */
+        margin-bottom: 20px; /* Espaço entre os gráficos */
+    }
+
+    canvas {
+        height: 300px !important; /* Ajusta a altura dos gráficos para caber melhor */
+    }
+}
+
+
+/* ===== Estilos do Rodapé ===== */
+footer {
+    text-align: center;
+    padding: 10px 0;
+    background-color: transparent;
+    color: white;
+    margin-top: 20px;
+}
+
+/* ===== Estilos dos Cards ===== */
+.card {
+    background: rgba(243, 219, 174, 0.9);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-text {
+    font-size: 16px;
+}
+
+.card-img-top {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+.row {
+    background-color: #f4f3d3;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+#cursos {
+    background-color: #f4f3d3 !important; /* Fundo sólido no container do carrossel */
+}
+
+.card-title {
+    text-align: center;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+    .card-text {
+      font-size: 16px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-text {
+      font-size: 14px;
+    }
+
+   .col-md-3 {
+    width: 50% !important;
+   }
+  }
+@media (max-width: 480px) {
+    .col-md-3 {
+      width: 100% !important;
+    }
+  }
+
+
+/* ===== Estilos Cabeçalho ===== */
+/* Estilizar os links de navegação dentro da navbar */
+.navbar-nav .nav-item .nav-link {
+    color: #fff; /* Cor do texto */
+    background-color: rgba(245, 109, 13, 0.8); /* Cor de fundo com transparência */
+    border-radius: 5px; /* Bordas arredondadas */
+    padding: 3px 8px; /* Padding para aumentar o tamanho do botão */
+    margin-right: 15px; /* Espaçamento entre os botões */
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transição suave */
+}
+
+.sair {
+    display: flex !important;
+    padding: 3px 8px !important;
+    font-size: 0.875rem !important;
+}
+
+/* Mudando a cor do fundo e do texto quando o mouse passar sobre o botão */
+.navbar-nav .nav-item .nav-link:hover {
+    background-color: rgba(224, 78, 78, 0.8); /* Cor de fundo ao passar o mouse */
+    color: #fff; /* Cor do texto ao passar o mouse */
+}
+
+/* Estilo do botão ativo */
+.navbar-nav .nav-item .nav-link:active {
+    background-color: rgba(216, 70, 70, 0.8); /* Cor de fundo ao clicar */
+    color: #fff; /* Cor do texto ao clicar */
+}
+
+/* Personalizando a aparência do botão do menu (navbar-toggler) */
+.navbar-toggler {
+    border-color: #494847; /* Cor da borda do menu em dispositivos móveis */
+}
+
+.navbar-toggler-icon {
+    background-color: #b9b7b5; /* Cor do ícone do menu */
+}
+
+#cabecalho {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1001;
+}   
+
+/* Opcional: Mudando o fundo da navbar (caso deseje mudar o fundo da barra de navegação) */
+.navbar-light {
+    background-color: #ffffff; /* Cor de fundo da navbar */
+}
+
+.bg-light {
+    background-color: #f8f9fa !important; /* Cor de fundo para o fundo claro */
+}
+
+.navbar-brand {
+    font-weight: bold; /* Texto da marca no cabeçalho */
+    width:50%;
+    color: #000000;
+    padding-left: 50px;
+    font-size: 3vh;
+}
+
+#titulo {
+    font-family: 'Merriweather', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#cabecalho {
+    background-color: #f1e097;
+    border-radius: 10px;
+    max-width: 100%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+/* ===== Estilos Página Register ===== */
+
+/* Estilos gerais da página */
+.register-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+}
+
+/* Estilos para o título */
+.registro {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* Estilo do formulário */
+.register-page form {
+    width: 100%;
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Estilos Página Register ===== */
+
+/* Estilos gerais da página */
+.register-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ajusta para que a página ocupe toda a altura da tela */
+}
+
+/* Estilos para o título */
+.registro {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* Estilo do formulário */
+.register-page form {
+    width: 100%;
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilizando os campos obrigatórios em negrito */
+.register-page form .required {
+    font-weight: bold;
+    color: #f56d0d; /* Cor laranja para os campos obrigatórios */
+}
+
+/* Estilizando os campos do formulário */
+.register-page form input, .register-page form select, .register-page form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Faz com que o padding não afete a largura total */
+}
+/* Estilo para a galeria */
+.gallery-container {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%; /* Reduzindo a largura do container */
+    max-width: 1000px; /* Definindo um limite máximo de largura */
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro */
+    display: none; /* Inicialmente oculta */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Imagem principal */
+.main-image {
+    max-width: 90%;
+    max-height: 70vh;
+    margin: 20px 0;
+}
+
+.main-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    max-width: 1080px; /* Limita a largura da imagem principal a 1080px */
+}
+
+
+.nav-arrow.prev {
+    left: 10px;
+}
+
+.nav-arrow.next {
+    right: 10px;
+}
+
+/* Estilo para os itens da galeria (miniaturas) */
+#galleryImages {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.gallery-item {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.1); /* Efeito de zoom ao passar o mouse */
+}
+
+/* Limita as imagens da galeria a 1080px de largura */
+.gallery-item, .main-image img {
+    max-width: 1080px;
+    width: 100%; /* Garante que as imagens não ultrapassem o limite */
+}
+
+/* Botão de fechar */
+.close-gallery {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Ajuste da posição do botão */
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .gallery-container {
+        width: 90%; /* Aumenta a largura do container em telas pequenas */
+        top: 15%;
+    }
+
+    .main-image {
+        max-width: 80%;
+        max-height: 60vh;
+    }
+
+    .gallery-item {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+
+
+
+
