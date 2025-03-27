@@ -3,3 +3,4 @@ django-extensions
 django-widget-tweaks
 python-dotenv
 gunicorn
+psycopg2-binary>=2.9.9
