@@ -2,6 +2,12 @@ from pathlib import Path
 import os
 from django.utils.deprecation import MiddlewareMixin
 from dotenv import load_dotenv
+import environ
+from urllib.parse import urlparse
+
+# Inicializa o ambiente e lê o arquivo .env
+env = environ.Env()
+environ.Env.read_env()
 
 # Carregar variáveis do .env
 load_dotenv()
@@ -16,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^)x_@f6=eqae8$s4kz0f+bq(_!cfg5ub2h^oa*%vh+2co85)gh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['escola-arte.onrender.com', 'localhost']
+ALLOWED_HOSTS = ['escola-arte.onrender.com', 'localhost']   
 
 # Application definition
 
@@ -81,7 +87,7 @@ DATABASES = {
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', 5432),
+        'PORT': os.getenv('DB_PORT', '5432'),
 
     }
 }
