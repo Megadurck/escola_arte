@@ -38,7 +38,7 @@ def register(request):
             user.set_password(form.cleaned_data['password1'])  # Certifique-se de chamar set_password para criptografar a senha
             user.save()
             messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
-            return redirect('login')
+            return redirect('accounts:login')
         else:
             print(form.errors)  # Para depuração, verifique se o formulário tem erros
             messages.error(request, 'Por favor, corrija os erros abaixo.')
