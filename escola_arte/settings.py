@@ -2,12 +2,7 @@ from pathlib import Path
 import os
 from django.utils.deprecation import MiddlewareMixin
 from dotenv import load_dotenv
-import environ
-from urllib.parse import urlparse
 
-# Inicializa o ambiente e lê o arquivo .env
-env = environ.Env()
-environ.Env.read_env()
 
 # Carregar variáveis do .env
 load_dotenv()
