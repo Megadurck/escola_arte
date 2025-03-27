@@ -1,8 +1,7 @@
 Django==4.1.3
 django-extensions==3.2.3
 django-widget-tweaks==1.5.0
-gunicorn
 python-dotenv==1.0.1
-requests==2.32.3
-BeautifulSoup==4.12.3
+gunicorn  # Só pra produção
+
 
