@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-^)x_@f6=eqae8$s4kz0f+bq(_!cfg5ub2h^oa*%vh+2co85)gh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['escola-arte.onrender.com', 'localhost', '127.0.0.1']
 
 # Application definition
 
