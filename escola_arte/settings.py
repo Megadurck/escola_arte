@@ -1,8 +1,10 @@
 from pathlib import Path
 import os
+from django.utils.deprecation import MiddlewareMixin
 from dotenv import load_dotenv
 
-
+# Carregar variáveis do .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -71,19 +73,18 @@ WSGI_APPLICATION = 'escola_arte.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-# Carregar variáveis do .env
-load_dotenv()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # Usando PostgreSQL como o banco de dados
-        'NAME': 'escola_arte_db',
-        'USER': 'escola_arte_db_user',
-        'PASSWORD': 'JlXZp2U8dcJMskXGb5DfUTdHOGAxvB7t',
-        'HOST': 'dpg-cvianl15pdvs73beten0-a',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', 5432),
+
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -119,13 +120,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Diretório onde os arquivos estáticos serão coletados durante o deploy
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Pastas adicionais onde o Django irá procurar arquivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Diretório onde os arquivos estáticos serão coletados durante o deploy
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Para garantir que arquivos estáticos de apps específicos sejam encontrados
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
