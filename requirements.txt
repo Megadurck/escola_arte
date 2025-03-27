@@ -29,6 +29,7 @@ docopt==0.6.2
 executing==2.1.0
 fonttools==4.55.7
 fpdf==1.7.2
+gunicorn
 gitdb==4.0.12
 GitPython==3.1.44
 h11==0.14.0
