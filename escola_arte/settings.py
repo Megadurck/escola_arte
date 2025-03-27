@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^)x_@f6=eqae8$s4kz0f+bq(_!cfg5ub2h^oa*%vh+2co85)gh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['escola-arte.onrender.com', 'localhost']   
 
@@ -127,12 +127,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Pastas adicionais onde o Django irá procurar arquivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-]
-
-# Para garantir que arquivos estáticos de apps específicos sejam encontrados
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
 # Default primary key field type

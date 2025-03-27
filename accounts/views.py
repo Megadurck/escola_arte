@@ -50,7 +50,7 @@ def register(request):
 @login_required
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('accounts:login')
 
 # Função para deslogar um admin
 @login_required
