@@ -7,4 +7,5 @@ python-dotenv==1.0.1
 requests==2.32.3
 beautifulsoup4==4.12.3
 psycopg2-binary
+dj-database-url>=1.0.0
 
