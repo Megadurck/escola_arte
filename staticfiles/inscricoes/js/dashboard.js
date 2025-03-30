@@ -1,25 +1,88 @@
 document.addEventListener("DOMContentLoaded", function() {
+    // Verificar se Chart.js está disponível
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js não está carregado. Por favor, inclua a biblioteca Chart.js antes de usar este script.');
+        return;
+    }
+
     let barChartInstance = null;
     let pieChartInstance = null;
     let lineChartInstance = null;
 
+    // Função para limpar os gráficos
+    function cleanupCharts() {
+        if (barChartInstance) barChartInstance.destroy();
+        if (pieChartInstance) pieChartInstance.destroy();
+        if (lineChartInstance) lineChartInstance.destroy();
+    }
+
+    // Limpar gráficos quando a página for fechada
+    window.addEventListener('beforeunload', cleanupCharts);
+
+    // Verificar se os elementos do DOM existem
+    const barChartElement = document.getElementById('barChart');
+    const pieChartElement = document.getElementById('pieChart');
+    const lineChartElement = document.getElementById('lineChart');
+
+    if (!barChartElement || !pieChartElement || !lineChartElement) {
+        console.error('Elementos necessários para os gráficos não foram encontrados.');
+        return;
+    }
+
     // Buscar os dados da API
     fetch('/inscricoes/dashboard-data/')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            console.log("Dados recebidos:", data);  // Verifique todos os dados recebidos
+            console.log("Dados recebidos:", data);
 
-            if (!data || !data.inscricoes_por_curso || !data.data_inscricao) {
-                console.error("Dados inválidos recebidos.");
-                return;
+            // Validação mais robusta dos dados
+            if (!data || !Array.isArray(data.inscricoes_por_curso) || !Array.isArray(data.data_inscricao)) {
+                throw new Error('Formato de dados inválido');
             }
 
-            // Mapear os dados para os gráficos
-            const cursos = data.inscricoes_por_curso.map(item => item.curso);
-            const totais = data.inscricoes_por_curso.map(item => item.total);
-            const porcentagens = data.inscricoes_por_curso.map(item => item.porcentagem);
-            const datas = data.data_inscricao.map(item => item.data_inscricao ? new Date(item.data_inscricao).toLocaleDateString() : ''); // lista de datas
-            const quantidades = data.data_inscricao.map(item => item.count || 0); // Adicionado para verificar as quantidades
+            if (data.inscricoes_por_curso.length === 0 || data.data_inscricao.length === 0) {
+                throw new Error('Não há dados para exibir');
+            }
+
+            // Mapear os dados para os gráficos com validação
+            const cursos = data.inscricoes_por_curso.map(item => {
+                if (!item || typeof item.curso !== 'string') {
+                    throw new Error('Dados de curso inválidos');
+                }
+                return item.curso;
+            });
+
+            const totais = data.inscricoes_por_curso.map(item => {
+                if (typeof item.total !== 'number') {
+                    throw new Error('Dados de totais inválidos');
+                }
+                return item.total;
+            });
+
+            const porcentagens = data.inscricoes_por_curso.map(item => {
+                if (typeof item.porcentagem !== 'number') {
+                    throw new Error('Dados de porcentagens inválidos');
+                }
+                return item.porcentagem;
+            });
+
+            const datas = data.data_inscricao.map(item => {
+                if (!item.data_inscricao) return '';
+                const date = new Date(item.data_inscricao);
+                return isNaN(date.getTime()) ? '' : date.toLocaleDateString();
+            }).filter(date => date !== '');
+
+            const quantidades = data.data_inscricao.map(item => {
+                if (typeof item.count !== 'number') {
+                    throw new Error('Dados de quantidades inválidos');
+                }
+                return item.count;
+            });
 
             // Verifique as variáveis para garantir que estão corretas
             console.log("Cursos:", cursos);
@@ -158,6 +221,11 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .catch(error => {
             console.error('Erro ao buscar dados para os gráficos:', error);
+            // Adicionar mensagem de erro na interface
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'alert alert-danger';
+            errorMessage.textContent = 'Erro ao carregar os dados do dashboard. Por favor, tente novamente mais tarde.';
+            document.querySelector('.container').prepend(errorMessage);
         });
 });
 
