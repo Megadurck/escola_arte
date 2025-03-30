@@ -46,32 +46,55 @@ def inscrever(request):
 # Função para exibir dados do dashboard (somente para administradores ou usuários com permissões)
 @login_required
 def dashboard_data(request):
-    total_inscricoes = Inscricao.objects.count()
-    cursos = Curso.objects.annotate(total_inscricoes=Count('inscricao')).all()
+    try:
+        # Verificar se o usuário tem permissão para ver o dashboard
+        if not request.user.is_staff:
+            return JsonResponse({'error': 'Acesso não autorizado'}, status=403)
 
-    # Inscrições por curso
-    inscricoes_por_curso = [
-        {
-            'curso': curso.nome,
-            'total': curso.total_inscricoes,
-            'porcentagem': (curso.total_inscricoes / total_inscricoes * 100) if total_inscricoes > 0 else 0
-        }
-        for curso in cursos
-    ]
+        # Buscar dados básicos
+        total_inscricoes = Inscricao.objects.count()
+        
+        # Buscar cursos com contagem de inscrições
+        cursos = Curso.objects.annotate(
+            total_inscricoes=Count('inscricoes')
+        ).all()
 
-    # Inscrições por data
-    data_inscricao = Inscricao.objects.values('data_inscricao').annotate(count=Count('id')).order_by('data_inscricao')
-    
-    # Preparar os dados de inscrições por data para o gráfico de linha
-    datas = [entry['data_inscricao'].strftime('%Y-%m-%d') for entry in data_inscricao]
-    quantidades = [entry['count'] for entry in data_inscricao]
+        # Preparar dados de inscrições por curso
+        inscricoes_por_curso = []
+        for curso in cursos:
+            inscricoes_por_curso.append({
+                'curso': curso.nome,
+                'total': curso.total_inscricoes,
+                'porcentagem': round((curso.total_inscricoes / total_inscricoes * 100) if total_inscricoes > 0 else 0, 2)
+            })
 
-    # Retornar os dados no formato JSON para o frontend
-    return JsonResponse({
-        'inscricoes_por_curso': inscricoes_por_curso,
-        'total_inscricoes': total_inscricoes,
-        'data_inscricao': [{'data_inscricao': data, 'count': quantidades} for data, quantidades in zip(datas, quantidades)],  # Dados para o gráfico de linha datas,  # Dados para o gráfico de linha
-    })
+        # Buscar e preparar dados de inscrições por data
+        data_inscricao = Inscricao.objects.values('data_inscricao').annotate(
+            count=Count('id')
+        ).order_by('data_inscricao')
+
+        data_inscricao_list = []
+        for entry in data_inscricao:
+            if entry['data_inscricao']:  # Verificar se a data não é None
+                data_inscricao_list.append({
+                    'data_inscricao': entry['data_inscricao'].strftime('%Y-%m-%d'),
+                    'count': entry['count']
+                })
+
+        # Retornar os dados
+        return JsonResponse({
+            'inscricoes_por_curso': inscricoes_por_curso,
+            'total_inscricoes': total_inscricoes,
+            'data_inscricao': data_inscricao_list
+        })
+
+    except Exception as e:
+        # Log do erro para debug
+        print(f"Erro no dashboard_data: {str(e)}")
+        return JsonResponse({
+            'error': 'Erro ao processar dados do dashboard',
+            'details': str(e)
+        }, status=500)
 
 # Função para painel administrativo
 @login_required

@@ -206,31 +206,33 @@ body .dashboard{
 }
 
 .grafico-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
     padding: 20px;
-    margin-top: calc(-35px - 20px); /* Desloca para cima considerando a soma do padding e do gap */
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .grafico-box {
-    display: grid;
-    background: #ffffff;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    width: calc(48% - 10px);  /* Gráficos de barra e pizza terão 50% de largura em telas grandes */
-    text-align: center;
-    margin-bottom: -10px;
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .grafico-titulo {
-    font-size: 1.2rem;
+    margin-bottom: 0;
     color: #333;
-    margin-bottom: 5px;
+    font-size: 1.2rem;
     text-align: center;
+    font-weight: bold;
+    width: 100%;
+    padding: 0 10px;
 }
 
 #titulo-dashboard {
@@ -245,39 +247,41 @@ body .dashboard{
 
 /* Gráfico de linha ocupará 100% da largura disponível, se necessário */
 #grafico-linha {
-    width: 100%;  /* O gráfico de linha ocupará toda a largura disponível */
-    margin-top: 5px; /* Espaço superior entre o gráfico de linha e os outros */
+    width: 100%;
+    margin-top: 30px;
 }
 
 canvas {
     background-color: #f6f6f6;
-    width: 100%; /* O gráfico ocupará 100% da largura do contêiner */
+    width: 100% !important;
     max-width: 100% !important; /* Garante que o gráfico nunca ultrapasse a largura da tela */
-    height: auto; /* Permite que a altura seja ajustada proporcionalmente */
-    max-height: 400px; /* Limita a altura máxima do gráfico para evitar que ele fique muito grande */
+    height: 100% !important;
+    min-height: 400px !important;
     border-radius: 8px;
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.1);
     margin: 0 auto; /* Centraliza o gráfico */
+    flex: 1; /* Permite que o canvas ocupe o espaço restante */
 }
 
 @media (max-width: 768px) {
     .grafico-container {
-        flex-direction: column; /* Alinha os gráficos um em cima do outro */
-        gap: 10px; /* Menor espaço entre os gráficos */
+        padding: 10px;
     }
     
     .grafico-box {
-        width: 100%; /* Garante que os gráficos ocupem a largura total do contêiner */
-        margin-bottom: 20px; /* Espaço entre os gráficos */
+        height: 400px;
+        flex-direction: column;
+        align-items: center;
     }
-
-    .grafico-container > div {
-        width: 100%; /* Garante que os gráficos ocupem a largura total do contêiner */
-        margin-bottom: 20px; /* Espaço entre os gráficos */
+    
+    .grafico-titulo {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 20px;
     }
-
-    canvas {
-        height: 300px !important; /* Ajusta a altura dos gráficos para caber melhor */
+    
+    .title-dashboard {
+        font-size: 2rem;
     }
 }
 
@@ -617,6 +621,70 @@ footer {
     .gallery-item {
         width: 80px;
         height: 80px;
+    }
+}
+
+/* Estilos do Dashboard */
+.dashboard {
+    background-color: #d6f9f7;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.painel-administrativo {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.title-dashboard {
+    color: #333;
+    font-size: 2.5rem;
+    margin: 0;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.grafico-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Ajuste do layout dos gráficos */
+#grafico-barras, #grafico-pizza {
+    height: 500px;
+    margin-bottom: 30px;
+}
+
+#grafico-linha {
+    height: 500px;
+    margin-top: 30px;
+}
+
+.grafico-box:hover {
+    transform: translateY(-5px);
+}
+
+/* Responsividade para o Dashboard */
+@media (max-width: 768px) {
+    .grafico-container {
+        padding: 10px;
+    }
+    
+    #grafico-barras, #grafico-pizza, #grafico-linha {
+        height: 400px;
+        margin-bottom: 20px;
+    }
+    
+    .title-dashboard {
+        font-size: 2rem;
+    }
+
+    .grafico-titulo {
+        font-size: 1.2rem;
     }
 }
 
