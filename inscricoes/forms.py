@@ -15,13 +15,6 @@ class InscricaoForm(forms.ModelForm):
         model = Inscricao
         fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'cursos']
 
-    cursos = forms.ModelMultipleChoiceField(
-        queryset=Curso.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        label='Cursos',
-        required=True
-    )
-
     # Usando o widget 'date' do HTML5 mas garantindo a conversão correta
     data_nascimento = forms.DateField(
         input_formats=['%d/%m/%Y', '%Y-%m-%d'],  # Aceita ambos os formatos

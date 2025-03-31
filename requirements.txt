@@ -1,13 +1,12 @@
-Django==5.0.2
+beautifulsoup4==4.12.3
+dj-database-url==2.3.0
+Django==5.1.7
 django-extensions==3.2.3
 django-widget-tweaks==1.5.0
-python-dotenv==1.0.1
 gunicorn
-python-dotenv==1.0.1
+psycopg2-binary==2.9.10
+python-decouple==3.8
+python-dotenv==1.1.0
 requests==2.32.3
-beautifulsoup4==4.12.3
-psycopg2-binary
-dj-database-url>=1.0.0
-python-decouple>=3.5
 
 
