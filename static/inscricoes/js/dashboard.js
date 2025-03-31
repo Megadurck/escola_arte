@@ -37,6 +37,128 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     console.log("Elementos do DOM encontrados com sucesso");
 
+    // Função para criar gráfico de barras
+    function createBarChart(data) {
+        if (barChartInstance) {
+            barChartInstance.destroy();
+        }
+        barChartInstance = new Chart(barChartElement, {
+            type: 'bar',
+            data: {
+                labels: data.cursos,
+                datasets: [{
+                    label: 'Total de Inscrições',
+                    data: data.totais,
+                    backgroundColor: data.backgroundColors,
+                    borderColor: data.backgroundColors.map(color => color.replace('0.5', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: ctx => `${ctx.raw} inscrições`
+                        }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Função para criar gráfico de pizza
+    function createPieChart(data) {
+        if (pieChartInstance) {
+            pieChartInstance.destroy();
+        }
+        pieChartInstance = new Chart(pieChartElement, {
+            type: 'pie',
+            data: {
+                labels: data.cursos,
+                datasets: [{
+                    label: 'Porcentagem de Inscrições',
+                    data: data.porcentagens,
+                    backgroundColor: data.backgroundColors,
+                    borderColor: data.backgroundColors.map(color => color.replace('0.5', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: ctx => `${ctx.raw.toFixed(0)}% das inscrições`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Função para criar gráfico de linha
+    function createLineChart(data) {
+        if (lineChartInstance) {
+            lineChartInstance.destroy();
+        }
+        lineChartInstance = new Chart(lineChartElement, {
+            type: 'line',
+            data: {
+                labels: data.datas,
+                datasets: [{
+                    label: 'Inscrições ao Longo do Tempo',
+                    data: data.quantidades,
+                    fill: true,
+                    borderColor: 'rgb(2, 19, 19)',
+                    backgroundColor: 'rgba(2, 19, 19, 0.2)',
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointHoverRadius: 8,
+                    showLine: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: ctx => `${ctx.raw} inscrições`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'category',
+                        title: {
+                            display: true,
+                            text: 'Data'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Número de Inscrições'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     // Buscar os dados da API
     console.log("Iniciando requisição para /inscricoes/dashboard-data/");
     fetch('/inscricoes/dashboard-data/', {
@@ -104,14 +226,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return item.count;
         });
 
-        console.log("Dados processados:", {
-            cursos,
-            totais,
-            porcentagens,
-            datas,
-            quantidades
-        });
-
         const backgroundColors = [
             'rgba(23, 213, 197, 0.5)',
             'rgba(20, 241, 61, 0.5)',
@@ -123,121 +237,16 @@ document.addEventListener("DOMContentLoaded", function() {
             'rgba(136, 19, 232, 0.5)',
         ];
 
-        // Gráfico de Barras
-        if (barChartInstance) {
-            barChartInstance.destroy();
+        // Criar os gráficos
+        try {
+            createBarChart({ cursos, totais, backgroundColors });
+            createPieChart({ cursos, porcentagens, backgroundColors });
+            createLineChart({ datas, quantidades });
+            console.log("Gráficos criados com sucesso");
+        } catch (error) {
+            console.error("Erro ao criar os gráficos:", error);
+            throw error;
         }
-        barChartInstance = new Chart(document.getElementById('barChart'), {
-            type: 'bar',
-            data: {
-                labels: cursos,
-                datasets: [{
-                    label: 'Total de Inscrições',
-                    data: totais,
-                    backgroundColor: backgroundColors,
-                    borderColor: backgroundColors.map(color => color.replace('0.5', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: ctx => `${ctx.raw} inscrições`
-                        }
-                    }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-
-        // Gráfico de Pizza
-        if (pieChartInstance) {
-            pieChartInstance.destroy();
-        }
-        pieChartInstance = new Chart(document.getElementById('pieChart'), {
-            type: 'pie',
-            data: {
-                labels: cursos,
-                datasets: [{
-                    label: 'Porcentagem de Inscrições',
-                    data: porcentagens,
-                    backgroundColor: backgroundColors,
-                    borderColor: backgroundColors.map(color => color.replace('0.5', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'top' },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: ctx => `${ctx.raw.toFixed(0)}% das inscrições`
-                        }
-                    }
-                }
-            }
-        });
-
-        // Gráfico de Linha (com datas)
-        if (lineChartInstance) {
-            lineChartInstance.destroy();
-        }
-        lineChartInstance = new Chart(document.getElementById('lineChart'), {
-            type: 'line',
-            data: {
-                labels: datas,
-                datasets: [{
-                    label: 'Inscrições ao Longo do Tempo',
-                    data: quantidades,
-                    fill: true,
-                    borderColor: 'rgb(2, 19, 19)',
-                    backgroundColor: 'rgba(2, 19, 19, 0.2)', // Adiciona uma cor de fundo ao gráfico de linha
-                    tension: 0.4, // Aumenta a tensão para suavizar as curvas
-                    pointRadius: 3,
-                    pointHoverRadius: 8,
-                    showLine: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: true }, // Adiciona uma legenda ao gráfico
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: ctx => `${ctx.raw} inscrições`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'category',
-                        title: {
-                            display: true,
-                            text: 'Data'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Número de Inscrições' // Adiciona título ao eixo Y
-                        }
-                    }
-                }
-            }
-        });
     })
     .catch(error => {
         console.error('Erro ao buscar dados para os gráficos:', error);

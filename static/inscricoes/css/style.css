@@ -226,6 +226,15 @@ body .dashboard{
     position: relative;
 }
 
+.grafico-wrapper {
+    width: 100%;
+    height: calc(100% - 60px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .grafico-titulo {
     margin-bottom: 0;
     color: #333;
@@ -234,6 +243,7 @@ body .dashboard{
     font-weight: bold;
     width: 100%;
     padding: 0 10px;
+    height: 40px;
 }
 
 #titulo-dashboard {
@@ -670,6 +680,15 @@ footer {
     position: relative;
 }
 
+.grafico-wrapper {
+    width: 100%;
+    height: calc(100% - 60px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .grafico-titulo {
     margin-bottom: 0;
     color: #333;
@@ -678,19 +697,7 @@ footer {
     font-weight: bold;
     width: 100%;
     padding: 0 10px;
-}
-
-/* Ajuste do layout dos gráficos */
-#grafico-barras, #grafico-pizza {
-    height: 500px;
-    margin-bottom: 30px;
-    width: 100%;
-}
-
-#grafico-linha {
-    height: 500px;
-    margin-top: 30px;
-    width: 100%;
+    height: 40px;
 }
 
 /* Ajuste do canvas dos gráficos */
@@ -701,6 +708,7 @@ footer {
     min-height: 300px !important;
     margin: 0 auto;
     display: block;
+    position: relative;
 }
 
 /* Responsividade para o Dashboard */
