@@ -81,20 +81,34 @@ def dashboard_data(request):
                     'count': entry['count']
                 })
 
-        # Retornar os dados
-        return JsonResponse({
+        # Criar resposta com headers CORS
+        response = JsonResponse({
             'inscricoes_por_curso': inscricoes_por_curso,
             'total_inscricoes': total_inscricoes,
             'data_inscricao': data_inscricao_list
         })
+        
+        # Adicionar headers CORS
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        
+        return response
 
     except Exception as e:
         # Log do erro para debug
         print(f"Erro no dashboard_data: {str(e)}")
-        return JsonResponse({
+        response = JsonResponse({
             'error': 'Erro ao processar dados do dashboard',
             'details': str(e)
         }, status=500)
+        
+        # Adicionar headers CORS mesmo para erros
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        
+        return response
 
 # Função para painel administrativo
 @login_required
