@@ -223,6 +223,7 @@ body .dashboard{
     align-items: center;
     gap: 20px;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .grafico-titulo {
@@ -666,6 +667,7 @@ footer {
     align-items: center;
     gap: 20px;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .grafico-titulo {
@@ -682,18 +684,23 @@ footer {
 #grafico-barras, #grafico-pizza {
     height: 500px;
     margin-bottom: 30px;
+    width: 100%;
 }
 
 #grafico-linha {
     height: 500px;
     margin-top: 30px;
+    width: 100%;
 }
 
 /* Ajuste do canvas dos gráficos */
 .grafico-box canvas {
     width: 100% !important;
     height: 100% !important;
-    max-height: 400px;
+    max-height: 400px !important;
+    min-height: 300px !important;
+    margin: 0 auto;
+    display: block;
 }
 
 /* Responsividade para o Dashboard */

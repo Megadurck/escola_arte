@@ -8,6 +8,7 @@ from .models import Curso, Inscricao
 from django.contrib.auth import logout
 from django.db.models import Count
 from datetime import datetime
+import time
 
 
 # Função para inscrever usuário
@@ -113,7 +114,9 @@ def dashboard_data(request):
 # Função para painel administrativo
 @login_required
 def dashboard_view(request):
-    return render(request, 'inscricoes/dashboard.html')
+    # Adicionar timestamp para forçar recarregamento dos arquivos estáticos
+    timestamp = int(time.time())
+    return render(request, 'inscricoes/dashboard.html', {'timestamp': timestamp})
 
 # Função para página inicial (protegida por login)
 @login_required
