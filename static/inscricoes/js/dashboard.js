@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error('Chart.js não está carregado. Por favor, inclua a biblioteca Chart.js antes de usar este script.');
         return;
     }
-    console.log("Chart.js está disponível");
+    console.log("Chart.js está disponível", Chart.version);
 
     let barChartInstance = null;
     let pieChartInstance = null;
@@ -27,6 +27,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const pieChartElement = document.getElementById('pieChart');
     const lineChartElement = document.getElementById('lineChart');
 
+    console.log("Verificando elementos do DOM:", {
+        barChart: barChartElement ? "Encontrado" : "Não encontrado",
+        pieChart: pieChartElement ? "Encontrado" : "Não encontrado",
+        lineChart: lineChartElement ? "Encontrado" : "Não encontrado"
+    });
+
     if (!barChartElement || !pieChartElement || !lineChartElement) {
         console.error('Elementos necessários para os gráficos não foram encontrados:', {
             barChart: !!barChartElement,
@@ -39,124 +45,148 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Função para criar gráfico de barras
     function createBarChart(data) {
+        console.log("Criando gráfico de barras com dados:", data);
         if (barChartInstance) {
+            console.log("Destruindo instância anterior do gráfico de barras");
             barChartInstance.destroy();
         }
-        barChartInstance = new Chart(barChartElement, {
-            type: 'bar',
-            data: {
-                labels: data.cursos,
-                datasets: [{
-                    label: 'Total de Inscrições',
-                    data: data.totais,
-                    backgroundColor: data.backgroundColors,
-                    borderColor: data.backgroundColors.map(color => color.replace('0.5', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: ctx => `${ctx.raw} inscrições`
-                        }
-                    }
+        try {
+            barChartInstance = new Chart(barChartElement, {
+                type: 'bar',
+                data: {
+                    labels: data.cursos,
+                    datasets: [{
+                        label: 'Total de Inscrições',
+                        data: data.totais,
+                        backgroundColor: data.backgroundColors,
+                        borderColor: data.backgroundColors.map(color => color.replace('0.5', '1')),
+                        borderWidth: 1
+                    }]
                 },
-                scales: {
-                    y: { beginAtZero: true }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: ctx => `${ctx.raw} inscrições`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
                 }
-            }
-        });
+            });
+            console.log("Gráfico de barras criado com sucesso");
+        } catch (error) {
+            console.error("Erro ao criar gráfico de barras:", error);
+            throw error;
+        }
     }
 
     // Função para criar gráfico de pizza
     function createPieChart(data) {
+        console.log("Criando gráfico de pizza com dados:", data);
         if (pieChartInstance) {
+            console.log("Destruindo instância anterior do gráfico de pizza");
             pieChartInstance.destroy();
         }
-        pieChartInstance = new Chart(pieChartElement, {
-            type: 'pie',
-            data: {
-                labels: data.cursos,
-                datasets: [{
-                    label: 'Porcentagem de Inscrições',
-                    data: data.porcentagens,
-                    backgroundColor: data.backgroundColors,
-                    borderColor: data.backgroundColors.map(color => color.replace('0.5', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'top' },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: ctx => `${ctx.raw.toFixed(0)}% das inscrições`
+        try {
+            pieChartInstance = new Chart(pieChartElement, {
+                type: 'pie',
+                data: {
+                    labels: data.cursos,
+                    datasets: [{
+                        label: 'Porcentagem de Inscrições',
+                        data: data.porcentagens,
+                        backgroundColor: data.backgroundColors,
+                        borderColor: data.backgroundColors.map(color => color.replace('0.5', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: ctx => `${ctx.raw.toFixed(0)}% das inscrições`
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log("Gráfico de pizza criado com sucesso");
+        } catch (error) {
+            console.error("Erro ao criar gráfico de pizza:", error);
+            throw error;
+        }
     }
 
     // Função para criar gráfico de linha
     function createLineChart(data) {
+        console.log("Criando gráfico de linha com dados:", data);
         if (lineChartInstance) {
+            console.log("Destruindo instância anterior do gráfico de linha");
             lineChartInstance.destroy();
         }
-        lineChartInstance = new Chart(lineChartElement, {
-            type: 'line',
-            data: {
-                labels: data.datas,
-                datasets: [{
-                    label: 'Inscrições ao Longo do Tempo',
-                    data: data.quantidades,
-                    fill: true,
-                    borderColor: 'rgb(2, 19, 19)',
-                    backgroundColor: 'rgba(2, 19, 19, 0.2)',
-                    tension: 0.4,
-                    pointRadius: 3,
-                    pointHoverRadius: 8,
-                    showLine: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: true },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: ctx => `${ctx.raw} inscrições`
-                        }
-                    }
+        try {
+            lineChartInstance = new Chart(lineChartElement, {
+                type: 'line',
+                data: {
+                    labels: data.datas,
+                    datasets: [{
+                        label: 'Inscrições ao Longo do Tempo',
+                        data: data.quantidades,
+                        fill: true,
+                        borderColor: 'rgb(2, 19, 19)',
+                        backgroundColor: 'rgba(2, 19, 19, 0.2)',
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 8,
+                        showLine: true
+                    }]
                 },
-                scales: {
-                    x: {
-                        type: 'category',
-                        title: {
-                            display: true,
-                            text: 'Data'
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: ctx => `${ctx.raw} inscrições`
+                            }
                         }
                     },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Número de Inscrições'
+                    scales: {
+                        x: {
+                            type: 'category',
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Inscrições'
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+            console.log("Gráfico de linha criado com sucesso");
+        } catch (error) {
+            console.error("Erro ao criar gráfico de linha:", error);
+            throw error;
+        }
     }
 
     // Buscar os dados da API
@@ -226,6 +256,14 @@ document.addEventListener("DOMContentLoaded", function() {
             return item.count;
         });
 
+        console.log("Dados processados:", {
+            cursos,
+            totais,
+            porcentagens,
+            datas,
+            quantidades
+        });
+
         const backgroundColors = [
             'rgba(23, 213, 197, 0.5)',
             'rgba(20, 241, 61, 0.5)',
@@ -242,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function() {
             createBarChart({ cursos, totais, backgroundColors });
             createPieChart({ cursos, porcentagens, backgroundColors });
             createLineChart({ datas, quantidades });
-            console.log("Gráficos criados com sucesso");
+            console.log("Todos os gráficos foram criados com sucesso");
         } catch (error) {
             console.error("Erro ao criar os gráficos:", error);
             throw error;
