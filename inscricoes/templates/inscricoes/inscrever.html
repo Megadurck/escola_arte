@@ -163,7 +163,6 @@
     </div>
 </div>
 
-{% block extra_js %}
 <script src="{% static 'inscricoes/js/mascara_telefone.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -175,33 +174,37 @@ document.addEventListener('DOMContentLoaded', function() {
     
     cursoSelect.addEventListener('change', function() {
         const cursoId = this.value;
-        // Limpa e desabilita o select de horários
-        horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
-        horarioSelect.disabled = true;
-        
         if (cursoId) {
-            // Habilita o select de horários
-            horarioSelect.disabled = false;
+            // Limpa e desabilita o select de horários
+            horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+            horarioSelect.disabled = true;
             
-            // Faz a requisição AJAX para buscar os horários
-            fetch(`/inscricoes/get-horarios/${cursoId}/`)
+            // Faz a requisição AJAX para buscar os horários do curso
+            fetch(`/inscricoes/get-horarios-curso/${cursoId}/`)
                 .then(response => response.json())
                 .then(data => {
-                    // Adiciona as novas opções
-                    data.horarios.forEach(horario => {
-                        const option = document.createElement('option');
-                        option.value = horario.id;
-                        option.textContent = horario.texto;
-                        horarioSelect.appendChild(option);
-                    });
+                    if (data.horarios) {
+                        // Adiciona as opções de horário
+                        data.horarios.forEach(horario => {
+                            const option = document.createElement('option');
+                            option.value = horario.id;
+                            option.textContent = horario.texto;
+                            horarioSelect.appendChild(option);
+                        });
+                        // Habilita o select de horários
+                        horarioSelect.disabled = false;
+                    }
                 })
                 .catch(error => {
-                    console.error('Erro ao buscar horários:', error);
+                    console.error('Erro:', error);
                     alert('Erro ao carregar os horários. Por favor, tente novamente.');
                 });
+        } else {
+            // Se nenhum curso estiver selecionado, limpa e desabilita o select de horários
+            horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+            horarioSelect.disabled = true;
         }
     });
 });
 </script>
-{% endblock %}
 {% endblock %}

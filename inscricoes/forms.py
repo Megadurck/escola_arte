@@ -16,7 +16,7 @@ class InscricaoForm(forms.ModelForm):
     )
     
     horario = forms.ModelChoiceField(
-        queryset=HorarioCurso.objects.none(),  # Inicializa vazio
+        queryset=HorarioCurso.objects.all(),  # Alterado para mostrar todos os horários
         label='Horário',
         required=True,
         widget=forms.Select(attrs={'class': 'form-select', 'id': 'horario-select'})
@@ -65,9 +65,13 @@ class InscricaoForm(forms.ModelForm):
         if commit:
             inscricao.save()
             # Adiciona o curso e horário selecionados
-            inscricao.cursos.add(self.cleaned_data['curso'])
-            # Atualiza as vagas disponíveis
+            curso = self.cleaned_data['curso']
             horario = self.cleaned_data['horario']
+            
+            inscricao.cursos.add(curso)
+            inscricao.horarios_selecionados.add(horario)
+            
+            # Atualiza as vagas disponíveis
             horario.vagas_disponiveis -= 1
             horario.save()
         return inscricao

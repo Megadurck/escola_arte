@@ -31,21 +31,6 @@ def inscrever(request):
             inscricao.usuario = request.user
             inscricao.save()
             
-            # Salva o curso selecionado
-            curso_id = request.POST.get('curso')
-            if curso_id:
-                curso = Curso.objects.get(id=curso_id)
-                inscricao.cursos.add(curso)
-            
-            # Salva o horário selecionado
-            horario_id = request.POST.get('horario')
-            if horario_id:
-                horario = HorarioCurso.objects.get(id=horario_id)
-                inscricao.horarios_selecionados.add(horario)
-                # Atualiza o número de vagas disponíveis
-                horario.vagas_disponiveis -= 1
-                horario.save()
-            
             messages.success(request, 'Inscrição realizada com sucesso!')
             return redirect('inscricoes:pagina_inicial')
     else:
