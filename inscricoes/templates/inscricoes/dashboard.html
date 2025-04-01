@@ -2,106 +2,107 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Dashboard de Inscrições</h2>
-    
-    <!-- Gráficos -->
+<div class="container-fluid py-4">
+    <!-- Cards de Estatísticas -->
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Inscrições por Curso</h5>
-                    <canvas id="graficoCursos"></canvas>
+                    <h5 class="card-title text-primary">Total de Inscrições</h5>
+                    <h2 class="mb-0">{{ total_inscricoes }}</h2>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Inscrições por Mês</h5>
-                    <canvas id="graficoMeses"></canvas>
+                    <h5 class="card-title text-success">Vagas Disponíveis</h5>
+                    <h2 class="mb-0">{{ total_vagas }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Cursos Ativos</h5>
+                    <h2 class="mb-0">{{ total_cursos }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Horários Cadastrados</h5>
+                    <h2 class="mb-0">{{ total_horarios }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Estatísticas -->
+    <!-- Gráficos -->
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Inscrições por Curso</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Total de Inscritos</h5>
-                    <p class="card-text display-4">{{ total_inscritos }}</p>
+                    <canvas id="inscricoesPorCurso"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Vagas Disponíveis por Curso</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Cursos Mais Procurados</h5>
-                    <ul class="list-group">
-                        {% for curso in cursos_mais_procurados %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ curso.nome }}
-                                <span class="badge bg-primary rounded-pill">{{ curso.num_inscritos }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <canvas id="vagasPorCurso"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Lista de Inscrições -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">Inscrições Realizadas</h3>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Lista de Inscrições</h5>
             <div class="input-group" style="width: 300px;">
-                <input type="text" id="searchInput" class="form-control" placeholder="Buscar inscrição...">
-                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar inscrições...">
+                <button class="btn btn-light" type="button">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                <table class="table table-striped table-hover">
-                    <thead class="sticky-top bg-white">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light sticky-top">
                         <tr>
                             <th>Nome</th>
                             <th>CPF</th>
-                            <th>Telefone</th>
                             <th>Curso</th>
                             <th>Horário</th>
-                            <th>Data da Inscrição</th>
+                            <th>Data Inscrição</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for inscricao in inscricoes %}
-                            <tr>
-                                <td>{{ inscricao.usuario.get_full_name }}</td>
-                                <td>{{ inscricao.cpf }}</td>
-                                <td>{{ inscricao.telefone_whatsapp }}</td>
-                                <td>
-                                    {% for curso in inscricao.cursos.all %}
-                                        {{ curso.nome }}
-                                    {% empty %}
-                                        <span class="text-muted">Nenhum curso selecionado</span>
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% for horario in inscricao.horarios_selecionados.all %}
-                                        {{ horario.get_dia_semana_display }} - {{ horario.horario_inicio }} às {{ horario.horario_fim }}
-                                    {% empty %}
-                                        <span class="text-muted">Nenhum horário selecionado</span>
-                                    {% endfor %}
-                                </td>
-                                <td>{{ inscricao.data_inscricao|date:"d/m/Y H:i" }}</td>
-                            </tr>
+                        <tr>
+                            <td>{{ inscricao.usuario.get_full_name }}</td>
+                            <td>{{ inscricao.usuario.cpf }}</td>
+                            <td>{{ inscricao.curso.nome }}</td>
+                            <td>{{ inscricao.horario.dia_semana }} - {{ inscricao.horario.horario_inicio|time:"H:i" }} às {{ inscricao.horario.horario_fim|time:"H:i" }}</td>
+                            <td>{{ inscricao.data_inscricao|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <span class="badge bg-success">Confirmada</span>
+                            </td>
+                        </tr>
                         {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center">Nenhuma inscrição encontrada.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="6" class="text-center">Nenhuma inscrição encontrada.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -113,88 +114,87 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    // Dados para os gráficos
+    const inscricoesPorCursoData = {{ inscricoes_por_curso|safe }};
+    const vagasPorCursoData = {{ vagas_por_curso|safe }};
+
     // Configuração dos gráficos
-    const cursosData = {
-        labels: {{ cursos_labels|safe }},
-        datasets: [{
-            label: 'Inscritos por Curso',
-            data: {{ cursos_data|safe }},
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.5)',
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(255, 206, 86, 0.5)',
-                'rgba(75, 192, 192, 0.5)',
-                'rgba(153, 102, 255, 0.5)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)'
-            ],
-            borderWidth: 1
-        }]
+    const configInscricoes = {
+        type: 'bar',
+        data: {
+            labels: inscricoesPorCursoData.map(item => item.curso),
+            datasets: [{
+                label: 'Inscrições',
+                data: inscricoesPorCursoData.map(item => item.total),
+                backgroundColor: 'rgba(13, 110, 253, 0.5)',
+                borderColor: 'rgb(13, 110, 253)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
     };
 
-    const mesesData = {
-        labels: {{ meses_labels|safe }},
-        datasets: [{
-            label: 'Inscrições por Mês',
-            data: {{ meses_data|safe }},
-            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-        }]
+    const configVagas = {
+        type: 'bar',
+        data: {
+            labels: vagasPorCursoData.map(item => item.curso),
+            datasets: [{
+                label: 'Vagas',
+                data: vagasPorCursoData.map(item => item.vagas),
+                backgroundColor: 'rgba(25, 135, 84, 0.5)',
+                borderColor: 'rgb(25, 135, 84)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
     };
 
     // Criar os gráficos
-    new Chart(document.getElementById('graficoCursos'), {
-        type: 'bar',
-        data: cursosData,
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    new Chart(document.getElementById('inscricoesPorCurso'), configInscricoes);
+    new Chart(document.getElementById('vagasPorCurso'), configVagas);
 
-    new Chart(document.getElementById('graficoMeses'), {
-        type: 'line',
-        data: mesesData,
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    // Funcionalidade de busca
-    const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
-    const tableBody = document.querySelector('tbody');
-
-    function filterTable() {
-        const searchText = searchInput.value.toLowerCase();
-        const rows = tableBody.getElementsByTagName('tr');
-
-        for (let row of rows) {
+    // Função de busca
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchText = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
             const text = row.textContent.toLowerCase();
             row.style.display = text.includes(searchText) ? '' : 'none';
-        }
-    }
-
-    searchInput.addEventListener('keyup', filterTable);
-    searchButton.addEventListener('click', filterTable);
-});
+        });
+    });
 </script>
 {% endblock %}
 {% endblock %}
+
 

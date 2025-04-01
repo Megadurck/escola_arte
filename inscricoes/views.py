@@ -6,7 +6,7 @@ from django.contrib.auth import logout
 from .models import Inscricao, Curso, Funcionario, HorarioCurso
 from .forms import InscricaoForm
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import datetime, timedelta
 
@@ -59,48 +59,40 @@ def is_admin(user):
 @user_passes_test(is_admin)
 def dashboard(request):
     # Obtém todas as inscrições para administradores
-    inscricoes = Inscricao.objects.all().select_related('usuario')
+    inscricoes = Inscricao.objects.all().select_related('usuario', 'curso', 'horario')
     
     # Estatísticas gerais
-    total_inscritos = inscricoes.count()
-    cursos_mais_procurados = Curso.objects.annotate(
-        num_inscritos=Count('inscricoes')
-    ).order_by('-num_inscritos')[:5]
+    total_inscricoes = inscricoes.count()
+    total_vagas = HorarioCurso.objects.aggregate(total_vagas=Sum('vagas_disponiveis'))['total_vagas'] or 0
+    total_cursos = Curso.objects.count()
+    total_horarios = HorarioCurso.objects.count()
     
-    # Dados para o gráfico de cursos
-    cursos_data = []
-    cursos_labels = []
+    # Dados para o gráfico de inscrições por curso
+    inscricoes_por_curso = []
     for curso in Curso.objects.all():
         num_inscritos = curso.inscricoes.count()
-        cursos_labels.append(curso.nome)
-        cursos_data.append(num_inscritos)
+        inscricoes_por_curso.append({
+            'curso': curso.nome,
+            'total': num_inscritos
+        })
     
-    # Dados para o gráfico de meses
-    meses_labels = []
-    meses_data = []
-    hoje = timezone.now()
-    for i in range(6):  # Últimos 6 meses
-        data = hoje - timedelta(days=30*i)
-        mes = data.strftime('%B/%Y')
-        num_inscritos = inscricoes.filter(
-            data_inscricao__year=data.year,
-            data_inscricao__month=data.month
-        ).count()
-        meses_labels.append(mes)
-        meses_data.append(num_inscritos)
-    
-    # Inverte as listas de meses para mostrar do mais antigo para o mais recente
-    meses_labels.reverse()
-    meses_data.reverse()
+    # Dados para o gráfico de vagas por curso
+    vagas_por_curso = []
+    for curso in Curso.objects.all():
+        vagas = curso.horarios.aggregate(total_vagas=Sum('vagas_disponiveis'))['total_vagas'] or 0
+        vagas_por_curso.append({
+            'curso': curso.nome,
+            'vagas': vagas
+        })
     
     context = {
         'inscricoes': inscricoes,
-        'total_inscritos': total_inscritos,
-        'cursos_mais_procurados': cursos_mais_procurados,
-        'cursos_labels': cursos_labels,
-        'cursos_data': cursos_data,
-        'meses_labels': meses_labels,
-        'meses_data': meses_data,
+        'total_inscricoes': total_inscricoes,
+        'total_vagas': total_vagas,
+        'total_cursos': total_cursos,
+        'total_horarios': total_horarios,
+        'inscricoes_por_curso': inscricoes_por_curso,
+        'vagas_por_curso': vagas_por_curso,
     }
     return render(request, 'inscricoes/dashboard.html', context)
 
