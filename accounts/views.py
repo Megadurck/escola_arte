@@ -17,10 +17,10 @@ def user_login(request):
                 if user:
                     if user.is_staff:
                         messages.error(request, 'Você não tem permissão para acessar esta área.')
-                        return redirect('login')
+                        return redirect('accounts:login')
                     auth_login(request, user)
                     messages.success(request, 'Login bem-sucedido!')
-                    return redirect('inscricoes:pagina_inicial')  # Redirecionar para a página inicial
+                    return redirect('inscricoes:pagina_inicial')
                 else:
                     messages.error(request, 'Usuário ou senha inválidos.')
             else:
@@ -31,34 +31,35 @@ def user_login(request):
         messages.error(request, f'Ocorreu um erro inesperado: {str(e)}')
         form = AuthenticationForm()
 
-    return render(request, 'registration/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form})
 
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_staff = False  # Garante que o usuário será um usuário comum
-            user.set_password(form.cleaned_data['password1'])  # Certifique-se de chamar set_password para criptografar a senha
+            user.is_staff = False
+            user.set_password(form.cleaned_data['password1'])
             user.save()
             messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
             return redirect('accounts:login')
         else:
-            print(form.errors)  # Para depuração, verifique se o formulário tem erros
+            print(form.errors)
             messages.error(request, 'Por favor, corrija os erros abaixo.')
     else:
         form = CustomUserCreationForm()
-
+    
     return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
 def user_logout(request):
     logout(request)
+    messages.success(request, 'Você foi desconectado com sucesso!')
     return redirect('accounts:login')
 
-# Função para deslogar um admin
 @login_required
 def custom_logout(request):
     logout(request)
-    return redirect('logout')
+    messages.success(request, 'Você foi desconectado com sucesso!')
+    return redirect('accounts:login')
 

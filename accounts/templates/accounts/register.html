@@ -106,19 +106,15 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
-                                <i class="fas fa-user-plus me-2"></i>Criar Conta
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Registrar
                             </button>
                         </div>
-                    </form>
 
-                    <div class="text-center mt-4">
-                        <p class="mb-0">Já tem uma conta? 
-                            <a href="{% url 'accounts:login' %}" class="text-primary">
-                                <i class="fas fa-sign-in-alt me-1"></i>Faça login aqui
-                            </a>
-                        </p>
-                    </div>
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Já tem uma conta? <a href="{% url 'accounts:login' %}" class="text-primary">Faça login</a></p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
