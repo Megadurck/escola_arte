@@ -1,101 +1,127 @@
-<html>
-<head>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'accounts/css/register.css' %}">
-</head>
-<body>
-    {% block content %}
-        <h2 class="registro">Registrar nova conta</h2>
+{% extends 'base.html' %}
+{% load static %}
 
-        <!-- Exibindo mensagens de sucesso ou erro -->
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        <form method="post" class="register-form">
-            {% csrf_token %}
-            
-            <!-- Campos do formulário com classes personalizadas -->
-            <div class="form-group">
-                <label for="{{ form.username.id_for_label }}">Usuário</label>
-                {{ form.username }}
-                {% if form.username.errors %}
-                    <div class="error">
-                        {% for error in form.username.errors %}
-                            <p>{{ error }}</p>
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="text-center mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Registrar Nova Conta
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         {% endfor %}
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Dados Pessoais -->
+                        <div class="mb-4">
+                            <h4 class="border-bottom pb-2 text-primary">
+                                <i class="fas fa-user me-2"></i>Dados Pessoais
+                            </h4>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">Nome</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.first_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Sobrenome</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.last_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dados de Acesso -->
+                        <div class="mb-4">
+                            <h4 class="border-bottom pb-2 text-primary">
+                                <i class="fas fa-key me-2"></i>Dados de Acesso
+                            </h4>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">Usuário</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.username.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">E-mail</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Senha -->
+                        <div class="mb-4">
+                            <h4 class="border-bottom pb-2 text-primary">
+                                <i class="fas fa-lock me-2"></i>Senha
+                            </h4>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="{{ form.password1.id_for_label }}" class="form-label">Senha</label>
+                                    {{ form.password1 }}
+                                    {% if form.password1.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.password1.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.password2.id_for_label }}" class="form-label">Confirmar Senha</label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.password2.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="fas fa-user-plus me-2"></i>Criar Conta
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Já tem uma conta? 
+                            <a href="{% url 'accounts:login' %}" class="text-primary">
+                                <i class="fas fa-sign-in-alt me-1"></i>Faça login aqui
+                            </a>
+                        </p>
                     </div>
-                {% endif %}
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="{{ form.first_name.id_for_label }}">Nome</label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}
-                    <div class="error">
-                        {% for error in form.first_name.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.last_name.id_for_label }}">Sobrenome</label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}
-                    <div class="error">
-                        {% for error in form.last_name.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.email.id_for_label }}">E-mail</label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                    <div class="error">
-                        {% for error in form.email.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.password1.id_for_label }}">Senha</label>
-                {{ form.password1 }}
-                {% if form.password1.errors %}
-                    <div class="error">
-                        {% for error in form.password1.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.password2.id_for_label }}">Confirmar Senha</label>
-                {{ form.password2 }}
-                {% if form.password2.errors %}
-                    <div class="error">
-                        {% for error in form.password2.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-primary botao_registrar">Criar Conta</button>
-        </form>
-
-        <p class="login_link">Já tem uma conta? <a href="{% url 'accounts:login' %}">Faça login aqui</a></p>
-    {% endblock %}
-</body>
-</html>
+        </div>
+    </div>
+</div>
+{% endblock %}
