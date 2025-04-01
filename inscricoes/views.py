@@ -10,10 +10,12 @@ from django.db.models import Count
 from django.utils import timezone
 from datetime import datetime, timedelta
 
+@login_required
 def pagina_inicial(request):
     cursos = Curso.objects.all()
     return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos})
 
+@login_required
 def inscrever(request):
     # Verifica se o usuário já tem uma inscrição
     inscricao_existente = Inscricao.objects.filter(usuario=request.user).exists()
@@ -102,33 +104,27 @@ def dashboard(request):
     }
     return render(request, 'inscricoes/dashboard.html', context)
 
+@login_required
 def get_horarios_curso(request, curso_id):
-    """
-    View para retornar os horários disponíveis de um curso específico.
-    Retorna os horários em formato JSON para uso via AJAX.
-    """
     try:
-        curso = get_object_or_404(Curso, id=curso_id)
+        curso = Curso.objects.get(id=curso_id)
         horarios = HorarioCurso.objects.filter(
             curso=curso,
             vagas_disponiveis__gt=0
-        ).values('id', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas_disponiveis')
+        ).order_by('dia_semana', 'hora_inicio')
         
-        # Formata os horários para exibição
-        horarios_formatados = []
+        horarios_data = []
         for horario in horarios:
-            horarios_formatados.append({
-                'id': horario['id'],
-                'texto': f"{dict(HorarioCurso.DIAS_SEMANA).get(horario['dia_semana'])} - {horario['horario_inicio']} às {horario['horario_fim']} ({horario['vagas_disponiveis']} vagas)",
-                'vagas': horario['vagas_disponiveis']
+            horarios_data.append({
+                'id': horario.id,
+                'texto': f"{horario.get_dia_semana_display()} - {horario.hora_inicio.strftime('%H:%M')} às {horario.hora_fim.strftime('%H:%M')} ({horario.vagas_disponiveis} vagas)"
             })
         
-        return JsonResponse({'horarios': horarios_formatados})
+        return JsonResponse({'horarios': horarios_data})
     except Curso.DoesNotExist:
         return JsonResponse({'error': 'Curso não encontrado'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
 
+@login_required
 def logout_view(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
