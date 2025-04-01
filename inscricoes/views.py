@@ -44,7 +44,7 @@ def is_admin(user):
 @user_passes_test(is_admin)
 def dashboard(request):
     # Obtém todas as inscrições para administradores
-    inscricoes = Inscricao.objects.all().select_related('usuario', 'curso', 'horario')
+    inscricoes = Inscricao.objects.all().prefetch_related('usuario', 'cursos', 'horarios_selecionados')
     
     # Estatísticas gerais
     total_inscricoes = inscricoes.count()
