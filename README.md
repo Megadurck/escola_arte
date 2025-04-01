@@ -6,6 +6,34 @@ Este é um projeto para gerenciar as inscrições e usuários de uma escola de a
 ## Link do Projeto
 Acesse o projeto em: [Escola de Arte](https://escola-arte.onrender.com/accounts/login/)
 
+## Novas Funcionalidades e Melhorias
+
+### Sistema de Horários
+- Cadastro de horários específicos para cada curso
+- Seleção de horário durante a inscrição
+- Visualização de horários disponíveis por curso
+- Controle de vagas por horário
+
+### Interface Aprimorada
+- Design moderno e responsivo
+- Formulário de inscrição organizado em seções
+- Máscara de telefone automática (formato: (11) 91111-1111)
+- Feedback visual para ações do usuário
+- Ícones intuitivos para melhor navegação
+
+### Dashboard Administrativo
+- Estatísticas em tempo real
+- Gráficos interativos
+- Tabela de inscrições com barra de rolagem
+- Busca em tempo real nas inscrições
+- Visualização detalhada dos dados
+
+### Melhorias de Usabilidade
+- Validação de formulários em tempo real
+- Mensagens de feedback claras
+- Navegação intuitiva
+- Interface adaptativa para diferentes dispositivos
+
 ## Fluxo de Uso
 
 1. **Criar Conta**:
@@ -19,14 +47,16 @@ Acesse o projeto em: [Escola de Arte](https://escola-arte.onrender.com/accounts/
 
 3. **Inscrição em Cursos**:
    - Na página inicial, clique no botão "Inscrever-se"
-   - Preencha o formulário de inscrição
-   - Selecione os cursos desejados
+   - Preencha o formulário de inscrição com seus dados
+   - Selecione o curso desejado
+   - Escolha o horário disponível
    - Envie sua inscrição
 
 4. **Painel Administrativo**:
    - Acesso exclusivo para administradores
    - Visualização de estatísticas e dados das inscrições
-   - Gerenciamento de cursos e usuários
+   - Gerenciamento de cursos, horários e usuários
+   - Controle de vagas por horário
 
 ## Tecnologias Usadas
 
@@ -35,6 +65,8 @@ Acesse o projeto em: [Escola de Arte](https://escola-arte.onrender.com/accounts/
 - **PostgreSQL**: Banco de dados relacional para armazenamento dos dados
 - **Render**: Plataforma de deploy e hospedagem
 - **Git & GitHub**: Controle de versão e repositório de código
+- **JavaScript**: Para interatividade e máscaras de formulário
+- **Chart.js**: Para visualização de dados e gráficos
 
 ## Como Rodar o Projeto Localmente
 
