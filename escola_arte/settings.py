@@ -153,3 +153,8 @@ CSRF_COOKIE_SECURE = True         # Exige HTTPS
 
 print(config('DATABASE_URL'))  # Isso deve exibir a URL do banco de dados
 
+# Configurações de autenticação
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'inscricoes:pagina_inicial'
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
