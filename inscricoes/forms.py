@@ -1,5 +1,5 @@
 from django import forms
-from .models import Inscricao, Curso
+from .models import Inscricao, Curso, HorarioCurso
 from django.core.exceptions import ValidationError
 import re
 import datetime
@@ -8,52 +8,69 @@ from django.contrib.auth.models import User
 
 
 class InscricaoForm(forms.ModelForm):
+    curso = forms.ModelChoiceField(
+        queryset=Curso.objects.all(),
+        label='Curso',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'curso-select'})
+    )
     
-    cursos = forms.ModelMultipleChoiceField(queryset=Curso.objects.all())  # Múltiplos cursos podem ser selecionados
-
+    horario = forms.ModelChoiceField(
+        queryset=HorarioCurso.objects.all(),
+        label='Horário',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'horario-select'})
+    )
+    
     class Meta:
         model = Inscricao
-        fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'cursos']
+        fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'curso', 'horario']
+        widgets = {
+            'data_nascimento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'nome_completo': forms.TextInput(attrs={'class': 'form-control'}),
+            'cpf': forms.TextInput(attrs={'class': 'form-control'}),
+            'rua': forms.TextInput(attrs={'class': 'form-control'}),
+            'bairro': forms.TextInput(attrs={'class': 'form-control'}),
+            'numero': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefone_whatsapp': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
-    # Usando o widget 'date' do HTML5 mas garantindo a conversão correta
-    data_nascimento = forms.DateField(
-        input_formats=['%d/%m/%Y', '%Y-%m-%d'],  # Aceita ambos os formatos
-        widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'})  # Formato esperado para o HTML5
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Desabilita o campo de horário inicialmente
+        self.fields['horario'].widget.attrs['disabled'] = True
 
     def clean_telefone_whatsapp(self):
-        telefone = self.cleaned_data.get('telefone_whatsapp')
-        # Remove qualquer caractere não numérico
-        telefone = re.sub(r'\D', '', telefone)
+        telefone = self.cleaned_data.get('telefone_whatsapp', '')
+        # Remove todos os caracteres não numéricos
+        telefone = ''.join(filter(str.isdigit, telefone))
         return telefone
 
     def clean_cpf(self):
-        cpf = self.cleaned_data.get('cpf')
-        cpf = re.sub(r'\D', '', cpf)  # Remove tudo que não for número
+        cpf = self.cleaned_data.get('cpf', '')
+        # Remove todos os caracteres não numéricos
+        cpf = ''.join(filter(str.isdigit, cpf))
         
-        # Verificar se o CPF já existe
+        # Verifica se o CPF já está cadastrado
         if Inscricao.objects.filter(cpf=cpf).exists():
-            raise ValidationError('Este CPF já está cadastrado.')
-        
-        # Verificar o tamanho do CPF
+            raise forms.ValidationError('Este CPF já está cadastrado.')
+            
         if len(cpf) != 11:
-            raise ValidationError("O CPF deve conter exatamente 11 dígitos numéricos.")
-        
+            raise forms.ValidationError('CPF deve conter 11 dígitos.')
+            
         return cpf
 
-    def clean_data_nascimento(self):
-        data_nascimento = self.cleaned_data.get('data_nascimento')
-
-        # Se for uma string, tenta converter
-        if isinstance(data_nascimento, str):
-            try:
-                # Converte a data do formato DD/MM/YYYY para o formato datetime
-                data_formatada = datetime.strptime(data_nascimento, '%d/%m/%Y')
-                return data_formatada.date()
-            except ValueError:
-                raise ValidationError("Data inválida. Use o formato DD/MM/YYYY.")
-        
-        return data_nascimento  # Se já for um objeto de data, retorna diretamente
+    def save(self, commit=True):
+        inscricao = super().save(commit=False)
+        if commit:
+            inscricao.save()
+            # Adiciona o curso e horário selecionados
+            inscricao.cursos.add(self.cleaned_data['curso'])
+            # Atualiza as vagas disponíveis
+            horario = self.cleaned_data['horario']
+            horario.vagas_disponiveis -= 1
+            horario.save()
+        return inscricao
 
 
 class RegistrationForm(UserCreationForm):

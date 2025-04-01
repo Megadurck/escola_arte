@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import Inscricao, Curso, Funcionario
+from .models import Inscricao, Curso, Funcionario, HorarioCurso
 from django.contrib.auth.models import User
 
 # Definir o Inline para Inscrição
 class InscricaoInline(admin.TabularInline):
     model = Inscricao.cursos.through  # Usa o modelo intermediário
     extra = 0
+
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
@@ -31,12 +32,21 @@ class CursoAdmin(admin.ModelAdmin):
     list_editable = ['limite_inscricoes']  # Permite editar diretamente o limite de inscrições na lista
     inlines = [InscricaoInline]  # Supondo que você tenha um Inline para Inscrições
 
+# Registrar o modelo de HorarioCurso no admin
+@admin.register(HorarioCurso)
+class HorarioCursoAdmin(admin.ModelAdmin):
+    list_display = ['curso', 'get_dia_semana_display', 'horario_inicio', 'horario_fim', 'vagas_disponiveis']
+    list_filter = ['curso', 'dia_semana']
+    search_fields = ['curso__nome']
+    ordering = ['curso', 'dia_semana', 'horario_inicio']
+
 # Registrar o modelo de Funcionario no admin
 @admin.register(Funcionario)
-class FuncionarioAdmin(admin.ModelAdmin):   
-    list_display = ['nome', 'cargo', 'email', 'telefone']
-    search_fields = ['nome', 'cargo']
-    list_filter = ['cargo']
+class FuncionarioAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'cargo', 'email', 'telefone']  # Exibe nome, cargo, email e telefone na lista
+    search_fields = ('nome', 'email')  # Permite buscar por nome ou email
+    list_filter = ('cargo',)  # Filtro por cargo
+    filter_horizontal = ('cursos',)  # Interface mais amigável para selecionar cursos
 
 # Personalização do UserAdmin
 class UserAdmin(admin.ModelAdmin):

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Inscrição em Cursos</h2>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if inscricao_existente %}
+                        <div class="text-center">
+                            <p class="mb-4">Você já possui uma inscrição em nossos cursos.</p>
+                            <a href="{% url 'inscricoes:pagina_inicial' %}" class="btn btn-primary">Voltar para a Página Inicial</a>
+                        </div>
+                    {% else %}
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Inscrever-se</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cursoSelect = document.getElementById('id_curso');
+    const horarioSelect = document.getElementById('id_horario');
+    
+    // Desabilita o select de horários inicialmente
+    horarioSelect.disabled = true;
+    
+    cursoSelect.addEventListener('change', function() {
+        const cursoId = this.value;
+        if (cursoId) {
+            // Habilita o select de horários
+            horarioSelect.disabled = false;
+            
+            // Faz a requisição AJAX para buscar os horários
+            fetch(`/inscricoes/get-horarios/${cursoId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Limpa as opções atuais
+                    horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+                    
+                    // Adiciona as novas opções
+                    data.horarios.forEach(horario => {
+                        const option = document.createElement('option');
+                        option.value = horario.id;
+                        option.textContent = horario.texto;
+                        horarioSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar horários:', error);
+                    alert('Erro ao carregar os horários. Por favor, tente novamente.');
+                });
+        } else {
+            // Desabilita e limpa o select de horários se nenhum curso estiver selecionado
+            horarioSelect.disabled = true;
+            horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

@@ -1,105 +1,200 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo</title>
-    <!-- Forçando recarregamento do CSS com timestamp -->
-    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}?v={{ timestamp }}">
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Inline CSS para garantir que os estilos críticos sejam aplicados -->
-    <style>
-        .grafico-box {
-            background: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        .grafico-wrapper {
-            width: 100%;
-            height: calc(100% - 60px);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .grafico-titulo {
-            margin-bottom: 0;
-            color: #333;
-            font-size: 1.2rem;
-            text-align: center;
-            font-weight: bold;
-            width: 100%;
-            padding: 0 10px;
-            height: 40px;
-        }
-        .grafico-box canvas {
-            width: 100% !important;
-            height: 100% !important;
-            max-height: 400px !important;
-            min-height: 300px !important;
-            margin: 0 auto;
-            display: block;
-            position: relative;
-        }
-    </style>
-</head>
-<body class="dashboard">
-    <div class="container">
-        <header class="painel-administrativo mb-4">
-            <h1 class="title-dashboard">Painel Administrativo</h1>
-        </header>
-        
-        <main class="grafico-container">
-            <!-- Primeira linha: Gráficos lado a lado -->
-            <div class="row">
-                <div class="col-md-6">
-                    <article class="grafico-box" id="grafico-barras">
-                        <h3 class="grafico-titulo">Total de Inscrições por Curso</h3>
-                        <div class="grafico-wrapper">
-                            <canvas id="barChart"></canvas>
-                        </div>
-                    </article>
-                </div>
-                <div class="col-md-6">
-                    <article class="grafico-box" id="grafico-pizza">
-                        <h3 class="grafico-titulo">Distribuição Percentual de Inscrições por Curso</h3>
-                        <div class="grafico-wrapper">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                    </article>
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Dashboard de Inscrições</h2>
+    
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Inscrições por Curso</h5>
+                    <canvas id="graficoCursos"></canvas>
                 </div>
             </div>
-            
-            <!-- Segunda linha: Gráfico de linha ocupando toda a largura -->
-            <div class="row">
-                <div class="col-12">
-                    <article class="grafico-box" id="grafico-linha">
-                        <h3 class="grafico-titulo">Inscrições ao Longo do Tempo</h3>
-                        <div class="grafico-wrapper">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </article>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Inscrições por Mês</h5>
+                    <canvas id="graficoMeses"></canvas>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'inscricoes/js/dashboard.js' %}?v={{ timestamp }}"></script>
-</body>
-</html>
+    <!-- Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Inscritos</h5>
+                    <p class="card-text display-4">{{ total_inscritos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Cursos Mais Procurados</h5>
+                    <ul class="list-group">
+                        {% for curso in cursos_mais_procurados %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ curso.nome }}
+                                <span class="badge bg-primary rounded-pill">{{ curso.num_inscritos }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Inscrições -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Inscrições Realizadas</h3>
+            <div class="input-group" style="width: 300px;">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar inscrição...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-striped table-hover">
+                    <thead class="sticky-top bg-white">
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>Curso</th>
+                            <th>Horário</th>
+                            <th>Data da Inscrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inscricao in inscricoes %}
+                            <tr>
+                                <td>{{ inscricao.usuario.get_full_name }}</td>
+                                <td>{{ inscricao.cpf }}</td>
+                                <td>{{ inscricao.telefone_whatsapp }}</td>
+                                <td>
+                                    {% for curso in inscricao.cursos.all %}
+                                        {{ curso.nome }}
+                                    {% empty %}
+                                        <span class="text-muted">Nenhum curso selecionado</span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for horario in inscricao.horarios_selecionados.all %}
+                                        {{ horario.get_dia_semana_display }} - {{ horario.horario_inicio }} às {{ horario.horario_fim }}
+                                    {% empty %}
+                                        <span class="text-muted">Nenhum horário selecionado</span>
+                                    {% endfor %}
+                                </td>
+                                <td>{{ inscricao.data_inscricao|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">Nenhuma inscrição encontrada.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuração dos gráficos
+    const cursosData = {
+        labels: {{ cursos_labels|safe }},
+        datasets: [{
+            label: 'Inscritos por Curso',
+            data: {{ cursos_data|safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+                'rgba(153, 102, 255, 0.5)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const mesesData = {
+        labels: {{ meses_labels|safe }},
+        datasets: [{
+            label: 'Inscrições por Mês',
+            data: {{ meses_data|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    // Criar os gráficos
+    new Chart(document.getElementById('graficoCursos'), {
+        type: 'bar',
+        data: cursosData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('graficoMeses'), {
+        type: 'line',
+        data: mesesData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Funcionalidade de busca
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const tableBody = document.querySelector('tbody');
+
+    function filterTable() {
+        const searchText = searchInput.value.toLowerCase();
+        const rows = tableBody.getElementsByTagName('tr');
+
+        for (let row of rows) {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchText) ? '' : 'none';
+        }
+    }
+
+    searchInput.addEventListener('keyup', filterTable);
+    searchButton.addEventListener('click', filterTable);
+});
+</script>
+{% endblock %}
+{% endblock %}
 

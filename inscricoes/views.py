@@ -1,124 +1,135 @@
-from itertools import count
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .forms import InscricaoForm
-from .models import Curso, Inscricao
+from django.http import JsonResponse
 from django.contrib.auth import logout
+from .models import Inscricao, Curso, Funcionario, HorarioCurso
+from .forms import InscricaoForm
+from django.contrib.auth.models import User
 from django.db.models import Count
-from datetime import datetime
-import time
+from django.utils import timezone
+from datetime import datetime, timedelta
 
+def pagina_inicial(request):
+    cursos = Curso.objects.all()
+    return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos})
 
-# Função para inscrever usuário
-@login_required
 def inscrever(request):
-    if Inscricao.objects.filter(usuario=request.user).exists():
-        messages.error(request, 'Você já está inscrito!')
-        return redirect('inscricoes:pagina_inicial')
+    # Verifica se o usuário já tem uma inscrição
+    inscricao_existente = Inscricao.objects.filter(usuario=request.user).exists()
     
+    if inscricao_existente:
+        messages.warning(request, 'Você já possui uma inscrição!')
+        return redirect('inscricoes:pagina_inicial')
+        
     if request.method == 'POST':
         form = InscricaoForm(request.POST)
         if form.is_valid():
-            cursos_selecionados = form.cleaned_data.get('cursos')
-
-            for curso in cursos_selecionados:
-                if curso.inscricoes.count() >= curso.limite_inscricoes:
-                    messages.error(request, f'O curso "{curso.nome}" atingiu o limite de inscrições.')
-                    return redirect('inscricoes:inscrever')
-
             inscricao = form.save(commit=False)
             inscricao.usuario = request.user
             inscricao.save()
-            form.save_m2m()  # Salva a relação ManyToMany
-
+            
+            # Salva o curso selecionado
+            curso_id = request.POST.get('curso')
+            if curso_id:
+                curso = Curso.objects.get(id=curso_id)
+                inscricao.cursos.add(curso)
+            
+            # Salva o horário selecionado
+            horario_id = request.POST.get('horario')
+            if horario_id:
+                horario = HorarioCurso.objects.get(id=horario_id)
+                inscricao.horarios_selecionados.add(horario)
+                # Atualiza o número de vagas disponíveis
+                horario.vagas_disponiveis -= 1
+                horario.save()
+            
             messages.success(request, 'Inscrição realizada com sucesso!')
             return redirect('inscricoes:pagina_inicial')
     else:
         form = InscricaoForm()
+    return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
 
-    return render(request, 'inscricoes/inscrever.html', {'form': form})
+def is_admin(user):
+    return user.is_staff
 
-
-
-
-
-# Função para exibir dados do dashboard (somente para administradores ou usuários com permissões)
 @login_required
-def dashboard_data(request):
+@user_passes_test(is_admin)
+def dashboard(request):
+    # Obtém todas as inscrições para administradores
+    inscricoes = Inscricao.objects.all().select_related('usuario')
+    
+    # Estatísticas gerais
+    total_inscritos = inscricoes.count()
+    cursos_mais_procurados = Curso.objects.annotate(
+        num_inscritos=Count('inscricoes')
+    ).order_by('-num_inscritos')[:5]
+    
+    # Dados para o gráfico de cursos
+    cursos_data = []
+    cursos_labels = []
+    for curso in Curso.objects.all():
+        num_inscritos = curso.inscricoes.count()
+        cursos_labels.append(curso.nome)
+        cursos_data.append(num_inscritos)
+    
+    # Dados para o gráfico de meses
+    meses_labels = []
+    meses_data = []
+    hoje = timezone.now()
+    for i in range(6):  # Últimos 6 meses
+        data = hoje - timedelta(days=30*i)
+        mes = data.strftime('%B/%Y')
+        num_inscritos = inscricoes.filter(
+            data_inscricao__year=data.year,
+            data_inscricao__month=data.month
+        ).count()
+        meses_labels.append(mes)
+        meses_data.append(num_inscritos)
+    
+    # Inverte as listas de meses para mostrar do mais antigo para o mais recente
+    meses_labels.reverse()
+    meses_data.reverse()
+    
+    context = {
+        'inscricoes': inscricoes,
+        'total_inscritos': total_inscritos,
+        'cursos_mais_procurados': cursos_mais_procurados,
+        'cursos_labels': cursos_labels,
+        'cursos_data': cursos_data,
+        'meses_labels': meses_labels,
+        'meses_data': meses_data,
+    }
+    return render(request, 'inscricoes/dashboard.html', context)
+
+def get_horarios_curso(request, curso_id):
+    """
+    View para retornar os horários disponíveis de um curso específico.
+    Retorna os horários em formato JSON para uso via AJAX.
+    """
     try:
-        # Verificar se o usuário tem permissão para ver o dashboard
-        if not request.user.is_staff:
-            return JsonResponse({'error': 'Acesso não autorizado'}, status=403)
-
-        # Buscar dados básicos
-        total_inscricoes = Inscricao.objects.count()
+        curso = get_object_or_404(Curso, id=curso_id)
+        horarios = HorarioCurso.objects.filter(
+            curso=curso,
+            vagas_disponiveis__gt=0
+        ).values('id', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas_disponiveis')
         
-        # Buscar cursos com contagem de inscrições
-        cursos = Curso.objects.annotate(
-            total_inscricoes=Count('inscricoes')
-        ).all()
-
-        # Preparar dados de inscrições por curso
-        inscricoes_por_curso = []
-        for curso in cursos:
-            inscricoes_por_curso.append({
-                'curso': curso.nome,
-                'total': curso.total_inscricoes,
-                'porcentagem': round((curso.total_inscricoes / total_inscricoes * 100) if total_inscricoes > 0 else 0, 2)
+        # Formata os horários para exibição
+        horarios_formatados = []
+        for horario in horarios:
+            horarios_formatados.append({
+                'id': horario['id'],
+                'texto': f"{dict(HorarioCurso.DIAS_SEMANA).get(horario['dia_semana'])} - {horario['horario_inicio']} às {horario['horario_fim']} ({horario['vagas_disponiveis']} vagas)",
+                'vagas': horario['vagas_disponiveis']
             })
-
-        # Buscar e preparar dados de inscrições por data
-        data_inscricao = Inscricao.objects.values('data_inscricao').annotate(
-            count=Count('id')
-        ).order_by('data_inscricao')
-
-        data_inscricao_list = []
-        for entry in data_inscricao:
-            if entry['data_inscricao']:  # Verificar se a data não é None
-                data_inscricao_list.append({
-                    'data_inscricao': entry['data_inscricao'].strftime('%Y-%m-%d'),
-                    'count': entry['count']
-                })
-
-        # Criar resposta com headers CORS
-        response = JsonResponse({
-            'inscricoes_por_curso': inscricoes_por_curso,
-            'total_inscricoes': total_inscricoes,
-            'data_inscricao': data_inscricao_list
-        })
         
-        # Adicionar headers CORS
-        response["Access-Control-Allow-Origin"] = "*"
-        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type"
-        
-        return response
-
+        return JsonResponse({'horarios': horarios_formatados})
+    except Curso.DoesNotExist:
+        return JsonResponse({'error': 'Curso não encontrado'}, status=404)
     except Exception as e:
-        # Log do erro para debug
-        print(f"Erro no dashboard_data: {str(e)}")
-        response = JsonResponse({
-            'error': 'Erro ao processar dados do dashboard',
-            'details': str(e)
-        }, status=500)
-        
-        # Adicionar headers CORS mesmo para erros
-        response["Access-Control-Allow-Origin"] = "*"
-        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type"
-        
-        return response
+        return JsonResponse({'error': str(e)}, status=500)
 
-# Função para painel administrativo
-@login_required
-def dashboard_view(request):
-    # Adicionar timestamp para forçar recarregamento dos arquivos estáticos
-    timestamp = int(time.time())
-    return render(request, 'inscricoes/dashboard.html', {'timestamp': timestamp})
-
-# Função para página inicial (protegida por login)
-@login_required
-def pagina_inicial(request):
-    return render(request, 'inscricoes/pagina_inicial.html')
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'Você foi desconectado com sucesso!')
+    return redirect('inscricoes:pagina_inicial')
