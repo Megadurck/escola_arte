@@ -16,7 +16,7 @@ class InscricaoForm(forms.ModelForm):
     )
     
     horario = forms.ModelChoiceField(
-        queryset=HorarioCurso.objects.all(),
+        queryset=HorarioCurso.objects.none(),  # Inicializa vazio
         label='Horário',
         required=True,
         widget=forms.Select(attrs={'class': 'form-select', 'id': 'horario-select'})

@@ -103,13 +103,13 @@ def get_horarios_curso(request, curso_id):
         horarios = HorarioCurso.objects.filter(
             curso=curso,
             vagas_disponiveis__gt=0
-        ).order_by('dia_semana', 'hora_inicio')
+        ).order_by('dia_semana', 'horario_inicio')
         
         horarios_data = []
         for horario in horarios:
             horarios_data.append({
                 'id': horario.id,
-                'texto': f"{horario.get_dia_semana_display()} - {horario.hora_inicio.strftime('%H:%M')} às {horario.hora_fim.strftime('%H:%M')} ({horario.vagas_disponiveis} vagas)"
+                'texto': f"{horario.get_dia_semana_display()} - {horario.horario_inicio.strftime('%H:%M')} às {horario.horario_fim.strftime('%H:%M')} ({horario.vagas_disponiveis} vagas)"
             })
         
         return JsonResponse({'horarios': horarios_data})

@@ -175,6 +175,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     cursoSelect.addEventListener('change', function() {
         const cursoId = this.value;
+        // Limpa e desabilita o select de horários
+        horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
+        horarioSelect.disabled = true;
+        
         if (cursoId) {
             // Habilita o select de horários
             horarioSelect.disabled = false;
@@ -183,9 +187,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`/inscricoes/get-horarios/${cursoId}/`)
                 .then(response => response.json())
                 .then(data => {
-                    // Limpa as opções atuais
-                    horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
-                    
                     // Adiciona as novas opções
                     data.horarios.forEach(horario => {
                         const option = document.createElement('option');
@@ -198,10 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Erro ao buscar horários:', error);
                     alert('Erro ao carregar os horários. Por favor, tente novamente.');
                 });
-        } else {
-            // Desabilita e limpa o select de horários se nenhum curso estiver selecionado
-            horarioSelect.disabled = true;
-            horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
         }
     });
 });
