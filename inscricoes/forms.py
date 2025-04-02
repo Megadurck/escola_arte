@@ -8,23 +8,27 @@ from django.contrib.auth.models import User
 
 
 class InscricaoForm(forms.ModelForm):
-    curso = forms.ModelChoiceField(
+    cursos = forms.ModelMultipleChoiceField(
         queryset=Curso.objects.all(),
-        label='Curso',
+        label='Cursos',
         required=True,
-        widget=forms.Select(attrs={'class': 'form-select', 'id': 'curso-select'})
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input'
+        })
     )
     
-    horario = forms.ModelChoiceField(
-        queryset=HorarioCurso.objects.all(),  # Alterado para mostrar todos os horários
-        label='Horário',
+    horarios_selecionados = forms.ModelMultipleChoiceField(
+        queryset=HorarioCurso.objects.all(),
+        label='Horários',
         required=True,
-        widget=forms.Select(attrs={'class': 'form-select', 'id': 'horario-select'})
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input'
+        })
     )
     
     class Meta:
         model = Inscricao
-        fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'curso', 'horario']
+        fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'cursos', 'horarios_selecionados']
         widgets = {
             'data_nascimento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'nome_completo': forms.TextInput(attrs={'class': 'form-control'}),
@@ -38,7 +42,22 @@ class InscricaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Desabilita o campo de horário inicialmente
-        self.fields['horario'].widget.attrs['disabled'] = True
+        self.fields['horarios_selecionados'].widget.attrs['disabled'] = True
+
+    def clean_horarios_selecionados(self):
+        horarios = self.cleaned_data.get('horarios_selecionados', [])
+        cursos_selecionados = self.cleaned_data.get('cursos', [])
+        
+        # Verifica se os horários pertencem aos cursos selecionados
+        for horario in horarios:
+            if horario.curso not in cursos_selecionados:
+                raise forms.ValidationError(f'O horário {horario} não pertence aos cursos selecionados.')
+            
+            # Verifica se há vagas disponíveis
+            if horario.vagas_disponiveis <= 0:
+                raise forms.ValidationError(f'Não há mais vagas disponíveis para o horário {horario}.')
+        
+        return horarios
 
     def clean_telefone_whatsapp(self):
         telefone = self.cleaned_data.get('telefone_whatsapp', '')
@@ -63,17 +82,14 @@ class InscricaoForm(forms.ModelForm):
     def save(self, commit=True):
         inscricao = super().save(commit=False)
         if commit:
+            # Primeiro salvamos a inscrição
             inscricao.save()
-            # Adiciona o curso e horário selecionados
-            curso = self.cleaned_data['curso']
-            horario = self.cleaned_data['horario']
             
-            inscricao.cursos.add(curso)
-            inscricao.horarios_selecionados.add(horario)
+            # Agora salvamos os relacionamentos
+            self.save_m2m()
+            inscricao.cursos.set(self.cleaned_data['cursos'])
+            inscricao.horarios_selecionados.set(self.cleaned_data['horarios_selecionados'])
             
-            # Atualiza as vagas disponíveis
-            horario.vagas_disponiveis -= 1
-            horario.save()
         return inscricao
 
 

@@ -31,6 +31,16 @@ def inscrever(request):
             inscricao.usuario = request.user
             inscricao.save()
             
+            # Atualiza as vagas disponíveis
+            for horario in form.cleaned_data['horarios_selecionados']:
+                horario.refresh_from_db()
+                if horario.vagas_disponiveis > 0:
+                    horario.vagas_disponiveis -= 1
+                    horario.save()
+            
+            # Salva os relacionamentos
+            form.save_m2m()
+            
             messages.success(request, 'Inscrição realizada com sucesso!')
             return redirect('inscricoes:pagina_inicial')
     else:
@@ -82,27 +92,31 @@ def dashboard(request):
     return render(request, 'inscricoes/dashboard.html', context)
 
 @login_required
-def get_horarios_curso(request, curso_id):
-    try:
-        curso = Curso.objects.get(id=curso_id)
-        horarios = HorarioCurso.objects.filter(
-            curso=curso,
-            vagas_disponiveis__gt=0
-        ).order_by('dia_semana', 'horario_inicio')
-        
-        horarios_data = []
-        for horario in horarios:
-            horarios_data.append({
-                'id': horario.id,
-                'texto': f"{horario.get_dia_semana_display()} - {horario.horario_inicio.strftime('%H:%M')} às {horario.horario_fim.strftime('%H:%M')} ({horario.vagas_disponiveis} vagas)"
-            })
-        
-        return JsonResponse({'horarios': horarios_data})
-    except Curso.DoesNotExist:
-        return JsonResponse({'error': 'Curso não encontrado'}, status=404)
+def get_horarios_curso(request):
+    cursos_ids = request.GET.getlist('cursos[]')
+    
+    if not cursos_ids:
+        return JsonResponse({'horarios': []})
+
+    # Filtra os horários associados aos cursos selecionados
+    horarios = HorarioCurso.objects.filter(
+        curso__id__in=cursos_ids,
+        vagas_disponiveis__gt=0
+    ).order_by('curso__nome', 'dia_semana', 'horario_inicio')
+    
+    horarios_data = []
+    for horario in horarios:
+        horarios_data.append({
+            'id': horario.id,
+            'curso_nome': horario.curso.nome,
+            'texto': f"{horario.curso.nome} - {horario.get_dia_semana_display()} - {horario.horario_inicio.strftime('%H:%M')} às {horario.horario_fim.strftime('%H:%M')} ({horario.vagas_disponiveis} vagas)"
+        })
+    
+    return JsonResponse({'horarios': horarios_data})
 
 @login_required
 def logout_view(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
     return redirect('inscricoes:pagina_inicial')
+

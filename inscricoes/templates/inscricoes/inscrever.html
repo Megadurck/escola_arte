@@ -126,24 +126,42 @@
                             <!-- Curso e Horário -->
                             <div class="mb-4">
                                 <h4 class="border-bottom pb-2 text-primary">
-                                    <i class="fas fa-graduation-cap me-2"></i>Curso e Horário
+                                    <i class="fas fa-graduation-cap me-2"></i>Cursos e Horários
                                 </h4>
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="{{ form.curso.id_for_label }}" class="form-label">Curso</label>
-                                        {{ form.curso }}
-                                        {% if form.curso.errors %}
+                                    <div class="col-md-12">
+                                        <label class="form-label">Cursos</label>
+                                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                            {% for curso in form.cursos %}
+                                            <div class="form-check">
+                                                {{ curso.tag }}
+                                                <label class="form-check-label" for="{{ curso.id_for_label }}">
+                                                    {{ curso.choice_label }}
+                                                </label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% if form.cursos.errors %}
                                             <div class="invalid-feedback d-block">
-                                                {{ form.curso.errors }}
+                                                {{ form.cursos.errors }}
                                             </div>
                                         {% endif %}
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for="{{ form.horario.id_for_label }}" class="form-label">Horário</label>
-                                        {{ form.horario }}
-                                        {% if form.horario.errors %}
+                                    <div class="col-md-12">
+                                        <label class="form-label">Horários Disponíveis</label>
+                                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                            {% for horario in form.horarios_selecionados %}
+                                            <div class="form-check">
+                                                {{ horario.tag }}
+                                                <label class="form-check-label" for="{{ horario.id_for_label }}">
+                                                    {{ horario.choice_label }}
+                                                </label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        {% if form.horarios_selecionados.errors %}
                                             <div class="invalid-feedback d-block">
-                                                {{ form.horario.errors }}
+                                                {{ form.horarios_selecionados.errors }}
                                             </div>
                                         {% endif %}
                                     </div>
@@ -166,33 +184,52 @@
 <script src="{% static 'inscricoes/js/mascara_telefone.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const cursoSelect = document.getElementById('curso-select');
-    const horarioSelect = document.getElementById('horario-select');
+    const cursosCheckboxes = document.querySelectorAll('input[name="cursos"]');
+    const horariosContainer = document.querySelector('.col-md-12:last-child .border.rounded.p-3');
     
-    // Desabilita o select de horários inicialmente
-    horarioSelect.disabled = true;
+    // Desabilita os checkboxes de horários inicialmente
+    if (horariosContainer) {
+        horariosContainer.style.opacity = '0.5';
+        horariosContainer.style.pointerEvents = 'none';
+    }
     
-    cursoSelect.addEventListener('change', function() {
-        const cursoId = this.value;
-        if (cursoId) {
-            // Limpa e desabilita o select de horários
-            horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
-            horarioSelect.disabled = true;
+    function atualizarHorarios() {
+        const cursosSelecionados = Array.from(cursosCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+        
+        if (cursosSelecionados.length > 0) {
+            // Faz a requisição AJAX para buscar os horários dos cursos selecionados
+            const params = new URLSearchParams();
+            cursosSelecionados.forEach(cursoId => {
+                params.append('cursos[]', cursoId);
+            });
             
-            // Faz a requisição AJAX para buscar os horários do curso
-            fetch(`/inscricoes/get-horarios-curso/${cursoId}/`)
+            fetch(`/inscricoes/get-horarios-curso/?${params.toString()}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.horarios) {
-                        // Adiciona as opções de horário
-                        data.horarios.forEach(horario => {
-                            const option = document.createElement('option');
-                            option.value = horario.id;
-                            option.textContent = horario.texto;
-                            horarioSelect.appendChild(option);
-                        });
-                        // Habilita o select de horários
-                        horarioSelect.disabled = false;
+                        // Atualiza os checkboxes de horários
+                        if (horariosContainer) {
+                            horariosContainer.innerHTML = '';
+                            
+                            data.horarios.forEach(horario => {
+                                const div = document.createElement('div');
+                                div.className = 'form-check';
+                                div.innerHTML = `
+                                    <input type="checkbox" name="horarios_selecionados" value="${horario.id}" 
+                                           class="form-check-input" id="horario_${horario.id}">
+                                    <label class="form-check-label" for="horario_${horario.id}">
+                                        ${horario.texto}
+                                    </label>
+                                `;
+                                horariosContainer.appendChild(div);
+                            });
+                            
+                            // Habilita os checkboxes de horários
+                            horariosContainer.style.opacity = '1';
+                            horariosContainer.style.pointerEvents = 'auto';
+                        }
                     }
                 })
                 .catch(error => {
@@ -200,10 +237,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert('Erro ao carregar os horários. Por favor, tente novamente.');
                 });
         } else {
-            // Se nenhum curso estiver selecionado, limpa e desabilita o select de horários
-            horarioSelect.innerHTML = '<option value="">Selecione um horário</option>';
-            horarioSelect.disabled = true;
+            // Se nenhum curso estiver selecionado, desabilita os checkboxes de horários
+            if (horariosContainer) {
+                horariosContainer.style.opacity = '0.5';
+                horariosContainer.style.pointerEvents = 'none';
+            }
         }
+    }
+    
+    // Adiciona o evento de mudança para todos os checkboxes de cursos
+    cursosCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', atualizarHorarios);
     });
 });
 </script>

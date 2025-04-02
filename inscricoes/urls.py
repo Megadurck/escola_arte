@@ -1,14 +1,12 @@
-# inscricoes/urls.py
-from django.contrib.auth import views as auth_views
 from django.urls import path
-from . import views  # Certifique-se de que as views estão sendo importadas
+from .views import pagina_inicial, inscrever, dashboard, get_horarios_curso, logout_view
 
-app_name = 'inscricoes'  # Adicione isso para definir o namespace
+app_name = 'inscricoes'
 
 urlpatterns = [
-    path('', views.pagina_inicial, name='pagina_inicial'),
-    path('inscrever/', views.inscrever, name='inscrever'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('get-horarios-curso/<int:curso_id>/', views.get_horarios_curso, name='get_horarios_curso'),
-    path('logout/', views.logout_view, name='logout'),
+    path('', pagina_inicial, name='pagina_inicial'),
+    path('inscrever/', inscrever, name='inscrever'),
+    path('dashboard/', dashboard, name='dashboard'),
+    path('get-horarios-curso/', get_horarios_curso, name='get_horarios_curso'),
+    path('logout/', logout_view, name='logout'),
 ]
