@@ -41,13 +41,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-   
 ]
 
 ROOT_URLCONF = 'escola_arte.urls'
@@ -157,4 +157,7 @@ print(config('DATABASE_URL'))  # Isso deve exibir a URL do banco de dados
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'inscricoes:pagina_inicial'
 LOGOUT_REDIRECT_URL = 'accounts:login'
+
+# Configurações do WhiteNoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

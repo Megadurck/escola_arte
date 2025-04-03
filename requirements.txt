@@ -1,12 +1,16 @@
 beautifulsoup4==4.12.3
-dj-database-url==2.3.0
-Django==5.1.7
+dj-database-url==2.1.0
+Django==4.2.10
 django-extensions==3.2.3
 django-widget-tweaks==1.5.0
-gunicorn
-psycopg2-binary==2.9.10
+gunicorn==21.2.0
+psycopg2-binary==2.9.9
 python-decouple==3.8
-python-dotenv==1.1.0
+python-dotenv==1.0.0
 requests==2.32.3
+django-crispy-forms==2.1
+crispy-bootstrap5==2023.10
+Pillow==10.2.0
+whitenoise==6.9.0
 
 
