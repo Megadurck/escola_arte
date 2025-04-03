@@ -34,18 +34,33 @@ header {
 
 /* ===== Estilos do Banner ===== */
 .banner {
-    text-align: center;
-    padding: 30px 20px; /* Reduz o padding para evitar deslocamento */
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    margin: 5px auto;
-    max-width: 2440px;
-    min-height: 50vh;
+    background: url('/static/inscricoes/img/background_escola.png') no-repeat center center;
+    background-size: cover;
+    height: 40vh;
+    color: white;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    text-align: center;
+    position: relative;
+    z-index: 999; /* Garante que o banner fique por trás da logo e dos botões */
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+}
+
+.banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
 }
 
 .banner h1 {
@@ -59,74 +74,159 @@ header {
 
 .banner p {
     font-size: 1.5rem;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
+    margin-top: 0px;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);  /* Adiciona sombra ao texto */
 }
 
 #logo_escola {
-    max-width: 470px; /* Define um tamanho máximo mais controlado */
-    height: auto; /* Mantém a proporção correta */
-    margin-top: 50px; /* Reduz o espaço acima da logo */
-    margin-bottom: -45px; /* Reduz ainda mais o espaço entre a logo e o texto */
-    object-fit: contain; /* Mantém a proporção da imagem */
+    max-width: 350px;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: -20px;
+    object-fit: contain;
 }
 
 @media (max-width: 480px) {
-    /* Estilos específicos para tela de celular de 480px */
     #logo_escola {
-      max-width: 60%; /* Diminui a largura da logo em telas menores */
-      margin-top: 40px; /* Reduz o espaço acima da logo */
-      margin-bottom: -10px; /* Reduz ainda mais o espaço entre a logo e o texto */
+        max-width: 45%; /* Reduzindo ainda mais para telas pequenas */
+        margin-top: 15px;
+        margin-bottom: -15px;
     }
     .banner {
-      padding: 20px 10px;
+        padding: 20px 10px;
     }
-  
     .banner h1 {
-      font-size: 1.5rem;
+        font-size: 1.5rem;
     }
-  
-    .banner p {
-      font-size: 1rem;
-    }
-  
-    .description-box {
-      margin: 10px auto;
-      padding: 10px;
-    }
-  
-    .btn {
-      padding: 5px 15px;
-    }
-  }
-
-  @media (max-width: 768px) and (orientation: landscape) {
-    #logo_escola {
-        max-width: 25vw; /* Diminui um pouco a logo em telas menores */
-        height: auto;
-        margin-top: 60px;
-        margin-bottom: -5px;
-    }
-
-    .banner {
-        padding: 10px; /* Reduz ainda mais o padding */
-    }
-
-    .banner h1 {
-        font-size: 2rem;
-        margin-bottom: -3px;
-        margin-top: -5px;
-    }
-
     .banner p {
         font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+    #logo_escola {
+        max-width: 15vw; /* Reduzindo para orientação paisagem */
+        height: auto;
+        margin-top: 30px;
         margin-bottom: -10px;
     }
+}
 
-    .inscrever {
-        padding: 10px 20px;
+/* Ajustes gerais de responsividade */
+@media (max-width: 768px) {
+    .description-box {
+        margin: 20px 15px;
+        padding: 15px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .card-text {
+        font-size: 14px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+        padding-left: 20px;
+    }
+    
+    .btn-primary {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .description-box {
+        margin: 15px 10px;
+        padding: 10px;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1rem;
+        padding-left: 10px;
+    }
+    
+    .btn-primary {
+        padding: 6px 15px;
+        font-size: 0.8rem;
+    }
+    
+    #botao_inscrever {
+        margin-top: 15px;
+        margin-bottom: 30px;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 320px) {
+    #logo_escola {
+        max-width: 40%; /* Ajuste para telas muito pequenas */
         margin-top: 10px;
         margin-bottom: -10px;
+    }
+    
+    .banner h1 {
+        font-size: 1.2rem;
+    }
+    
+    .banner p {
+        font-size: 0.9rem;
+    }
+    
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+}
+
+/* Ajustes para telas muito grandes */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+    
+    #logo_escola {
+        max-width: 400px; /* Ajuste para telas grandes */
+        margin-top: 25px;
+        margin-bottom: -25px;
+    }
+    
+    .description-box {
+        max-width: 1200px;
+    }
+}
+
+/* Ajustes para orientação paisagem em dispositivos móveis */
+@media (max-height: 500px) and (orientation: landscape) {
+    .banner {
+        height: 100vh;
+    }
+    
+    #logo_escola {
+        max-width: 15vw;
+        margin-top: 20px;
+    }
+    
+    .banner h1 {
+        font-size: 1.8rem;
+        margin-top: 5px;
+    }
+    
+    .banner p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    #botao_inscrever {
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
 }
 
@@ -260,59 +360,43 @@ footer {
 
 
 /* ===== Estilos Cabeçalho ===== */
-/* Estilizar os links de navegação dentro da navbar */
-.navbar-nav .nav-item .nav-link {
-    color: #fff; /* Cor do texto */
-    background-color: rgba(245, 109, 13, 0.8); /* Cor de fundo com transparência */
-    border-radius: 5px; /* Bordas arredondadas */
-    padding: 3px 8px; /* Padding para aumentar o tamanho do botão */
-    margin-right: 15px; /* Espaçamento entre os botões */
-    font-size: 0.875rem;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Transição suave */
+#cabecalho {
+    background-color: #f1e097;
+    border-radius: 10px;
+    max-width: 100%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 0px;
+    margin-top: 0px;
 }
 
-.sair {
-    display: flex !important;
-    padding: 3px 8px !important;
-    font-size: 0.875rem !important;
+.navbar-light {
+    background-color: #ffffff;
+}
+
+/* Estilizar os links de navegação dentro da navbar */
+.navbar-nav .nav-item .nav-link {
+    color: #fff;
+    background-color: rgba(245, 109, 13, 0.8);
+    border-radius: 5px;
+    padding: 3px 8px;
+    margin-right: 15px;
+    font-size: 0.875rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Mudando a cor do fundo e do texto quando o mouse passar sobre o botão */
 .navbar-nav .nav-item .nav-link:hover {
-    background-color: rgba(224, 78, 78, 0.8); /* Cor de fundo ao passar o mouse */
-    color: #fff; /* Cor do texto ao passar o mouse */
-}
-
-/* Estilo do botão ativo */
-.navbar-nav .nav-item .nav-link:active {
-    background-color: rgba(216, 70, 70, 0.8); /* Cor de fundo ao clicar */
-    color: #fff; /* Cor do texto ao clicar */
+    background-color: rgba(224, 78, 78, 0.8);
+    color: #fff;
 }
 
 /* Personalizando a aparência do botão do menu (navbar-toggler) */
 .navbar-toggler {
-    border-color: #494847; /* Cor da borda do menu em dispositivos móveis */
+    border-color: #494847;
 }
 
 .navbar-toggler-icon {
-    background-color: #b9b7b5; /* Cor do ícone do menu */
-}
-
-#cabecalho {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1001;
-}   
-
-/* Opcional: Mudando o fundo da navbar (caso deseje mudar o fundo da barra de navegação) */
-.navbar-light {
-    background-color: #ffffff; /* Cor de fundo da navbar */
-}
-
-.bg-light {
-    background-color: #f8f9fa !important; /* Cor de fundo para o fundo claro */
+    background-color: #b9b7b5;
 }
 
 .navbar-brand {
@@ -326,13 +410,6 @@ footer {
 #titulo {
     font-family: 'Merriweather', serif;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-#cabecalho {
-    background-color: #f1e097;
-    border-radius: 10px;
-    max-width: 100%;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .form-label {
@@ -520,6 +597,220 @@ footer {
     .gallery-item {
         width: 80px;
         height: 80px;
+    }
+}
+
+/* Ajustes para formulários */
+.form-control {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Ajustes para cards de formulário */
+.card {
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    padding: 1rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Ajustes para checkboxes e radio buttons */
+.form-check {
+    margin-bottom: 0.5rem;
+}
+
+.form-check-label {
+    font-size: 0.95rem;
+}
+
+/* Ajustes para botões */
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
+
+/* Ajustes para alertas */
+.alert {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .form-control {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-lg {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+    }
+    
+    .alert {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .form-check-label {
+        font-size: 0.85rem;
+    }
+}
+
+/* Ajustes para telas médias */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 0.75rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .form-control {
+        font-size: 0.95rem;
+    }
+}
+
+/* Ajustes para telas grandes */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+    
+    .card {
+        margin-bottom: 2rem;
+    }
+    
+    .form-control {
+        font-size: 1.05rem;
+    }
+}
+
+/* Ajustes para orientação paisagem em dispositivos móveis */
+@media (max-height: 500px) and (orientation: landscape) {
+    .container {
+        padding-top: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control {
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 320px) {
+    .container {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .form-control {
+        font-size: 0.85rem;
+    }
+    
+    .btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.85rem;
+    }
+    
+    .alert {
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+/* Ajustes para telas muito grandes */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1320px;
+    }
+    
+    .card {
+        margin-bottom: 2.5rem;
+    }
+    
+    .form-control {
+        font-size: 1.1rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Ajustes para melhor legibilidade em dispositivos com tela de alta resolução */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Ajustes para melhor usabilidade em dispositivos touch */
+@media (hover: none) {
+    .btn:hover {
+        transform: none;
+    }
+    
+    .form-check-input {
+        min-width: 1.2rem;
+        min-height: 1.2rem;
+    }
+    
+    .form-check-label {
+        padding-left: 0.5rem;
+    }
+}
+
+/* Ajuste para telas pequenas */
+@media (max-width: 768px) {
+    .navbar-nav .nav-item .nav-link {
+        background-color: rgba(245, 109, 13, 0.95); /* Aumentando ainda mais a opacidade em telas pequenas */
+        margin: 5px 0;
+    }
+    
+    .navbar-toggler {
+        background-color: rgba(245, 109, 13, 0.95);
     }
 }
 

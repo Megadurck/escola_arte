@@ -90,10 +90,18 @@
                     <tbody>
                         {% for inscricao in inscricoes %}
                         <tr>
-                            <td>{{ inscricao.usuario.get_full_name }}</td>
-                            <td>{{ inscricao.usuario.cpf }}</td>
-                            <td>{{ inscricao.curso.nome }}</td>
-                            <td>{{ inscricao.horario.dia_semana }} - {{ inscricao.horario.horario_inicio|time:"H:i" }} às {{ inscricao.horario.horario_fim|time:"H:i" }}</td>
+                            <td>{{ inscricao.nome_completo }}</td>
+                            <td>{{ inscricao.cpf }}</td>
+                            <td>
+                                {% for curso in inscricao.cursos.all %}
+                                    {{ curso.nome }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for horario in inscricao.horarios_selecionados.all %}
+                                    {{ horario.get_dia_semana_display }} - {{ horario.horario_inicio|time:"H:i" }} às {{ horario.horario_fim|time:"H:i" }}{% if not forloop.last %}<br>{% endif %}
+                                {% endfor %}
+                            </td>
                             <td>{{ inscricao.data_inscricao|date:"d/m/Y H:i" }}</td>
                             <td>
                                 <span class="badge bg-success">Confirmada</span>
