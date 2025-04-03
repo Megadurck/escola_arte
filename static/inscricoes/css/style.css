@@ -12,7 +12,7 @@ body {
 }
 
 body.bg-light, body.pagina-inicial {
-    background-image: url('/static/inscricoes/img/background_escola.png');
+    background-image: url('../img/background_escola.png');
 }
 
 body.dashboard {
@@ -34,7 +34,7 @@ header {
 
 /* ===== Estilos do Banner ===== */
 .banner {
-    background: url('/static/inscricoes/img/background_escola.png') no-repeat center center;
+    background: url('../img/background_escola.png') no-repeat center center;
     background-size: cover;
     height: 40vh;
     color: white;
