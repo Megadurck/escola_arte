@@ -1,0 +1,1 @@
+web: gunicorn escola_arte.wsgi:application 

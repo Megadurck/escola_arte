@@ -1,0 +1,215 @@
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Estilos dos formulários */
+.form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+/* Estilos dos cards */
+.card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Estilos dos botões */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+    border-color: #565e64;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+    transform: translateY(-2px);
+}
+
+/* Estilos das mensagens de erro */
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.alert {
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    color: #842029;
+}
+
+/* Estilos da barra de progresso */
+.progress {
+    height: 0.5rem;
+    border-radius: 1rem;
+    background-color: #e9ecef;
+    margin: 2rem 0;
+}
+
+.progress-bar {
+    background-color: #0d6efd;
+    border-radius: 1rem;
+    transition: width 0.6s ease;
+}
+
+/* Estilos dos cards de curso */
+.curso-card {
+    border-radius: 1rem;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.curso-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.curso-card.selected {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+.curso-card .card-title {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.curso-card .card-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Estilos dos itens de horário */
+.horario-item {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.horario-item:hover {
+    background-color: #f8f9fa;
+    border-color: #0d6efd;
+}
+
+.horario-item.selected {
+    background-color: #e9ecef;
+    border-color: #0d6efd;
+}
+
+/* Estilos dos checkboxes e radio buttons */
+.form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.25rem;
+    border: 2px solid #dee2e6;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-check-label {
+    padding-left: 0.5rem;
+    color: #212529;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .curso-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-section.active {
+    animation: fadeIn 0.5s ease-out forwards;
+} 

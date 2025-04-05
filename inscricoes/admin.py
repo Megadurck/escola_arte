@@ -1,52 +1,55 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
-from .models import Inscricao, Curso, Funcionario, HorarioCurso
+from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
 
-# Definir o Inline para Inscrição
-class InscricaoInline(admin.TabularInline):
-    model = Inscricao.cursos.through  # Usa o modelo intermediário
-    extra = 0
+class TurmaInline(admin.TabularInline):
+    model = Turma
+    extra = 1
+
+class InscricaoTurmaInline(admin.TabularInline):
+    model = InscricaoTurma
+    extra = 1
 
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
-    list_display = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento', 'painel_link']
+    list_display = ['nome_completo', 'cpf', 'telefone_whatsapp', 'data_inscricao']
     search_fields = ['nome_completo', 'cpf']
-    list_filter = ['data_nascimento']
-    filter_horizontal = ['cursos']
-
-    # Adiciona um botão/link para acessar o painel
-    def painel_link(self, obj):
-        url = reverse('inscricoes:dashboard')  # Link para o painel
-        return format_html('<a href="{}" target="_blank">Ir para o Painel</a>', url)
-
-    painel_link.short_description = 'Acessar Painel'
+    list_filter = ['data_inscricao']
+    inlines = [InscricaoTurmaInline]
+    fieldsets = (
+        ('Dados Pessoais', {
+            'fields': ('usuario', 'nome_completo', 'cpf', 'data_nascimento', 'telefone_whatsapp')
+        }),
+        ('Endereço', {
+            'fields': ('rua', 'bairro', 'numero')
+        }),
+    )
 
 # Registrar o modelo de Curso no admin
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'descricao', 'limite_inscricoes']  # Exibe o nome, descrição e limite na lista
-    search_fields = ('nome',)  # Permite buscar por nome do curso
-    list_editable = ['limite_inscricoes']  # Permite editar diretamente o limite de inscrições na lista
-    inlines = [InscricaoInline]  # Supondo que você tenha um Inline para Inscrições
+    list_display = ['nome', 'descricao', 'valor', 'vagas_total']
+    search_fields = ('nome',)
+    inlines = [TurmaInline]
+    list_editable = ['vagas_total']
 
-# Registrar o modelo de HorarioCurso no admin
-@admin.register(HorarioCurso)
-class HorarioCursoAdmin(admin.ModelAdmin):
-    list_display = ['curso', 'get_dia_semana_display', 'horario_inicio', 'horario_fim', 'vagas_disponiveis']
-    list_filter = ['curso', 'dia_semana']
-    search_fields = ['curso__nome']
-    ordering = ['curso', 'dia_semana', 'horario_inicio']
+# Registrar o modelo de Turma no admin
+@admin.register(Turma)
+class TurmaAdmin(admin.ModelAdmin):
+    list_display = ['nome', 'curso', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas']
+    list_filter = ('curso', 'dia_semana')
+    search_fields = ('nome', 'curso__nome')
 
 # Registrar o modelo de Funcionario no admin
 @admin.register(Funcionario)
 class FuncionarioAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'cargo', 'email', 'telefone']  # Exibe nome, cargo, email e telefone na lista
-    search_fields = ('nome', 'email')  # Permite buscar por nome ou email
-    list_filter = ('cargo',)  # Filtro por cargo
-    filter_horizontal = ('cursos',)  # Interface mais amigável para selecionar cursos
+    list_display = ['nome', 'cargo', 'email', 'telefone']
+    search_fields = ('nome', 'email')
+    list_filter = ('cargo',)
+    filter_horizontal = ('cursos',)
 
 # Personalização do UserAdmin
 class UserAdmin(admin.ModelAdmin):

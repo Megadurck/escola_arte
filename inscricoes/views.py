@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth import logout
-from .models import Inscricao, Curso, Funcionario, HorarioCurso
-from .forms import InscricaoForm
+from .models import Inscricao, Curso, Funcionario, Turma
+from .forms import InscricaoForm, RegistrationForm
 from django.contrib.auth.models import User
 from django.db.models import Count, Sum
 from django.utils import timezone
@@ -32,14 +32,11 @@ def inscrever(request):
             inscricao.save()
             
             # Atualiza as vagas disponíveis
-            for horario in form.cleaned_data['horarios_selecionados']:
-                horario.refresh_from_db()
-                if horario.vagas_disponiveis > 0:
-                    horario.vagas_disponiveis -= 1
-                    horario.save()
-            
-            # Salva os relacionamentos
-            form.save_m2m()
+            for turma in form.cleaned_data['turmas']:
+                turma.refresh_from_db()
+                if turma.vagas_disponiveis() > 0:
+                    turma.vagas -= 1
+                    turma.save()
             
             messages.success(request, 'Inscrição realizada com sucesso!')
             return redirect('inscricoes:pagina_inicial')
@@ -54,18 +51,18 @@ def is_admin(user):
 @user_passes_test(is_admin)
 def dashboard(request):
     # Obtém todas as inscrições para administradores
-    inscricoes = Inscricao.objects.all().prefetch_related('usuario', 'cursos', 'horarios_selecionados')
+    inscricoes = Inscricao.objects.all().prefetch_related('usuario', 'turmas')
     
     # Estatísticas gerais
     total_inscricoes = inscricoes.count()
-    total_vagas = HorarioCurso.objects.aggregate(total_vagas=Sum('vagas_disponiveis'))['total_vagas'] or 0
+    total_vagas = Turma.objects.aggregate(total_vagas=Sum('vagas'))['total_vagas'] or 0
     total_cursos = Curso.objects.count()
-    total_horarios = HorarioCurso.objects.count()
+    total_turmas = Turma.objects.count()
     
     # Dados para o gráfico de inscrições por curso
     inscricoes_por_curso = []
     for curso in Curso.objects.all():
-        num_inscritos = curso.inscricoes.count()
+        num_inscritos = curso.turmas.filter(inscricao__isnull=False).count()
         inscricoes_por_curso.append({
             'curso': curso.nome,
             'total': num_inscritos
@@ -74,7 +71,7 @@ def dashboard(request):
     # Dados para o gráfico de vagas por curso
     vagas_por_curso = []
     for curso in Curso.objects.all():
-        vagas = curso.horarios.aggregate(total_vagas=Sum('vagas_disponiveis'))['total_vagas'] or 0
+        vagas = curso.turmas.aggregate(total_vagas=Sum('vagas'))['total_vagas'] or 0
         vagas_por_curso.append({
             'curso': curso.nome,
             'vagas': vagas
@@ -85,38 +82,45 @@ def dashboard(request):
         'total_inscricoes': total_inscricoes,
         'total_vagas': total_vagas,
         'total_cursos': total_cursos,
-        'total_horarios': total_horarios,
+        'total_turmas': total_turmas,
         'inscricoes_por_curso': inscricoes_por_curso,
         'vagas_por_curso': vagas_por_curso,
     }
     return render(request, 'inscricoes/dashboard.html', context)
 
 @login_required
-def get_horarios_curso(request):
-    cursos_ids = request.GET.getlist('cursos[]')
+def get_turmas(request):
+    curso_ids = request.GET.get('curso_id', '').split(',')
+    curso_ids = [int(id) for id in curso_ids if id.isdigit()]
     
-    if not cursos_ids:
-        return JsonResponse({'horarios': []})
+    turmas = Turma.objects.filter(curso_id__in=curso_ids)
+    turmas_data = [{
+        'id': turma.id,
+        'nome': turma.nome,
+        'dia_semana': turma.dia_semana,
+        'horario_inicio': turma.horario_inicio.strftime('%H:%M'),
+        'horario_fim': turma.horario_fim.strftime('%H:%M'),
+        'vagas_disponiveis': turma.vagas_disponiveis(),
+        'curso_id': turma.curso_id,
+        'curso_nome': turma.curso.nome
+    } for turma in turmas if turma.vagas_disponiveis() > 0]
+    
+    return JsonResponse({'turmas': turmas_data})
 
-    # Filtra os horários associados aos cursos selecionados
-    horarios = HorarioCurso.objects.filter(
-        curso__id__in=cursos_ids,
-        vagas_disponiveis__gt=0
-    ).order_by('curso__nome', 'dia_semana', 'horario_inicio')
-    
-    horarios_data = []
-    for horario in horarios:
-        horarios_data.append({
-            'id': horario.id,
-            'curso_nome': horario.curso.nome,
-            'texto': f"{horario.curso.nome} - {horario.get_dia_semana_display()} - {horario.horario_inicio.strftime('%H:%M')} às {horario.horario_fim.strftime('%H:%M')} ({horario.vagas_disponiveis} vagas)"
-        })
-    
-    return JsonResponse({'horarios': horarios_data})
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
+            return redirect('accounts:login')
+    else:
+        form = RegistrationForm()
+    return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
 def logout_view(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
-    return redirect('inscricoes:pagina_inicial')
+    return redirect('accounts:login')
 

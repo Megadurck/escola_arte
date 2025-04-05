@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 cpf_validator = RegexValidator(
@@ -14,68 +16,67 @@ telefone_validator = RegexValidator(
 )
 
 class Curso(models.Model):
-    nome = models.CharField(max_length=255, verbose_name="Nome do Curso")
-    limite_inscricoes = models.IntegerField(
-        validators=[MinValueValidator(1)],
-        help_text="Número máximo de inscrições permitidas",
-        null=True,  # Permite valores nulos temporariamente
-        blank=True  # Permite valores em branco no formulário
-    )
-    descricao = models.TextField(verbose_name="Descrição", blank=True, null=True)  # Permite descrição vazia
-    funcionario = models.ForeignKey('Funcionario', on_delete=models.SET_NULL, null=True, blank=True)
-    horarios_disponiveis = models.ManyToManyField('HorarioCurso', blank=True, related_name='cursos')
-
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField(default='')
+    valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    imagem = models.ImageField(upload_to='cursos/', null=True, blank=True)
+    vagas_total = models.IntegerField(default=30)
+    
     def __str__(self):
         return self.nome
-
+    
     def vagas_disponiveis(self):
-        if self.limite_inscricoes is None:
-            return 0
-        return self.limite_inscricoes - self.inscricoes.count()
+        total_vagas = sum(turma.vagas for turma in self.turmas.all())
+        total_inscritos = sum(turma.inscricaoturma_set.count() for turma in self.turmas.all())
+        return total_vagas - total_inscritos
 
-class HorarioCurso(models.Model):
-    DIAS_SEMANA = [
-        ('segunda', 'Segunda-feira'),
-        ('terca', 'Terça-feira'),
-        ('quarta', 'Quarta-feira'),
-        ('quinta', 'Quinta-feira'),
-        ('sexta', 'Sexta-feira'),
-        ('sabado', 'Sábado'),
-        ('domingo', 'Domingo')
-    ]
-
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='horarios')
-    dia_semana = models.CharField(max_length=20, choices=DIAS_SEMANA, verbose_name="Dia da semana")
-    horario_inicio = models.TimeField(verbose_name="Horário de início")
-    horario_fim = models.TimeField(verbose_name="Horário de término")
-    vagas_disponiveis = models.IntegerField(
-        validators=[MinValueValidator(0)],
-        help_text="Número de vagas disponíveis neste horário"
-    )
-
+class Turma(models.Model):
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='turmas')
+    nome = models.CharField(max_length=50)  # Ex: "Turma 1", "Turma 2"
+    dia_semana = models.CharField(max_length=20)  # Ex: "Segunda-feira", "Terça-feira"
+    horario_inicio = models.TimeField()
+    horario_fim = models.TimeField()
+    vagas = models.IntegerField(default=30)
+    
     class Meta:
-        verbose_name = "Horário do Curso"
-        verbose_name_plural = "Horários dos Cursos"
         unique_together = ['curso', 'dia_semana', 'horario_inicio', 'horario_fim']
-
+    
     def __str__(self):
-        return f"{self.curso.nome} - {self.get_dia_semana_display()} ({self.horario_inicio} - {self.horario_fim})"
+        return f"{self.curso.nome} - {self.nome} ({self.dia_semana})"
+    
+    def vagas_disponiveis(self):
+        return self.vagas - self.inscricaoturma_set.count()
 
 class Inscricao(models.Model):
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
-    nome_completo = models.CharField(max_length=200)
-    cpf = models.CharField(max_length=11, unique=True, validators=[cpf_validator])
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    nome_completo = models.CharField(max_length=100)
+    cpf = models.CharField(max_length=11, unique=True)
+    data_nascimento = models.DateField()
+    telefone_whatsapp = models.CharField(max_length=11)
     rua = models.CharField(max_length=100)
     bairro = models.CharField(max_length=100)
     numero = models.CharField(max_length=10)
-    telefone_whatsapp = models.CharField(max_length=15, validators=[telefone_validator])
-    data_nascimento = models.DateField()
-    cursos = models.ManyToManyField(Curso, related_name='inscricoes')
-    horarios_selecionados = models.ManyToManyField(HorarioCurso, related_name='inscricoes')
     data_inscricao = models.DateTimeField(auto_now_add=True)
-
+    turmas = models.ManyToManyField(Turma, through='InscricaoTurma')
+    
     def __str__(self):
-        return self.nome_completo
+        return f"{self.nome_completo} - {self.cpf}"
+
+class InscricaoTurma(models.Model):
+    inscricao = models.ForeignKey(Inscricao, on_delete=models.CASCADE)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    data_inscricao = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['inscricao', 'turma']
+    
+    def save(self, *args, **kwargs):
+        if self.turma.vagas_disponiveis() <= 0:
+            raise ValidationError('Não há vagas disponíveis para esta turma.')
+        super().save(*args, **kwargs)
+    
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
 
 class Funcionario(models.Model):
     TIPO = (
