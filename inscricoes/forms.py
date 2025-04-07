@@ -30,13 +30,23 @@ class InscricaoForm(forms.ModelForm):
         model = Inscricao
         fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento']
         widgets = {
-            'data_nascimento': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'data_nascimento': forms.DateInput(
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control',
+                    'min': '1900-01-01',
+                    'max': datetime.date.today().strftime('%Y-%m-%d')
+                }
+            ),
             'nome_completo': forms.TextInput(attrs={'class': 'form-control'}),
             'cpf': forms.TextInput(attrs={'class': 'form-control'}),
             'rua': forms.TextInput(attrs={'class': 'form-control'}),
             'bairro': forms.TextInput(attrs={'class': 'form-control'}),
             'numero': forms.TextInput(attrs={'class': 'form-control'}),
-            'telefone_whatsapp': forms.TextInput(attrs={'class': 'form-control'}),
+            'telefone_whatsapp': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '(00) 00000-0000'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -83,10 +93,6 @@ class InscricaoForm(forms.ModelForm):
         inscricao = super().save(commit=False)
         if commit:
             inscricao.save()
-            # Salva as turmas selecionadas
-            for turma in self.cleaned_data['turmas']:
-                inscricao.turmas.add(turma)
-            
         return inscricao
 
 

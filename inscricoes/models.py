@@ -37,6 +37,7 @@ class Turma(models.Model):
     horario_inicio = models.TimeField()
     horario_fim = models.TimeField()
     vagas = models.IntegerField(default=30)
+    vagas_originais = models.IntegerField(default=30, help_text="Número original de vagas da turma")
     
     class Meta:
         unique_together = ['curso', 'dia_semana', 'horario_inicio', 'horario_fim']
@@ -46,6 +47,12 @@ class Turma(models.Model):
     
     def vagas_disponiveis(self):
         return self.vagas - self.inscricaoturma_set.count()
+    
+    def save(self, *args, **kwargs):
+        # Se for uma nova turma, define o número original de vagas
+        if not self.pk:
+            self.vagas_originais = self.vagas
+        super().save(*args, **kwargs)
 
 class Inscricao(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -61,6 +68,20 @@ class Inscricao(models.Model):
     
     def __str__(self):
         return f"{self.nome_completo} - {self.cpf}"
+        
+    def delete(self, *args, **kwargs):
+        # Obtém todas as turmas associadas à inscrição
+        inscricoes_turma = InscricaoTurma.objects.filter(inscricao=self)
+        
+        # Atualiza o contador de vagas para cada turma
+        for inscricao_turma in inscricoes_turma:
+            turma = inscricao_turma.turma
+            turma.vagas = turma.vagas + 1
+            turma.save()
+            print(f"Vagas atualizadas após deletar inscrição: {turma.vagas}")
+            
+        # Chama o método delete da classe pai
+        super().delete(*args, **kwargs)
 
 class InscricaoTurma(models.Model):
     inscricao = models.ForeignKey(Inscricao, on_delete=models.CASCADE)
@@ -76,7 +97,14 @@ class InscricaoTurma(models.Model):
         super().save(*args, **kwargs)
     
     def delete(self, *args, **kwargs):
+        # Atualiza o contador de vagas antes de deletar
+        turma = self.turma
         super().delete(*args, **kwargs)
+        # Atualiza o contador de vagas após deletar
+        turma.refresh_from_db()
+        turma.vagas = turma.vagas + 1
+        turma.save()
+        print(f"Vagas atualizadas após deletar: {turma.vagas}")
 
 class Funcionario(models.Model):
     TIPO = (

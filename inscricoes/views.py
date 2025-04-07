@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth import logout
-from .models import Inscricao, Curso, Funcionario, Turma
+from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from .forms import InscricaoForm, RegistrationForm
 from django.contrib.auth.models import User
 from django.db.models import Count, Sum
@@ -26,13 +26,29 @@ def inscrever(request):
         
     if request.method == 'POST':
         form = InscricaoForm(request.POST)
+        
+        # Processa o campo oculto com os IDs das turmas selecionadas
+        turmas_ids = request.POST.get('turmas_selecionadas', '').split(',')
+        turmas_ids = [int(id) for id in turmas_ids if id.isdigit()]
+        
+        # Verifica se pelo menos uma turma foi selecionada
+        if not turmas_ids:
+            messages.error(request, 'Você deve selecionar pelo menos uma turma para se inscrever.')
+            return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
+        
+        # Atualiza o queryset do campo turmas com as turmas selecionadas
+        form.fields['turmas'].queryset = Turma.objects.filter(id__in=turmas_ids)
+        
         if form.is_valid():
             inscricao = form.save(commit=False)
             inscricao.usuario = request.user
             inscricao.save()
             
-            # Atualiza as vagas disponíveis
-            for turma in form.cleaned_data['turmas']:
+            # Cria as relações InscricaoTurma
+            for turma_id in turmas_ids:
+                turma = Turma.objects.get(id=turma_id)
+                InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
+                # Atualiza as vagas disponíveis
                 turma.refresh_from_db()
                 if turma.vagas_disponiveis() > 0:
                     turma.vagas -= 1

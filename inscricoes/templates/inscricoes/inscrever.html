@@ -1,14 +1,42 @@
-{% extends 'base.html' %}
+{% extends 'inscricoes/base.html' %}
 {% load static %}
 
+{% block title %}Inscrição - {{ block.super }}{% endblock %}
+
 {% block content %}
+<style>
+    /* Estilos para melhorar a usabilidade em dispositivos móveis */
+    @media (max-width: 768px) {
+        input[type="date"] {
+            font-size: 16px; /* Evita zoom automático em iOS */
+            padding: 8px;
+        }
+        
+        input[type="tel"],
+        input[type="text"] {
+            font-size: 16px; /* Evita zoom automático em iOS */
+            padding: 8px;
+        }
+        
+        .form-control {
+            height: auto;
+            min-height: 38px;
+        }
+        
+        .btn {
+            padding: 12px;
+            font-size: 16px;
+        }
+    }
+</style>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-lg">
                 <div class="card-header bg-primary text-white py-3">
                     <h2 class="text-center mb-0">
-                        <i class="fas fa-graduation-cap me-2"></i>Inscrição em Cursos
+                        <i class="fas fa-graduation-cap me-2"></i>Inscrição
                     </h2>
                 </div>
                 <div class="card-body p-4">
@@ -49,13 +77,11 @@
                                         {% endif %}
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="{{ form.cpf.id_for_label }}" class="form-label">CPF</label>
-                                        {{ form.cpf }}
-                                        {% if form.cpf.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                {{ form.cpf.errors }}
-                                            </div>
-                                        {% endif %}
+                                        <label for="id_cpf" class="form-label">CPF</label>
+                                        <input type="text" class="form-control form-control-lg" id="id_cpf" 
+                                               name="cpf" required maxlength="14" 
+                                               placeholder="XXX.XXX.XXX-XX">
+                                        <div class="form-text">Digite apenas números</div>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="{{ form.data_nascimento.id_for_label }}" class="form-label">Data de Nascimento</label>
@@ -112,13 +138,11 @@
                                 </h4>
                                 <div class="row g-3">
                                     <div class="col-md-12">
-                                        <label for="{{ form.telefone_whatsapp.id_for_label }}" class="form-label">Telefone/WhatsApp</label>
-                                        {{ form.telefone_whatsapp }}
-                                        {% if form.telefone_whatsapp.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                {{ form.telefone_whatsapp.errors }}
-                                            </div>
-                                        {% endif %}
+                                        <label for="id_telefone_whatsapp" class="form-label">Telefone/WhatsApp</label>
+                                        <input type="tel" class="form-control form-control-lg" id="id_telefone_whatsapp" 
+                                               name="telefone_whatsapp" required maxlength="15" 
+                                               placeholder="(XX) 9 XXXX-XXXX">
+                                        <div class="form-text">Digite apenas números, incluindo o DDD</div>
                                     </div>
                                 </div>
                             </div>
@@ -131,7 +155,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-12">
                                         <label class="form-label">Cursos</label>
-                                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                        <div id="cursos-container" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
                                             {% for curso in form.cursos %}
                                             <div class="form-check">
                                                 {{ curso.tag }}
@@ -149,19 +173,12 @@
                                     </div>
                                     <div class="col-md-12">
                                         <label class="form-label">Horários Disponíveis</label>
-                                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                                            {% for horario in form.horarios_selecionados %}
-                                            <div class="form-check">
-                                                {{ horario.tag }}
-                                                <label class="form-check-label" for="{{ horario.id_for_label }}">
-                                                    {{ horario.choice_label }}
-                                                </label>
-                                            </div>
-                                            {% endfor %}
+                                        <div id="horarios-container" class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                            <p class="text-muted">Selecione um curso para ver os horários disponíveis.</p>
                                         </div>
-                                        {% if form.horarios_selecionados.errors %}
+                                        {% if form.turmas.errors %}
                                             <div class="invalid-feedback d-block">
-                                                {{ form.horarios_selecionados.errors }}
+                                                {{ form.turmas.errors }}
                                             </div>
                                         {% endif %}
                                     </div>
@@ -173,14 +190,81 @@
                                     <i class="fas fa-paper-plane me-2"></i>Enviar Inscrição
                                 </button>
                             </div>
+                            
+                            <!-- Campo oculto para armazenar os IDs das turmas selecionadas -->
+                            <input type="hidden" name="turmas_selecionadas" id="turmas_selecionadas" value="">
                         </form>
                     {% endif %}
+                    
+                    <!-- Botões de navegação -->
+                    <div class="mt-4 d-flex justify-content-between">
+                        <a href="{% url 'inscricoes:pagina_inicial' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Voltar à Página Inicial
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script src="{% static 'inscricoes/js/mascara_telefone.js' %}"></script>
-<script src="{% static 'inscricoes/js/atualizar_horarios.js' %}"></script>
+{% block extra_js %}
+<script src="{% static 'inscricoes/js/formulario.js' %}"></script>
+<script>
+    // Script de depuração
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Script de depuração carregado');
+        
+        // Verifica se o container de cursos existe
+        const cursosContainer = document.getElementById('cursos-container');
+        if (cursosContainer) {
+            console.log('Container de cursos encontrado');
+            
+            // Verifica os checkboxes
+            const checkboxes = cursosContainer.querySelectorAll('input[type="checkbox"]');
+            console.log('Número de checkboxes encontrados:', checkboxes.length);
+            
+            // Adiciona evento de clique para depuração
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function() {
+                    console.log('Checkbox clicado:', this.id, 'Valor:', this.value, 'Checked:', this.checked);
+                });
+            });
+        } else {
+            console.error('Container de cursos não encontrado!');
+        }
+        
+        // Verifica se o container de horários existe
+        const horariosContainer = document.getElementById('horarios-container');
+        if (horariosContainer) {
+            console.log('Container de horários encontrado');
+        } else {
+            console.error('Container de horários não encontrado!');
+        }
+        
+        // Adiciona evento de submit ao formulário para garantir que os campos sejam enviados corretamente
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                // Remove caracteres não numéricos do CPF antes de enviar
+                const cpfField = document.getElementById('id_cpf');
+                if (cpfField) {
+                    cpfField.value = cpfField.value.replace(/\D/g, '');
+                }
+                
+                // Remove caracteres não numéricos do telefone antes de enviar
+                const telefoneField = document.getElementById('id_telefone_whatsapp');
+                if (telefoneField) {
+                    telefoneField.value = telefoneField.value.replace(/\D/g, '');
+                }
+                
+                // Atualiza o campo oculto com os IDs das turmas selecionadas
+                atualizarTurmasSelecionadas();
+                
+                console.log('Formulário enviado com sucesso!');
+            });
+        }
+    });
+</script>
 {% endblock %}
