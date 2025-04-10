@@ -295,6 +295,20 @@ footer {
 }
 
 /* ===== Estilos dos Cards ===== */
+.container-cursos {
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+    .container-cursos {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
 .card {
     background: rgba(243, 219, 174, 0.9);
     border-radius: 10px;
@@ -549,6 +563,9 @@ footer {
     gap: 10px;
     overflow-x: auto;
     padding: 10px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
 }
 
 .gallery-item {
@@ -582,6 +599,24 @@ footer {
     cursor: pointer;
     border-radius: 8px;
 }
+
+/* Ajustes para telas de 1366px */
+@media (max-width: 1366px) and (orientation: landscape) {
+    .gallery-container {
+        width: 95%;
+        top: 10%;
+    }
+
+    .main-image {
+        max-height: 60vh;
+    }
+
+    .gallery-item {
+        width: 70px;
+        height: 70px;
+    }
+}
+
 
 /* Ajustes responsivos */
 @media (max-width: 768px) {
