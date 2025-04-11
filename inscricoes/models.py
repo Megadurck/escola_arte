@@ -45,8 +45,6 @@ class Turma(models.Model):
     def __str__(self):
         return f"{self.curso.nome} - {self.nome} ({self.dia_semana})"
     
-    def vagas_disponiveis(self):
-        return self.vagas - self.inscricaoturma_set.count()
     
     def save(self, *args, **kwargs):
         # Se for uma nova turma, define o número original de vagas
@@ -92,9 +90,11 @@ class InscricaoTurma(models.Model):
         unique_together = ['inscricao', 'turma']
     
     def save(self, *args, **kwargs):
-        if self.turma.vagas_disponiveis() <= 0:
+        vagas_disponiveis = self.turma.vagas - self.turma.inscricaoturma_set.count()
+        if vagas_disponiveis <= 0:
             raise ValidationError('Não há vagas disponíveis para esta turma.')
         super().save(*args, **kwargs)
+
     
     def delete(self, *args, **kwargs):
         # Atualiza o contador de vagas antes de deletar

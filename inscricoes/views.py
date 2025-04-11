@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.core.exceptions import ValidationError
 
 @login_required
 def pagina_inicial(request):
@@ -44,16 +46,15 @@ def inscrever(request):
             inscricao.usuario = request.user
             inscricao.save()
             
-            # Cria as relações InscricaoTurma
-            for turma_id in turmas_ids:
-                turma = Turma.objects.get(id=turma_id)
-                InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
-                # Atualiza as vagas disponíveis
-                turma.refresh_from_db()
-                if turma.vagas_disponiveis() > 0:
-                    turma.vagas -= 1
-                    turma.save()
-            
+            try:# Cria as relações InscricaoTurma
+                for turma_id in set(turmas_ids):
+                    turma = Turma.objects.get(id=turma_id)
+                    InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
+            except ValidationError as e:
+                messages.error(request, f'Erro ao inscrever em uma turma: {e}')
+                inscricao.delete()  # desfaz a inscrição criada
+                return render(request, 'inscricoes/inscrever.html', {'form': form})
+
             messages.success(request, 'Inscrição realizada com sucesso!')
             return redirect('inscricoes:pagina_inicial')
     else:
@@ -110,18 +111,24 @@ def get_turmas(request):
     curso_ids = [int(id) for id in curso_ids if id.isdigit()]
     
     turmas = Turma.objects.filter(curso_id__in=curso_ids)
-    turmas_data = [{
-        'id': turma.id,
-        'nome': turma.nome,
-        'dia_semana': turma.dia_semana,
-        'horario_inicio': turma.horario_inicio.strftime('%H:%M'),
-        'horario_fim': turma.horario_fim.strftime('%H:%M'),
-        'vagas_disponiveis': turma.vagas_disponiveis(),
-        'curso_id': turma.curso_id,
-        'curso_nome': turma.curso.nome
-    } for turma in turmas if turma.vagas_disponiveis() > 0]
+    turmas_data = []
+
+    for turma in turmas:
+        vagas_disponiveis = turma.vagas - turma.inscricaoturma_set.count()
+        if vagas_disponiveis > 0:
+            turmas_data.append({
+                'id': turma.id,
+                'nome': turma.nome,
+                'dia_semana': turma.dia_semana,
+                'horario_inicio': turma.horario_inicio.strftime('%H:%M'),
+                'horario_fim': turma.horario_fim.strftime('%H:%M'),
+                'vagas_disponiveis': vagas_disponiveis,
+                'curso_id': turma.curso_id,
+                'curso_nome': turma.curso.nome
+            })
     
     return JsonResponse({'turmas': turmas_data})
+
 
 def register(request):
     if request.method == 'POST':
