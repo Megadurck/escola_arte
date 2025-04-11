@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    min-height: 100vh; /* Adicionando altura mínima para garantir que o conteúdo ocupe toda a tela */
+    min-height: 100vh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -27,9 +27,14 @@ header {
     text-align: center;
 }
 
-.logo {
-    max-width: 1000px;
+/* ✅ Logo com responsividade aprimorada */
+#logo_escola {
+    width: 35vw;
+    max-width: 350px;
     height: auto;
+    margin-top: 20px;
+    margin-bottom: -20px;
+    object-fit: contain;
 }
 
 /* ===== Estilos do Banner ===== */
@@ -37,13 +42,14 @@ header {
     background: url('../img/background_escola.png') no-repeat center center;
     background-size: cover;
     height: 40vh;
+    min-height: 200px; /* ✅ Garante que não fique achatado */
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     position: relative;
-    z-index: 999; /* Garante que o banner fique por trás da logo e dos botões */
+    z-index: 999;
 }
 
 .banner-content {
@@ -76,20 +82,14 @@ header {
     font-size: 1.5rem;
     margin-bottom: 0px;
     margin-top: 0px;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);  /* Adiciona sombra ao texto */
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.2);
 }
 
-#logo_escola {
-    max-width: 350px;
-    height: auto;
-    margin-top: 20px;
-    margin-bottom: -20px;
-    object-fit: contain;
-}
-
+/* ===== Media Queries ===== */
 @media (max-width: 480px) {
     #logo_escola {
-        max-width: 45%; /* Reduzindo ainda mais para telas pequenas */
+        width: 45vw;
+        max-width: none;
         margin-top: 15px;
         margin-bottom: -15px;
     }
@@ -106,33 +106,32 @@ header {
 
 @media (max-width: 768px) and (orientation: landscape) {
     #logo_escola {
-        max-width: 15vw; /* Reduzindo para orientação paisagem */
-        height: auto;
+        width: 15vw;
+        max-width: none;
         margin-top: 30px;
         margin-bottom: -10px;
     }
 }
 
-/* Ajustes gerais de responsividade */
 @media (max-width: 768px) {
     .description-box {
         margin: 20px 15px;
         padding: 15px;
     }
-    
+
     .card {
         margin-bottom: 15px;
     }
-    
+
     .card-text {
         font-size: 14px;
     }
-    
+
     .navbar-brand {
         font-size: 1.2rem;
         padding-left: 20px;
     }
-    
+
     .btn-primary {
         padding: 8px 20px;
         font-size: 0.9rem;
@@ -144,86 +143,96 @@ header {
         margin: 15px 10px;
         padding: 10px;
     }
-    
+
     .card-title {
         font-size: 1.1rem;
     }
-    
+
     .navbar-brand {
         font-size: 1rem;
         padding-left: 10px;
     }
-    
+
     .btn-primary {
         padding: 6px 15px;
         font-size: 0.8rem;
     }
-    
+
     #botao_inscrever {
         margin-top: 15px;
         margin-bottom: 30px;
     }
 }
 
-/* Ajustes para telas muito pequenas */
 @media (max-width: 320px) {
     #logo_escola {
-        max-width: 40%; /* Ajuste para telas muito pequenas */
+        width: 40vw;
+        max-width: none;
         margin-top: 10px;
         margin-bottom: -10px;
     }
-    
+
     .banner h1 {
         font-size: 1.2rem;
     }
-    
+
     .banner p {
         font-size: 0.9rem;
     }
-    
+
     .navbar-brand {
         font-size: 0.9rem;
     }
 }
 
-/* Ajustes para telas muito grandes */
+/* ✅ Novo: Ajuste visual em telas maiores */
+@media (min-width: 1024px) {
+    .banner h1 {
+        font-size: 4rem;
+    }
+
+    .banner p {
+        font-size: 1.8rem;
+    }
+}
+
 @media (min-width: 1400px) {
     .container {
         max-width: 1320px;
     }
-    
+
     #logo_escola {
-        max-width: 400px; /* Ajuste para telas grandes */
+        max-width: 400px;
         margin-top: 25px;
         margin-bottom: -25px;
     }
-    
+
     .description-box {
         max-width: 1200px;
     }
 }
 
-/* Ajustes para orientação paisagem em dispositivos móveis */
 @media (max-height: 500px) and (orientation: landscape) {
     .banner {
         height: 100vh;
     }
-    
+
     #logo_escola {
-        max-width: 15vw;
+        width: 15vw;
+        max-width: none;
         margin-top: 20px;
     }
-    
+
     .banner h1 {
         font-size: 1.8rem;
         margin-top: 5px;
     }
-    
+
     .banner p {
         font-size: 1rem;
         margin-bottom: 10px;
     }
-    
+
     #botao_inscrever {
         margin-top: 10px;
         margin-bottom: 20px;
@@ -245,16 +254,16 @@ header {
 
 @media (max-width: 1024px) {
     .btn-primary {
-        padding: 12px 25px; /* Garante que o botão continue visível e clicável */
-        font-size: 1rem; /* Ajusta o tamanho da fonte para telas menores */
+        padding: 12px 25px;
+        font-size: 1rem;
     }
 }
 
 #botao_inscrever {
     margin-top: 20px;
     margin-bottom: 60px;
-
 }
+
 
 /* ===== Seção Sobre a Escola ===== */
 .description-box {
@@ -284,6 +293,32 @@ header {
         margin-bottom: 15px;
     }
 }
+
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #25D366;
+    color: white;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+    background-color: #1ebe5d;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-whatsapp i {
+    font-size: 20px;
+}
+
 
 /* ===== Estilos do Rodapé ===== */
 footer {
@@ -635,6 +670,39 @@ footer {
         height: 80px;
     }
 }
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .gallery-container {
+        width: 95%;
+        top: 5%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .main-image {
+        max-height: 50vh;
+    }
+
+    #galleryImages {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .gallery-item {
+        width: 60px;
+        height: 60px;
+    }
+
+    .close-gallery {
+        top: 5px;
+        right: 5px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
 
 /* Ajustes para formulários */
 .form-control {
