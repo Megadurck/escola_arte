@@ -196,7 +196,7 @@ header {
     }
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 1440px) {
     .container {
         max-width: 1320px;
     }
@@ -238,6 +238,18 @@ header {
         margin-bottom: 20px;
     }
 }
+
+@media (min-width: 900px) {
+    .container {
+        max-width: 1320px;    
+    }
+    #logo_escola {
+        max-width: 20vw;
+        margin-top: 25px;
+        margin-bottom: -25px;
+    }
+}
+
 
 /* ===== Botões ===== */
 .btn-primary {
