@@ -196,9 +196,9 @@ header {
     }
 }
 
-@media (min-width: 1440px) {
+@media (min-width: 1366px) {
     .container {
-        max-width: 1320px;
+        max-width: 1440px;
     }
 
     #logo_escola {
@@ -248,8 +248,35 @@ header {
         margin-top: 25px;
         margin-bottom: -25px;
     }
+    .banner h1 {
+        font-size: 2.5rem;
+    }
+    .banner p {
+        font-size: 1.5rem;
+    }
+    #botao_inscrever {
+        margin-top: 20px;
+        margin-bottom: 60px;
+    }
 }
 
+@media (min-width: 720px) {
+    .banner h1 {
+        font-size: 2.5rem;
+    }
+    .banner p {
+        font-size: 1.5rem;
+    }
+    #botao_inscrever {
+        margin-top: 20px;
+        margin-bottom: 60px;
+    }
+    #logo_escola {
+        width: 15vw;
+        max-width: none;
+        margin-top: 20px;
+    }
+}
 
 /* ===== Botões ===== */
 .btn-primary {
@@ -274,6 +301,12 @@ header {
 #botao_inscrever {
     margin-top: 20px;
     margin-bottom: 60px;
+}
+@media (max-width: 768px) {
+    #botao_inscrever {
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
 }
 
 
