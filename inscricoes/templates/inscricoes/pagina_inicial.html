@@ -61,7 +61,7 @@
                 <div class="col-12">
                     <h2 class="mb-3" id="titulo">Sobre a Escola</h2>
                     <p>
-                        O Grupo Cultura de Rua foi fundado em 2005 por jovens de Floriano, Piauí, e ao longo de quase 19 anos, tem contribuído culturalmente para a região com atividades socioculturais, montagens teatrais e espetáculos de dança.
+                        O Grupo Cultura de Rua foi fundado em 2005 por jovens da cidade de Floriano, no Piauí. Ao longo da trajetória de quase 20 anos, deu inúmeras contribuições culturais à região, desenvolvendo atividades socioculturais, realizando montagens de espetáculos teatrais e espetáculos de danças, participando e sendo premiado em inúmeros festivais.
                     </p>
                     <p>
                         A Escola de Artes Cultura de Rua foi criada para promover a cultura no Piauí, oferecendo oficinas de capoeira, violão, ballet, dança do ventre, teclado, bateria, percussão e teatro no Espaço Cultural Maria Bonita.
@@ -83,7 +83,7 @@
             <h2 class="text-center mb-4" id="titulo">Nossos Cursos</h2>
             <div class="row g-4">
                 <!-- Card do Curso -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="capoeira">
                         <img src="{% static 'inscricoes/img/capoeira.jpg' %}" class="card-img-top" alt="Capoeira">
                         <div class="card-body">
@@ -114,11 +114,13 @@
                         <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'capoeira')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'capoeira')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'capoeira')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/capoeira/capoeira6.jpg' %}" alt="Imagem 6" onclick="changeImage(5, 'capoeira')">
+
                     </div>
                 </div>
 
                 <!-- Curso 2 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="teatro">
                         <img src="{% static 'inscricoes/img/teatro.jpg' %}" class="card-img-top" alt="Teatro">
                         <div class="card-body">
@@ -150,16 +152,17 @@
                     </div>
                 </div>
 
-                <!-- Curso 3 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <!-- Curso 3 - Dança do Ventre -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="danca_ventre">
                         <img src="{% static 'inscricoes/img/danca_ventre.jpg' %}" class="card-img-top" alt="Dança do Ventre">
                         <div class="card-body">
-                            <h5 class="card-title">Curso de Dança do Ventre e Dança Moderna</h5>
-                            <p class="card-text">O curso de dança do ventre e dança moderna forma profissionais qualificadas na dança árabe e moderna. Ao longo do curso, os alunos se aprofundam na história da música e do ritmo com aulas teóricas e práticas.</p>
-                            <p><strong>Dias:</strong> Segunda e Quinta</p>
+                            <h5 class="card-title">Curso de Dança do Ventre</h5>
+                            <p class="card-text">
+                                Curso focado na arte tradicional da <strong>Dança do Ventre</strong>, com aulas teóricas e práticas sobre ritmos árabes, expressão corporal e musicalidade.
+                            </p>
+                            <p><strong>Dia:</strong> Segunda</p>
                             <p><strong>Horário:</strong> 17:00 - 19:00</p>
-                            <p><strong>Horário:</strong> 19:00 - 21:00</p>
                         </div>
                     </div>
                 </div>
@@ -181,11 +184,28 @@
                         <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'danca_ventre')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'danca_ventre')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'danca_ventre')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/danca_ventre/danca6.jpg' %}" alt="Imagem 6" onclick="changeImage(5, 'danca_ventre')">
+
                     </div>
                 </div>
 
-                <!-- Curso 4 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <!-- Curso 4 - Dança Moderna -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
+                    <div class="card h-100 course-card" data-course-id="danca_moderna">
+                        <img src="{% static 'inscricoes/img/danca_moderna.jpg' %}" class="card-img-top" alt="Dança Moderna">
+                        <div class="card-body">
+                            <h5 class="card-title">Curso de Dança Moderna</h5>
+                            <p class="card-text">
+                                Curso voltado à <strong>Dança Moderna</strong>, com enfoque em movimentos contemporâneos, criatividade e liberdade de expressão corporal. Ideal para quem busca inovação na dança.
+                            </p>
+                            <p><strong>Dia:</strong> Quinta</p>
+                            <p><strong>Horário:</strong> 19:00 - 21:00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Curso 5 -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="ballet">
                         <img src="{% static 'inscricoes/img/ballet.jpg' %}" class="card-img-top" alt="Ballet">
                         <div class="card-body">
@@ -213,11 +233,15 @@
                         <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'ballet')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'ballet')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'ballet')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'ballet')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/ballet/ballet6.jpg' %}" alt="Imagem 6" onclick="changeImage(5, 'ballet')">
+
+
                     </div>
                 </div>
                 
-                <!-- Curso 5 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <!-- Curso 6 -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="violao">
                         <img src="{% static 'inscricoes/img/violao.jpg' %}" class="card-img-top" alt="Violão">
                         <div class="card-body">
@@ -250,8 +274,8 @@
                     </div>
                 </div>
 
-                <!-- Curso 6 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <!-- Curso 7 -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="teclado">
                         <img src="{% static 'inscricoes/img/teclado.jpg' %}" class="card-img-top" alt="Teclado">
                         <div class="card-body">
@@ -280,11 +304,12 @@
                         <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'teclado')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'teclado')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'teclado')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/teclado/teclado5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'teclado')">
                     </div>
                 </div>
 
-                <!-- Curso 7 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <!-- Curso 8 -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="bateria">
                         <img src="{% static 'inscricoes/img/bateria.jpg' %}" class="card-img-top" alt="Bateria">
                         <div class="card-body">
@@ -313,11 +338,15 @@
                         <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'violao')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'violao')">
                         <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'violao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'violao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/bateria/bateria6.jpg' %}" alt="Imagem 6" onclick="changeImage(5, 'violao')">
+
+
                     </div>
                 </div>
 
-                <!-- Curso 8 -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <!-- Curso 9 -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-4">
                     <div class="card h-100 course-card" data-course-id="percussao">
                         <img src="{% static 'inscricoes/img/percussao.jpg' %}" class="card-img-top" alt="Percussão">
                         <div class="card-body">
@@ -341,8 +370,12 @@
 
                     <!-- Galeria de imagens -->
                     <div id="galleryImages">
-                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'violao')">
-                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'violao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao1.jpg' %}" alt="Imagem 1" onclick="changeImage(0, 'percussao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao2.jpg' %}" alt="Imagem 2" onclick="changeImage(1, 'percussao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao3.jpg' %}" alt="Imagem 3" onclick="changeImage(2, 'percussao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao4.jpg' %}" alt="Imagem 4" onclick="changeImage(3, 'percussao')">
+                        <img class="gallery-item" src="{% static 'inscricoes/img/percussao/percussao5.jpg' %}" alt="Imagem 5" onclick="changeImage(4, 'percussao')">
+
                     </div>
                 </div>
             </div>

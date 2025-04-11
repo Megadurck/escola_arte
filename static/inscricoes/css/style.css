@@ -333,6 +333,7 @@ footer {
 .container-cursos {
     padding-left: 20px;
     padding-right: 20px;
+    max-width: 1440px;
     width: 100%;
     margin: 0 auto;
 }
@@ -343,6 +344,7 @@ footer {
         padding-right: 20px;
     }
 }
+
 
 .card {
     background: rgba(243, 219, 174, 0.9);
