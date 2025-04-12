@@ -159,5 +159,5 @@ LOGIN_REDIRECT_URL = 'inscricoes:pagina_inicial'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # Configurações do WhiteNoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
