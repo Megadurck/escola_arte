@@ -1,32 +1,26 @@
 // Funções para a galeria de imagens
 function openGallery(courseId) {
-    // Esconde todas as galerias
-    document.querySelectorAll('.gallery-container').forEach(gallery => {
-        gallery.style.display = 'none';
-    });
-    
-    // Mostra a galeria selecionada
-    const selectedGallery = document.getElementById(`gallery-${courseId}`);
-    if (selectedGallery) {
-        selectedGallery.style.display = 'block';
+    const gallery = document.getElementById(`${courseId}-gallery`);
+    if (gallery) {
+        gallery.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Previne rolagem do body
     }
 }
 
 function closeGallery(courseId) {
-    const gallery = document.getElementById(`gallery-${courseId}`);
+    const gallery = document.getElementById(`${courseId}-gallery`);
     if (gallery) {
         gallery.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restaura rolagem do body
     }
 }
 
 function changeImage(index, courseId) {
-    const gallery = document.getElementById(`gallery-${courseId}`);
-    if (gallery) {
-        const mainImage = gallery.querySelector('.main-image');
-        const images = gallery.querySelectorAll('.gallery-item img');
-        if (mainImage && images[index]) {
-            mainImage.src = images[index].src;
-        }
+    const mainImage = document.getElementById(`mainImage-${courseId}`);
+    const galleryItems = document.querySelectorAll(`#${courseId}-gallery .gallery-item`);
+    
+    if (mainImage && galleryItems[index]) {
+        mainImage.src = galleryItems[index].src;
     }
 }
 
@@ -93,11 +87,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Adiciona eventos de clique nos cards dos cursos
 document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona event listeners para todos os cards de curso
     const courseCards = document.querySelectorAll('.course-card');
     courseCards.forEach(card => {
         card.addEventListener('click', function() {
             const courseId = this.getAttribute('data-course-id');
-            openGallery(courseId);
+            if (courseId) {
+                openGallery(courseId);
+            }
         });
     });
 }); 
