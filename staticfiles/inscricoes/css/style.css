@@ -196,9 +196,9 @@ header {
     }
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 1366px) {
     .container {
-        max-width: 1320px;
+        max-width: 1440px;
     }
 
     #logo_escola {
@@ -239,6 +239,45 @@ header {
     }
 }
 
+@media (min-width: 900px) {
+    .container {
+        max-width: 1320px;    
+    }
+    #logo_escola {
+        max-width: 20vw;
+        margin-top: 25px;
+        margin-bottom: -25px;
+    }
+    .banner h1 {
+        font-size: 2.5rem;
+    }
+    .banner p {
+        font-size: 1.5rem;
+    }
+    #botao_inscrever {
+        margin-top: 20px;
+        margin-bottom: 60px;
+    }
+}
+
+@media (min-width: 720px) {
+    .banner h1 {
+        font-size: 2.5rem;
+    }
+    .banner p {
+        font-size: 1.5rem;
+    }
+    #botao_inscrever {
+        margin-top: 20px;
+        margin-bottom: 60px;
+    }
+    #logo_escola {
+        width: 15vw;
+        max-width: none;
+        margin-top: 20px;
+    }
+}
+
 /* ===== Botões ===== */
 .btn-primary {
     background-color: #FFA500;
@@ -262,6 +301,12 @@ header {
 #botao_inscrever {
     margin-top: 20px;
     margin-bottom: 60px;
+}
+@media (max-width: 768px) {
+    #botao_inscrever {
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
 }
 
 
@@ -552,89 +597,175 @@ footer {
 }
 /* Estilo para a galeria */
 .gallery-container {
+    display: none;
     position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%; /* Reduzindo a largura do container */
-    max-width: 1000px; /* Definindo um limite máximo de largura */
-    height: auto;
-    background-color: rgba(0, 0, 0, 0.8); /* Fundo escuro */
-    display: none; /* Inicialmente oculta */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
     flex-direction: column;
+    border-radius: 15px;
     padding: 20px;
-    border-radius: 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Imagem principal */
-.main-image {
-    max-width: 90%;
-    max-height: 70vh;
-    margin: 20px 0;
+.gallery-container.active {
+    display: flex;
 }
 
-.main-image img {
+.main-image-container {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
-    max-width: 1080px; /* Limita a largura da imagem principal a 1080px */
-}
-
-
-.nav-arrow.prev {
-    left: 10px;
-}
-
-.nav-arrow.next {
-    right: 10px;
-}
-
-/* Estilo para os itens da galeria (miniaturas) */
-#galleryImages {
+    max-width: 80%;
+    max-height: 70vh;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    align-items: center;
+}
+
+.main-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.thumbnails-container {
+    width: 100%;
+    max-width: 80%;
+    display: flex;
     gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     overflow-x: auto;
-    padding: 10px 0;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: thin;
 }
 
 .gallery-item {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
+    width: 80px;
+    height: 80px;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .gallery-item:hover {
-    transform: scale(1.1); /* Efeito de zoom ao passar o mouse */
+    border-color: #007bff;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
-/* Limita as imagens da galeria a 1080px de largura */
-.gallery-item, .main-image img {
-    max-width: 1080px;
-    width: 100%; /* Garante que as imagens não ultrapassem o limite */
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
 }
 
-/* Botão de fechar */
 .close-gallery {
     position: absolute;
-    top: 10px;
-    right: 10px; /* Ajuste da posição do botão */
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
     cursor: pointer;
-    border-radius: 8px;
+    z-index: 1001;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-gallery:hover {
+    background-color: rgba(255, 0, 0, 0.7);
+    transform: rotate(90deg);
+}
+
+@media (max-width: 1366px) {
+    .gallery-container {
+        padding: 15px;
+    }
+
+    .main-image-container {
+        max-width: 90%;
+    }
+
+    .thumbnails-container {
+        max-width: 90%;
+    }
+
+    .gallery-item {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery-container {
+        padding: 10px;
+    }
+
+    .main-image-container {
+        max-width: 95%;
+    }
+
+    .thumbnails-container {
+        max-width: 95%;
+    }
+
+    .gallery-item {
+        width: 60px;
+        height: 60px;
+    }
+
+    .close-gallery {
+        width: 35px;
+        height: 35px;
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-container {
+        padding: 8px;
+    }
+
+    .main-image-container {
+        max-width: 98%;
+    }
+
+    .thumbnails-container {
+        max-width: 98%;
+    }
+
+    .gallery-item {
+        width: 50px;
+        height: 50px;
+    }
+
+    .close-gallery {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+    }
 }
 
 /* Ajustes para telas de 1366px */
@@ -920,5 +1051,68 @@ footer {
     }
 }
 
+@media (max-width: 1366px) and (min-height: 720px) {
+    .gallery-container {
+        padding: 10px;
+        height: 95vh;
+        top: 2.5vh;
+    }
 
+    .main-image-container {
+        max-width: 90%;
+        max-height: 55vh;
+        margin-bottom: 15px;
+    }
 
+    .thumbnails-container {
+        max-width: 90%;
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .gallery-item {
+        width: 65px;
+        height: 65px;
+    }
+
+    .close-gallery {
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        width: 35px;
+        height: 35px;
+    }
+}
+
+@media (max-width: 1366px) and (max-height: 720px) {
+    .gallery-container {
+        padding: 8px;
+        height: 96vh;
+        top: 2vh;
+    }
+
+    .main-image-container {
+        max-width: 92%;
+        max-height: 50vh;
+        margin-bottom: 12px;
+    }
+
+    .thumbnails-container {
+        max-width: 92%;
+        gap: 5px;
+        padding: 6px;
+    }
+
+    .gallery-item {
+        width: 60px;
+        height: 60px;
+    }
+
+    .close-gallery {
+        top: 8px;
+        right: 8px;
+        font-size: 22px;
+        width: 32px;
+        height: 32px;
+    }
+}

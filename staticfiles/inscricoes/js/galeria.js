@@ -1,70 +1,100 @@
-document.addEventListener("DOMContentLoaded", function () {
-    // Função para mudar a imagem principal
-    let currentIndex = {};  // Objeto para armazenar os índices de cada curso
-
-    function changeImage(direction, courseId) {
-        const images = document.querySelectorAll(`#${courseId}-gallery .gallery-item`);
-        if (typeof direction === "number") {
-            currentIndex[courseId] = direction;  // Atualiza o índice para o curso específico
-        } else {
-            currentIndex[courseId] = (currentIndex[courseId] + direction + images.length) % images.length;
-        }
-
-        const mainImage = document.getElementById(`mainImage-${courseId}`);
-        mainImage.src = images[currentIndex[courseId]].src;  // Atualiza a imagem principal
+// Funções para a galeria de imagens
+function openGallery(courseId) {
+    const gallery = document.getElementById(`${courseId}-gallery`);
+    if (gallery) {
+        gallery.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Previne rolagem do body
     }
+}
 
-    // Função para abrir a galeria
-    function openGallery(courseId) {
-        const gallery = document.getElementById(`${courseId}-gallery`);
-        gallery.style.display = "block";  // Exibe a galeria
+function closeGallery(courseId) {
+    const gallery = document.getElementById(`${courseId}-gallery`);
+    if (gallery) {
+        gallery.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restaura rolagem do body
     }
+}
 
-    // Função para fechar a galeria
-    function closeGallery(courseId) {
-        const gallery = document.getElementById(`${courseId}-gallery`);
-        gallery.style.display = "none";  // Esconde a galeria
+function changeImage(index, courseId) {
+    const mainImage = document.getElementById(`mainImage-${courseId}`);
+    const galleryItems = document.querySelectorAll(`#${courseId}-gallery .gallery-item`);
+    
+    if (mainImage && galleryItems[index]) {
+        mainImage.src = galleryItems[index].src;
     }
+}
 
-    // Adiciona evento de clique aos cards de curso
-    let courseCards = document.querySelectorAll(".course-card");
-
-    courseCards.forEach(card => {
-        card.addEventListener("click", function () {
-            let courseId = this.getAttribute("data-course-id");
-            openGallery(courseId);  // Abre a galeria quando o card for clicado
-        });
-    });
-
-    // Fecha a galeria ao clicar fora dela
-    document.addEventListener("click", function (event) {
-        const gallery = document.querySelector(".gallery-container");
-        if (gallery && !gallery.contains(event.target) && !event.target.closest(".course-card")) {
-            gallery.style.display = "none";  // Fecha a galeria se clicar fora
-        }
-    });
-
-    // Evento para o botão de fechar galeria
-    let closeButtons = document.querySelectorAll(".close-gallery");
-    closeButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            let courseId = this.closest('.gallery-container').id.replace("-gallery", "");
-            closeGallery(courseId);  // Fecha a galeria ao clicar no botão de fechar
-        });
-    });
-
-    // Eventos para navegação com as setas
-    const courses = document.querySelectorAll(".course-card");
-
-    courses.forEach(course => {
-        const courseId = course.getAttribute("data-course-id");
-
-        // Clique nas miniaturas da galeria para mudar a imagem
-        const galleryImages = document.querySelectorAll(`#${courseId}-gallery .gallery-item`);
-        galleryImages.forEach((image, index) => {
-            image.addEventListener("click", function() {
-                changeImage(index, courseId);  // Muda para a imagem clicada
+// Funções para carregar turmas
+function loadTurmas(cursoId) {
+    const turmasContainer = document.getElementById('turmas-container');
+    const turmasField = document.getElementById('id_turmas');
+    
+    // Limpa as turmas anteriores
+    turmasContainer.innerHTML = '';
+    turmasField.innerHTML = '';
+    
+    // Faz a requisição para obter as turmas do curso
+    fetch(`/inscricoes/get_turmas/${cursoId}/`)
+        .then(response => response.json())
+        .then(data => {
+            data.turmas.forEach(turma => {
+                // Adiciona a opção ao select de turmas
+                const option = document.createElement('option');
+                option.value = turma.id;
+                option.textContent = `${turma.nome} - ${turma.dia_semana} (${turma.horario_inicio} - ${turma.horario_fim}) - ${turma.vagas_disponiveis} vagas`;
+                turmasField.appendChild(option);
+                
+                // Adiciona o card da turma
+                const turmaCard = document.createElement('div');
+                turmaCard.className = 'col-md-4 mb-3';
+                turmaCard.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${turma.nome}</h5>
+                            <p class="card-text">
+                                <strong>Dia:</strong> ${turma.dia_semana}<br>
+                                <strong>Horário:</strong> ${turma.horario_inicio} - ${turma.horario_fim}<br>
+                                <strong>Vagas disponíveis:</strong> ${turma.vagas_disponiveis}
+                            </p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="turmas" value="${turma.id}" id="turma_${turma.id}">
+                                <label class="form-check-label" for="turma_${turma.id}">
+                                    Selecionar turma
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                turmasContainer.appendChild(turmaCard);
             });
+            
+            // Habilita o campo de turmas
+            turmasField.disabled = false;
+        });
+}
+
+// Adiciona eventos aos checkboxes de cursos
+document.addEventListener('DOMContentLoaded', function() {
+    const cursoCheckboxes = document.querySelectorAll('input[name="cursos"]');
+    cursoCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                loadTurmas(this.value);
+            }
         });
     });
 });
+
+// Adiciona eventos de clique nos cards dos cursos
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona event listeners para todos os cards de curso
+    const courseCards = document.querySelectorAll('.course-card');
+    courseCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const courseId = this.getAttribute('data-course-id');
+            if (courseId) {
+                openGallery(courseId);
+            }
+        });
+    });
+}); 
