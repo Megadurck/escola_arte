@@ -24,7 +24,9 @@ def user_login(request):
                 else:
                     messages.error(request, 'Usuário ou senha inválidos.')
             else:
-                messages.error(request, 'Por favor, preencha o formulário corretamente.')
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
         else:
             form = AuthenticationForm()
     except Exception as e:
@@ -34,19 +36,25 @@ def user_login(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_staff = False
-            user.set_password(form.cleaned_data['password1'])
-            user.save()
-            messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
-            return redirect('accounts:login')
+    try:
+        if request.method == 'POST':
+            form = CustomUserCreationForm(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.is_staff = False
+                user.set_password(form.cleaned_data['password1'])
+                user.save()
+                messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
+                return redirect('accounts:login')
+            else:
+                # Verifica erros específicos e mostra mensagens apropriadas
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
         else:
-            print(form.errors)
-            messages.error(request, 'Por favor, corrija os erros abaixo.')
-    else:
+            form = CustomUserCreationForm()
+    except Exception as e:
+        messages.error(request, f'Ocorreu um erro inesperado: {str(e)}')
         form = CustomUserCreationForm()
     
     return render(request, 'accounts/register.html', {'form': form})

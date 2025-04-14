@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 class TurmaInline(admin.TabularInline):
     model = Turma
@@ -100,8 +101,25 @@ class FuncionarioAdmin(admin.ModelAdmin):
     filter_horizontal = ('cursos',)
 
 # Personalização do UserAdmin
-class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'superuser_indicator')
+class UserAdmin(BaseUserAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'superuser_indicator', 'date_joined')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'groups')
+    ordering = ('-date_joined',)
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Informações Pessoais', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Permissões', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Datas Importantes', {'fields': ('last_login', 'date_joined')}),
+    )
+    
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
 
     def superuser_indicator(self, obj):
         if obj.is_superuser:
