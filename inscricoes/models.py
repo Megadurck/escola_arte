@@ -45,12 +45,18 @@ class Turma(models.Model):
     def __str__(self):
         return f"{self.curso.nome} - {self.nome} ({self.dia_semana})"
     
-    
     def save(self, *args, **kwargs):
         # Se for uma nova turma, define o número original de vagas
         if not self.pk:
             self.vagas_originais = self.vagas
         super().save(*args, **kwargs)
+
+    def vagas_disponiveis(self):
+        """Retorna o número real de vagas disponíveis"""
+        # Força uma nova consulta ao banco para obter o número atual de inscritos
+        self.refresh_from_db()
+        inscritos = self.inscricaoturma_set.count()
+        return max(0, self.vagas_originais - inscritos)
 
 class Inscricao(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -68,17 +74,7 @@ class Inscricao(models.Model):
         return f"{self.nome_completo} - {self.cpf}"
         
     def delete(self, *args, **kwargs):
-        # Obtém todas as turmas associadas à inscrição
-        inscricoes_turma = InscricaoTurma.objects.filter(inscricao=self)
-        
-        # Atualiza o contador de vagas para cada turma
-        for inscricao_turma in inscricoes_turma:
-            turma = inscricao_turma.turma
-            turma.vagas = turma.vagas + 1
-            turma.save()
-            print(f"Vagas atualizadas após deletar inscrição: {turma.vagas}")
-            
-        # Chama o método delete da classe pai
+        # Não precisa mais atualizar o contador de vagas pois agora usamos vagas_originais
         super().delete(*args, **kwargs)
 
 class InscricaoTurma(models.Model):
@@ -90,21 +86,14 @@ class InscricaoTurma(models.Model):
         unique_together = ['inscricao', 'turma']
     
     def save(self, *args, **kwargs):
-        vagas_disponiveis = self.turma.vagas - self.turma.inscricaoturma_set.count()
+        vagas_disponiveis = self.turma.vagas_originais - self.turma.inscricaoturma_set.count()
         if vagas_disponiveis <= 0:
             raise ValidationError('Não há vagas disponíveis para esta turma.')
         super().save(*args, **kwargs)
 
-    
     def delete(self, *args, **kwargs):
-        # Atualiza o contador de vagas antes de deletar
-        turma = self.turma
         super().delete(*args, **kwargs)
-        # Atualiza o contador de vagas após deletar
-        turma.refresh_from_db()
-        turma.vagas = turma.vagas + 1
-        turma.save()
-        print(f"Vagas atualizadas após deletar: {turma.vagas}")
+        # Não precisa atualizar o contador de vagas pois agora usamos vagas_originais
 
 class Funcionario(models.Model):
     TIPO = (

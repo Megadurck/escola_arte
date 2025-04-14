@@ -114,7 +114,7 @@ def get_turmas(request):
     turmas_data = []
 
     for turma in turmas:
-        vagas_disponiveis = turma.vagas - turma.inscricaoturma_set.count()
+        vagas_disponiveis = turma.vagas_disponiveis()
         if vagas_disponiveis > 0:
             turmas_data.append({
                 'id': turma.id,
