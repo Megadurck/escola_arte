@@ -106,9 +106,15 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button id="submit-btn" type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-user-plus me-2"></i>Registrar
                             </button>
+
+                            <script>
+                                document.querySelector('form').addEventListener('submit', function() {
+                                    document.getElementById('submit-btn').disabled = true;
+                                });
+                            </script>
                         </div>
 
                         <div class="text-center mt-4">
