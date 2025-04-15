@@ -56,7 +56,14 @@ class Turma(models.Model):
         # Força uma nova consulta ao banco para obter o número atual de inscritos
         self.refresh_from_db()
         inscritos = self.inscricaoturma_set.count()
-        return max(0, self.vagas_originais - inscritos)
+        vagas_disponiveis = max(0, self.vagas_originais - inscritos)
+        
+        # Atualiza o campo vagas para manter a consistência
+        if self.vagas != vagas_disponiveis:
+            self.vagas = vagas_disponiveis
+            self.save(update_fields=['vagas'])
+            
+        return vagas_disponiveis
 
 class Inscricao(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

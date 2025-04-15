@@ -63,8 +63,8 @@ class InscricaoForm(forms.ModelForm):
             if turma.curso not in cursos_selecionados:
                 raise forms.ValidationError(f'A turma {turma} não pertence aos cursos selecionados.')
             
-            # Verifica se há vagas disponíveis
-            vagas_disponiveis = turma.vagas - turma.inscricaoturma_set.count()
+            # Verifica se há vagas disponíveis usando o método correto
+            vagas_disponiveis = turma.vagas_disponiveis()
             if vagas_disponiveis <= 0:
                 raise forms.ValidationError(f'Não há mais vagas disponíveis para a turma {turma}.')
         

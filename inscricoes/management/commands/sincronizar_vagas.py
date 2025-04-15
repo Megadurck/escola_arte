@@ -9,9 +9,8 @@ class Command(BaseCommand):
         count = 0
         
         for turma in turmas:
-            inscritos_count = turma.inscricaoturma_set.count()
-            vagas_originais = 30  # Valor padrão de vagas
-            vagas_disponiveis = vagas_originais - inscritos_count
+            # Força a atualização das vagas usando o método vagas_disponiveis
+            vagas_disponiveis = turma.vagas_disponiveis()
             
             if turma.vagas != vagas_disponiveis:
                 turma.vagas = vagas_disponiveis
