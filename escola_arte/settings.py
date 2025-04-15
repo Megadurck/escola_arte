@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from decouple import config
 import dj_database_url
+# from django.contrib.sites.models import Site
 
 # Carregar variáveis do .env
 load_dotenv()
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',  # Necessário para o password reset
 
     # Outros apps que você criou
     'inscricoes',
@@ -160,4 +162,9 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # Configurações do WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# SITE_ID = 1
+
+# Remova ou comente esta linha
+# Site.objects.get_or_create(id=1, defaults={'domain': 'localhost:8000', 'name': 'localhost'})
 
