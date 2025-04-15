@@ -73,7 +73,7 @@ class CustomUserCreationForm(forms.ModelForm):
         try:
             validate_password(password1)
         except ValidationError as error:
-            self.add_error('password1', error)
+            raise forms.ValidationError(error)
         return password1
 
     def clean(self):
