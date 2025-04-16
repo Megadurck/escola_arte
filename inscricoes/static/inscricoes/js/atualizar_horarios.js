@@ -69,7 +69,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const label = document.createElement('label');
                                 label.className = 'form-check-label';
                                 label.htmlFor = `horario_${turma.id}`;
-                                label.textContent = `${turma.nome} - ${turma.dia_semana} (${turma.horario_inicio} - ${turma.horario_fim}) - Vagas: ${turma.vagas_disponiveis}`;
+                                
+                                let labelText = `${turma.nome} - ${turma.dia_semana} (${turma.horario_inicio} - ${turma.horario_fim}) - Vagas: ${turma.vagas_disponiveis}`;
+                                if(turma.vagas_disponiveis === 0){
+                                    labelText += ' (Esgotado)';
+                                }
+                                label.textContent = labelText;
                                 
                                 div.appendChild(input);
                                 div.appendChild(label);
