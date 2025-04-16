@@ -142,6 +142,10 @@ def register(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
+def pagina_inicial(request):
+    return render(request, 'inscricoes/pagina_inicial.html')
+
+@login_required
 def logout_view(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
