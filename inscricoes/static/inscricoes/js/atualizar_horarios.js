@@ -59,6 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 input.className = 'form-check-input turma-checkbox';
                                 input.id = `horario_${turma.id}`;
                                 input.dataset.cursoId = turma.curso_id;
+
+                                // Desabilita o checkbox se as vagas acabaram
+                                if (turma.vagas_disponiveis === 0){
+                                    input.disabled = true;
+                                    div.style.opacity = '0.5'; // Para dar a sensação de que está desabilitado
+                                }
                                 
                                 const label = document.createElement('label');
                                 label.className = 'form-check-label';
