@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const url = `/get_turmas/?curso_id=${cursosSelecionados.join(',')}`;
+        const url = `/inscricoes/get_turmas/?curso_id=${cursosSelecionados.join(',')}`;
         console.log('URL:', url);
         
         fetch(url, {
