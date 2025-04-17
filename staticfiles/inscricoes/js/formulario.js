@@ -128,9 +128,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = `/inscricoes/get_turmas/?curso_id=${cursosSelecionados.join(',')}`;
         console.log('URL:', url);
         
-        fetch(url)
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin' // Inclui cookies na requisição
+        })
             .then(response => {
-                console.log('Resposta:', response);
+                console.log('Status da resposta:', response.status);
+                if (response.status === 403) {
+                    throw new Error('Você precisa estar logado para ver os horários.');
+                }
+                if (response.status === 404) {
+                    throw new Error('Página não encontrada. Verifique se a URL está correta.');
+                }
+                if (!response.ok) {
+                    throw new Error(`Erro do servidor: ${response.status}`);
+                }
                 return response.json();
             })
             .then(data => {
@@ -210,7 +226,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Erro ao carregar horários:', error);
-                document.getElementById('horarios-container').innerHTML = '<p class="text-danger">Erro ao carregar horários. Por favor, tente novamente.</p>';
+                const container = document.getElementById('horarios-container');
+                if (error.message.includes('logado')) {
+                    container.innerHTML = '<p class="text-danger">Você precisa estar logado para ver os horários. <a href="/accounts/login/">Clique aqui para fazer login</a>.</p>';
+                } else {
+                    container.innerHTML = `<p class="text-danger">Erro ao carregar horários: ${error.message}</p>`;
+                }
             });
     }
 
