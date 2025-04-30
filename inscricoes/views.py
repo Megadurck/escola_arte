@@ -11,6 +11,8 @@ from django.db.models import Count, Sum
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
+from django.http import HttpResponseForbidden
+from django.utils.timezone import now 
 
 @login_required
 def pagina_inicial(request):
@@ -19,6 +21,9 @@ def pagina_inicial(request):
 
 @login_required
 def inscrever(request):
+    data_limite = datetime(2025, 5, 1)  # Mesmo valor usado na outra view
+    if now() >= data_limite:
+        return HttpResponseForbidden("As inscrições estão encerradas.")
     # Verifica se o usuário já tem uma inscrição
     inscricao_existente = Inscricao.objects.filter(usuario=request.user).exists()
     
@@ -143,7 +148,13 @@ def register(request):
 
 @login_required
 def pagina_inicial(request):
-    return render(request, 'inscricoes/pagina_inicial.html')
+    cursos = Curso.objects.all()
+    
+    # Defina a data limite para o bloqueio das inscrições
+    data_limite = datetime(2025, 5, 1)  # Ajuste para amanhã ou a data desejada
+    hoje = datetime.now()
+
+    return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos, 'hoje': hoje, 'data_limite': data_limite})
 
 @login_required
 def logout_view(request):

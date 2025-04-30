@@ -41,7 +41,13 @@
             <img src="{% static 'inscricoes/img/logo_escola.png' %}" class="img-fluid" id="logo_escola" alt="Logo da Escola de Artes">
             <h1 class="titulo_banner" id="titulo">Bem-vindo à Escola de Artes</h1>
             <p>Transforme sua criatividade em realidade.</p>
-            <a href="{% url 'inscricoes:inscrever' %}" class="btn btn-primary btn-lg inscrever" id="botao_inscrever">Inscreva-se</a>
+            
+            {% if hoje >= data_limite %}
+                <a class="btn btn-primary btn-lg inscrever disabled" id="botao_inscrever" tabindex="-1" aria-disabled="true">Inscrições encerradas</a>
+            {% else %}
+                <a href="{% url 'inscricoes:inscrever' %}" class="btn btn-primary btn-lg inscrever" id="botao_inscrever">Inscreva-se</a>
+            {% endif %}
+
         </div>
     </section>
     {% if messages %}
