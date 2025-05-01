@@ -42,8 +42,8 @@
             <h1 class="titulo_banner" id="titulo">Bem-vindo à Escola de Artes</h1>
             <p>Transforme sua criatividade em realidade.</p>
             
-            {% if hoje >= data_limite %}
-                <a class="btn btn-primary btn-lg inscrever disabled" id="botao_inscrever" tabindex="-1" aria-disabled="true">Inscrições encerradas</a>
+            {% if hoje > data_limite %}
+                <button class="btn btn-primary btn-lg inscrever" disabled>Inscrições Encerradas</button>
             {% else %}
                 <a href="{% url 'inscricoes:inscrever' %}" class="btn btn-primary btn-lg inscrever" id="botao_inscrever">Inscreva-se</a>
             {% endif %}

@@ -8,8 +8,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('inscricoes/', include('inscricoes.urls')),
 
-    # Redireciona a raiz para o login com next apontando para a inscrição
-    #path('', lambda request: redirect('/login/?next=/inscricoes/inscrever/')),
+    # Redireciona a raiz para o login com next apontando para a página inicial
+    path('', lambda request: redirect('/login/?next=/inscricoes/'), name='home_redirect'),
 
     # Login padrão com template personalizado
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
