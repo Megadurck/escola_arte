@@ -24,10 +24,10 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#cursos">Cursos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:password_reset' %}">Alterar Senha</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'password_reset' %}">Alterar Senha</a></li>
                 </ul>
                 <!-- Formulário de Logout -->
-                <form method="post" action="{% url 'accounts:logout' %}" class="d-flex ms-auto sair">
+                <form method="post" action="{% url 'logout' %}" class="d-flex ms-auto sair">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">Sair</button>
                 </form>

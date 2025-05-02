@@ -59,6 +59,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'escola_arte' / 'templates',  # Diretório de templates fora dos apps
+            BASE_DIR / 'accounts' / 'templates',  # Adiciona o diretório de templates do app 'accounts'
+
         ],
         'APP_DIRS': True,  # Permite buscar templates dentro de cada app
         'OPTIONS': {
@@ -156,9 +158,9 @@ CSRF_COOKIE_SECURE = True         # Exige HTTPS
 print(config('DATABASE_URL'))  # Isso deve exibir a URL do banco de dados
 
 # Configurações de autenticação
-LOGIN_URL = 'accounts:login'
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'inscricoes:pagina_inicial'
-LOGOUT_REDIRECT_URL = 'accounts:login'
+LOGOUT_REDIRECT_URL = 'login'
 
 # Configurações do WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'

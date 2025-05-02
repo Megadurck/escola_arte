@@ -17,7 +17,7 @@ def user_login(request):
                 if user:
                     if user.is_staff:
                         messages.error(request, 'Você não tem permissão para acessar esta área.')
-                        return redirect('accounts:login')
+                        return redirect('login')
                     auth_login(request, user)
                     messages.success(request, 'Login bem-sucedido!')
                     return redirect('inscricoes:pagina_inicial')
@@ -33,7 +33,7 @@ def user_login(request):
         messages.error(request, f'Ocorreu um erro inesperado: {str(e)}')
         form = AuthenticationForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 def register(request):
     try:
@@ -45,7 +45,7 @@ def register(request):
                 user.set_password(form.cleaned_data['password1'])
                 user.save()
                 messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
-                return redirect('accounts:login')
+                return redirect('login')
             else:
                 # Verifica erros específicos e mostra mensagens apropriadas
                 for field, errors in form.errors.items():
@@ -63,11 +63,15 @@ def register(request):
 def user_logout(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
-    return redirect('accounts:login')
+    return redirect('login')
 
 @login_required
 def custom_logout(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
-    return redirect('accounts:login')
+    return redirect('login')
+
+
+def password_reset_done(request):
+    return render(request, 'registration/password_reset_done.html')
 
