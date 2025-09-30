@@ -16,7 +16,7 @@ from django.utils.timezone import now, make_aware
 
 @login_required
 def inscrever(request):
-    data_limite = make_aware(datetime(2025, 9, 30))
+    data_limite = make_aware(datetime(2025, 10, 7, 23, 59, 59), timezone=timezone.get_current_timezone())
     hoje = timezone.now() # Mesmo valor usado na outra view
     print(f"HOJE: {hoje}")
     print(f"DATA LIMITE: {data_limite}")
@@ -150,7 +150,7 @@ def pagina_inicial(request):
     cursos = Curso.objects.all()
     
     # Defina a data limite para o bloqueio das inscrições
-    data_limite = date(2025, 9, 30)  # Ajuste para 30 de setembro
+    data_limite = date(2025, 10, 7)  # Ajuste para 30 de setembro
     hoje = date.today()
 
     return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos, 'hoje': hoje, 'data_limite': data_limite})
