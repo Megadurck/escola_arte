@@ -140,7 +140,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             messages.success(request, 'Conta criada com sucesso! Agora você pode fazer login.')
-            return redirect('accounts:login')
+            return redirect('login')
     else:
         form = RegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -159,5 +159,5 @@ def pagina_inicial(request):
 def logout_view(request):
     logout(request)
     messages.success(request, 'Você foi desconectado com sucesso!')
-    return redirect('accounts:login')
+    return redirect('login')
 

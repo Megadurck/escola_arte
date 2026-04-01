@@ -33,7 +33,7 @@ def user_login(request):
         messages.error(request, f'Ocorreu um erro inesperado: {str(e)}')
         form = AuthenticationForm()
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form})
 
 def register(request):
     try:
