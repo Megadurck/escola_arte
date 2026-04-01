@@ -14,7 +14,6 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.utils.timezone import now, make_aware
 
-@login_required
 def inscrever(request):
     data_limite = make_aware(datetime(2025, 10, 10, 23, 59, 59), timezone=timezone.get_current_timezone())
     hoje = timezone.now() # Mesmo valor usado na outra view
@@ -23,8 +22,10 @@ def inscrever(request):
     print(f"COMPARAÇÃO: {hoje >= data_limite}")
     if hoje >= data_limite:
         return HttpResponseForbidden("As inscrições estão encerradas.")
-    # Verifica se o usuário já tem uma inscrição
-    inscricao_existente = Inscricao.objects.filter(usuario=request.user).exists()
+    # Mantém a regra atual para usuários autenticados, sem exigir login no fluxo público
+    inscricao_existente = False
+    if request.user.is_authenticated:
+        inscricao_existente = Inscricao.objects.filter(usuario=request.user).exists()
     
     if inscricao_existente:
         messages.warning(request, 'Você já possui uma inscrição!')
@@ -47,7 +48,8 @@ def inscrever(request):
         
         if form.is_valid():
             inscricao = form.save(commit=False)
-            inscricao.usuario = request.user
+            if request.user.is_authenticated:
+                inscricao.usuario = request.user
             inscricao.save()
             
             try:# Cria as relações InscricaoTurma
@@ -109,7 +111,6 @@ def dashboard(request):
     }
     return render(request, 'inscricoes/dashboard.html', context)
 
-@login_required
 def get_turmas(request):
     curso_ids = request.GET.get('curso_id', '').split(',')
     curso_ids = [int(id) for id in curso_ids if id.isdigit()]
@@ -145,7 +146,6 @@ def register(request):
         form = RegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
-@login_required
 def pagina_inicial(request):
     cursos = Curso.objects.all()
     

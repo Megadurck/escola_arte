@@ -7,8 +7,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('inscricoes/', include('inscricoes.urls')),
 
-    # Redireciona a raiz para o login com next apontando para a página inicial
-    path('', lambda request: redirect('/accounts/login/?next=/inscricoes/'), name='pagina_inicial'),
+    # Fluxo público principal
+    path('', lambda request: redirect('/inscricoes/'), name='pagina_inicial'),
 
     # Rota legada para manter compatibilidade de links antigos
     path('login/', lambda request: redirect('/accounts/login/')),
