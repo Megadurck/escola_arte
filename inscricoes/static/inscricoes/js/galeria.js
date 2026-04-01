@@ -90,10 +90,41 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adiciona event listeners para todos os cards de curso
     const courseCards = document.querySelectorAll('.course-card');
     courseCards.forEach(card => {
-        card.addEventListener('click', function() {
-            const courseId = this.getAttribute('data-course-id');
-            if (courseId) {
+        const courseId = card.getAttribute('data-course-id');
+        const cardBody = card.querySelector('.card-body');
+
+        // Adiciona ações visíveis no card sem alterar o fluxo atual da galeria.
+        if (courseId && cardBody && !cardBody.querySelector('.card-actions')) {
+            const actions = document.createElement('div');
+            actions.className = 'card-actions';
+
+            const galleryBtn = document.createElement('button');
+            galleryBtn.type = 'button';
+            galleryBtn.className = 'card-action-btn gallery';
+            galleryBtn.textContent = 'Ver fotos';
+            galleryBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
                 openGallery(courseId);
+            });
+
+            const signupLink = document.createElement('a');
+            signupLink.className = 'card-action-btn signup';
+            signupLink.href = '/inscricoes/inscrever/';
+            signupLink.textContent = 'Inscrever-se';
+            signupLink.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+
+            actions.appendChild(galleryBtn);
+            actions.appendChild(signupLink);
+            cardBody.appendChild(actions);
+        }
+
+        card.addEventListener('click', function() {
+            const clickedCourseId = this.getAttribute('data-course-id');
+            if (clickedCourseId) {
+                openGallery(clickedCourseId);
             }
         });
     });

@@ -1116,3 +1116,378 @@ footer {
         height: 32px;
     }
 }
+
+/* ===== Refinamento Visual da Página Inicial ===== */
+body.pagina-inicial {
+    --cor-fundo-claro: #f7f2d9;
+    --cor-fundo-secundaria: #efe4b6;
+    --cor-primaria: #f58b1f;
+    --cor-secundaria: #5f3b22;
+    --cor-texto: #2f2a23;
+    --cor-card: rgba(255, 248, 228, 0.92);
+    --sombra-suave: 0 6px 18px rgba(70, 42, 20, 0.12);
+    --sombra-forte: 0 10px 22px rgba(70, 42, 20, 0.18);
+    background:
+        radial-gradient(circle at 15% 15%, rgba(245, 139, 31, 0.22) 0, rgba(245, 139, 31, 0) 32%),
+        radial-gradient(circle at 85% 5%, rgba(239, 228, 182, 0.8) 0, rgba(239, 228, 182, 0) 36%),
+        linear-gradient(180deg, var(--cor-fundo-secundaria) 0%, var(--cor-fundo-claro) 38%, #fdf9ea 100%);
+    color: var(--cor-texto);
+    font-family: 'Montserrat', sans-serif;
+}
+
+body.pagina-inicial .banner,
+body.pagina-inicial #cabecalho,
+body.pagina-inicial .description-box,
+body.pagina-inicial #cursos .row,
+body.pagina-inicial .card.course-card {
+    position: relative;
+    isolation: isolate;
+}
+
+body.pagina-inicial .navbar {
+    background: transparent !important;
+    padding-top: 14px;
+    padding-bottom: 8px;
+}
+
+body.pagina-inicial #cabecalho {
+    background: linear-gradient(90deg, #f5e19c 0%, #f6d183 52%, #efc263 100%);
+    border: 1px solid rgba(145, 86, 22, 0.2);
+    box-shadow: var(--sombra-suave);
+}
+
+body.pagina-inicial .navbar-brand {
+    color: #4c2d16;
+    letter-spacing: 0.3px;
+}
+
+body.pagina-inicial .navbar-nav .nav-item .nav-link {
+    background-color: rgba(245, 139, 31, 0.92);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 6px 11px;
+    font-weight: 600;
+}
+
+body.pagina-inicial .navbar-nav .nav-item .nav-link:hover {
+    background-color: #d96a00;
+    transform: translateY(-1px);
+}
+
+body.pagina-inicial .banner {
+    min-height: 360px;
+    border-radius: 18px;
+    margin: 12px 20px 0;
+    overflow: hidden;
+    box-shadow: var(--sombra-suave);
+}
+
+body.pagina-inicial .banner::before {
+    background: linear-gradient(135deg, rgba(26, 16, 10, 0.65) 0%, rgba(58, 36, 18, 0.35) 52%, rgba(217, 106, 0, 0.32) 100%);
+}
+
+body.pagina-inicial .banner h1 {
+    font-family: 'Merriweather', serif;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+body.pagina-inicial .banner p {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+    margin-top: 6px;
+}
+
+body.pagina-inicial .btn-primary,
+body.pagina-inicial #botao_inscrever {
+    background: linear-gradient(90deg, var(--cor-primaria) 0%, #e77411 100%);
+    border-color: transparent;
+    font-weight: 700;
+    box-shadow: 0 7px 16px rgba(217, 106, 0, 0.24);
+}
+
+body.pagina-inicial .btn-primary:hover {
+    background: linear-gradient(90deg, #e77411 0%, #c95e00 100%);
+    transform: translateY(-2px);
+}
+
+body.pagina-inicial .description-box {
+    background: linear-gradient(180deg, rgba(255, 250, 236, 0.95) 0%, rgba(247, 236, 202, 0.95) 100%);
+    border-left: 6px solid var(--cor-primaria);
+    border-top: 1px solid rgba(255, 255, 255, 0.75);
+    border-right: 1px solid rgba(176, 121, 44, 0.22);
+    border-bottom: 1px solid rgba(176, 121, 44, 0.22);
+    box-shadow: 0 5px 15px rgba(70, 42, 20, 0.11);
+}
+
+body.pagina-inicial #cursos {
+    background-color: transparent !important;
+}
+
+body.pagina-inicial #cursos .row {
+    background: linear-gradient(180deg, rgba(255, 247, 222, 0.84) 0%, rgba(250, 239, 207, 0.88) 100%);
+    border: 1px solid rgba(168, 116, 43, 0.18);
+    box-shadow: 0 5px 15px rgba(70, 42, 20, 0.11);
+}
+
+body.pagina-inicial .card.course-card {
+    background: var(--cor-card);
+    border: 1px solid rgba(168, 116, 43, 0.22);
+    border-radius: 14px;
+    overflow: hidden;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+body.pagina-inicial .card.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(70, 42, 20, 0.16);
+    border-color: rgba(217, 106, 0, 0.45);
+}
+
+body.pagina-inicial .card.course-card:focus-within {
+    box-shadow: 0 0 0 3px rgba(245, 139, 31, 0.26);
+    border-color: rgba(217, 106, 0, 0.58);
+}
+
+body.pagina-inicial .card.course-card .card-img-top {
+    height: 220px;
+    object-fit: cover;
+    filter: saturate(1.03) contrast(1.04);
+}
+
+body.pagina-inicial .card.course-card .card-body {
+    padding: 1.1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+body.pagina-inicial .card-title {
+    color: var(--cor-secundaria);
+    text-shadow: none;
+    font-weight: 800;
+    letter-spacing: 0.15px;
+    margin-bottom: 0.75rem;
+}
+
+body.pagina-inicial .card-text,
+body.pagina-inicial .card p {
+    color: #3e342c;
+    line-height: 1.5;
+}
+
+body.pagina-inicial .card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 6rem;
+}
+
+body.pagina-inicial .card-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 8px;
+    padding-top: 6px;
+}
+
+body.pagina-inicial .card-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 7px 10px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-decoration: none;
+    line-height: 1;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+body.pagina-inicial .card-action-btn:hover {
+    transform: translateY(-1px);
+}
+
+body.pagina-inicial .card-action-btn.gallery {
+    background: #fff7e2;
+    color: #7b4215;
+    border-color: rgba(217, 106, 0, 0.35);
+}
+
+body.pagina-inicial .card-action-btn.gallery:hover {
+    background: #ffe8be;
+    color: #5f3010;
+}
+
+body.pagina-inicial .card-action-btn.signup {
+    background: linear-gradient(90deg, var(--cor-primaria) 0%, #e77411 100%);
+    color: #fff;
+}
+
+body.pagina-inicial .card-action-btn.signup:hover {
+    color: #fff;
+    background: linear-gradient(90deg, #e77411 0%, #c95e00 100%);
+}
+
+body.pagina-inicial .gallery-container {
+    background: rgba(24, 17, 12, 0.94);
+}
+
+body.pagina-inicial .gallery-item:hover {
+    border-color: var(--cor-primaria);
+    box-shadow: 0 4px 10px rgba(245, 139, 31, 0.35);
+}
+
+body.pagina-inicial footer.bg-dark {
+    background: linear-gradient(90deg, #2d2017 0%, #4a3121 100%) !important;
+}
+
+@media (max-width: 992px) {
+    body.pagina-inicial .banner {
+        margin: 8px 12px 0;
+        min-height: 300px;
+    }
+
+    body.pagina-inicial .navbar-brand {
+        width: auto;
+        font-size: 1.35rem;
+        padding-left: 14px;
+    }
+
+    body.pagina-inicial .navbar-nav {
+        margin-top: 8px;
+        gap: 6px;
+    }
+
+    body.pagina-inicial .container-cursos {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    body.pagina-inicial #cursos .row {
+        padding: 12px;
+        gap: 0.15rem;
+    }
+
+    body.pagina-inicial .card.course-card .card-img-top {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    body.pagina-inicial .banner {
+        border-radius: 12px;
+        min-height: 250px;
+    }
+
+    body.pagina-inicial .card.course-card .card-img-top {
+        height: 190px;
+    }
+
+    body.pagina-inicial .banner-content {
+        padding: 18px 14px;
+    }
+
+    body.pagina-inicial .banner h1 {
+        font-size: 1.45rem;
+        line-height: 1.25;
+    }
+
+    body.pagina-inicial .banner p {
+        font-size: 1rem;
+    }
+
+    body.pagina-inicial #botao_inscrever {
+        width: min(92%, 320px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    body.pagina-inicial .description-box {
+        border-left-width: 4px;
+        margin: 16px 8px;
+        padding: 14px;
+    }
+
+    body.pagina-inicial .card.course-card {
+        border-radius: 12px;
+    }
+
+    body.pagina-inicial .card-title {
+        font-size: 1.05rem;
+    }
+
+    body.pagina-inicial .card-text,
+    body.pagina-inicial .card p {
+        font-size: 0.9rem;
+        line-height: 1.45;
+    }
+
+    body.pagina-inicial .card-text {
+        -webkit-line-clamp: 3;
+        min-height: 4.2rem;
+    }
+
+    body.pagina-inicial .card-actions {
+        flex-direction: column;
+    }
+
+    body.pagina-inicial .card-action-btn {
+        width: 100%;
+        padding: 8px 10px;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+    body.pagina-inicial .banner {
+        min-height: 320px;
+    }
+
+    body.pagina-inicial .banner-content {
+        padding: 22px 18px;
+    }
+
+    body.pagina-inicial .banner h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    body.pagina-inicial .banner p {
+        font-size: 1.15rem;
+    }
+
+    body.pagina-inicial .card.course-card .card-img-top {
+        height: 205px;
+    }
+
+    body.pagina-inicial .card-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1366px) {
+    body.pagina-inicial .banner {
+        min-height: 360px;
+    }
+
+    body.pagina-inicial .banner h1 {
+        font-size: 2.4rem;
+    }
+
+    body.pagina-inicial .banner p {
+        font-size: 1.35rem;
+    }
+
+    body.pagina-inicial .container-cursos {
+        max-width: 1320px;
+    }
+
+    body.pagina-inicial .card.course-card .card-img-top {
+        height: 210px;
+    }
+
+    body.pagina-inicial .description-box {
+        max-width: 1260px;
+    }
+}
