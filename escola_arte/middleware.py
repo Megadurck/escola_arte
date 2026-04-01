@@ -7,7 +7,7 @@ class AdminSessionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path.startswith('/admin/') and request.user.is_authenticated and not request.user.is_staff:
+        if request.path.startswith('/admin/') and request.user.is_authenticated and not request.user.is_superuser:
             logout(request)
             return redirect('/accounts/login/')
         response = self.get_response(request)
@@ -18,10 +18,13 @@ class CustomSessionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        admin_session_cookie = getattr(settings, 'ADMIN_SESSION_COOKIE_NAME', settings.SESSION_COOKIE_NAME)
+        admin_csrf_cookie = getattr(settings, 'ADMIN_CSRF_COOKIE_NAME', settings.CSRF_COOKIE_NAME)
+
         if request.path.startswith('/admin'):
             request.session.set_expiry(0)  # Expira a sessão quando o navegador é fechado
-            request.session[settings.SESSION_COOKIE_NAME] = settings.ADMIN_SESSION_COOKIE_NAME
-            request.META['CSRF_COOKIE'] = settings.ADMIN_CSRF_COOKIE_NAME
+            request.session[settings.SESSION_COOKIE_NAME] = admin_session_cookie
+            request.META['CSRF_COOKIE'] = admin_csrf_cookie
         else:
             request.session[settings.SESSION_COOKIE_NAME] = settings.SESSION_COOKIE_NAME
             request.META['CSRF_COOKIE'] = settings.CSRF_COOKIE_NAME

@@ -3,9 +3,15 @@ from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.utils.http import url_has_allowed_host_and_scheme
 from .forms import CustomUserCreationForm
 
 def user_login(request):
+    next_url = request.POST.get('next') or request.GET.get('next', '')
+    safe_next = ''
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        safe_next = next_url
+
     try:
         if request.method == 'POST':
             form = AuthenticationForm(request, data=request.POST)
@@ -15,12 +21,21 @@ def user_login(request):
                 user = authenticate(request, username=username, password=password)
 
                 if user:
+                    if user.is_superuser:
+                        auth_login(request, user)
+                        messages.success(request, 'Login administrativo realizado com sucesso!')
+                        return redirect(safe_next or '/admin/')
+
                     if user.is_staff:
-                        messages.error(request, 'Você não tem permissão para acessar esta área.')
-                        return redirect('login')
+                        auth_login(request, user)
+                        messages.success(request, 'Login realizado com sucesso!')
+                        if safe_next.startswith('/admin/'):
+                            return redirect('inscricoes:dashboard')
+                        return redirect(safe_next or 'inscricoes:dashboard')
+
                     auth_login(request, user)
                     messages.success(request, 'Login bem-sucedido!')
-                    return redirect('inscricoes:pagina_inicial')
+                    return redirect(safe_next or 'inscricoes:pagina_inicial')
                 else:
                     messages.error(request, 'Usuário ou senha inválidos.')
             else:
@@ -33,7 +48,7 @@ def user_login(request):
         messages.error(request, f'Ocorreu um erro inesperado: {str(e)}')
         form = AuthenticationForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': safe_next})
 
 def register(request):
     try:

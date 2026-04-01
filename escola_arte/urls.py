@@ -2,6 +2,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 
+
+def superuser_admin_only(request):
+    return request.user.is_active and request.user.is_superuser
+
+
+admin.site.has_permission = superuser_admin_only
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),

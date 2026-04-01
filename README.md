@@ -136,6 +136,16 @@ O projeto utiliza PostgreSQL. Configure as variáveis de ambiente com suas crede
 DATABASE_URL=postgresql://usuario:senha@host:porta/nome_do_banco
 SECRET_KEY=sua_chave_secreta
 DEBUG=True
+
+# Segurança (recomendado em produção)
+SECURE_SSL_REDIRECT=True
+SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_PRELOAD=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+SESSION_COOKIE_SAMESITE=Lax
+CSRF_COOKIE_SAMESITE=Lax
 ```
 
 ### 5. **Execute as migrações**
