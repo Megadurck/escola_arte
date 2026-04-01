@@ -13,14 +13,11 @@ from datetime import datetime, timedelta, date
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.utils.timezone import now, make_aware
+from django.conf import settings
 
 def inscrever(request):
-    data_limite = make_aware(datetime(2025, 10, 10, 23, 59, 59), timezone=timezone.get_current_timezone())
-    hoje = timezone.now() # Mesmo valor usado na outra view
-    print(f"HOJE: {hoje}")
-    print(f"DATA LIMITE: {data_limite}")
-    print(f"COMPARAÇÃO: {hoje >= data_limite}")
-    if hoje >= data_limite:
+    inscricoes_abertas = getattr(settings, 'INSCRICOES_ABERTAS', False)
+    if not inscricoes_abertas:
         return HttpResponseForbidden("As inscrições estão encerradas.")
     # Mantém a regra atual para usuários autenticados, sem exigir login no fluxo público
     inscricao_existente = False
@@ -148,12 +145,9 @@ def register(request):
 
 def pagina_inicial(request):
     cursos = Curso.objects.all()
-    
-    # Defina a data limite para o bloqueio das inscrições
-    data_limite = date(2025, 10, 10)  # Ajuste para 10 de outubro de 2025
-    hoje = date.today()
+    inscricoes_abertas = getattr(settings, 'INSCRICOES_ABERTAS', False)
 
-    return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos, 'hoje': hoje, 'data_limite': data_limite})
+    return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos, 'inscricoes_abertas': inscricoes_abertas})
 
 @login_required
 def logout_view(request):

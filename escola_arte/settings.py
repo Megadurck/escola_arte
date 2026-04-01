@@ -155,7 +155,8 @@ CSRF_COOKIE_SECURE = True         # Exige HTTPS
 
 
 
-print(config('DATABASE_URL'))  # Isso deve exibir a URL do banco de dados
+# Controle de abertura de inscrições (definir INSCRICOES_ABERTAS=True no .env para abrir)
+INSCRICOES_ABERTAS = config('INSCRICOES_ABERTAS', default=False, cast=bool)
 
 # Configurações de autenticação
 LOGIN_URL = 'login'
