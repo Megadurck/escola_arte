@@ -1,6 +1,12 @@
 <!-- templates/admin/base_site.html -->
 {% extends "admin/base_site.html" %}
 {% block title %}Administração Personalizada{% endblock %}
+
+{% block nav-global %}
+    {{ block.super }}
+    <a href="/inscricoes/dashboard/" style="margin-left:12px;font-weight:600;">Dashboard de Inscrições</a>
+{% endblock %}
+
 {% block content %}
     <div class="custom-admin-header">
         <h1>Bem-vindo ao painel de administração</h1>
