@@ -100,6 +100,24 @@ Plano resumido:
 3. Atualizar DATABASE_URL no serviço web
 4. Validar formulário público e painel admin
 
+### Limpeza de inscrições para novo ano letivo
+
+Após restaurar o banco em produção, execute:
+
+Pré-visualização (sem alterar dados):
+
+python manage.py limpar_inscricoes_ano
+
+Execução real:
+
+python manage.py limpar_inscricoes_ano --confirmar
+
+Este comando:
+
+- remove todas as inscrições antigas
+- restaura as vagas das turmas para vagas_originais
+- mantém cursos, turmas e funcionários
+
 ## Observações de segurança
 
 - Não versionar .env
