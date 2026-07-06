@@ -1,220 +1,107 @@
-# Escola de Arte
+﻿# Escola de Arte
 
-**Descrição do Projeto**:  
-Este é um projeto para gerenciar as inscrições e usuários de uma escola de arte. A aplicação permite que os usuários se inscrevam, façam login e interajam com o sistema de forma simples e intuitiva. O sistema foi desenvolvido com foco na usabilidade e na experiência do usuário, oferecendo uma interface moderna e responsiva.
+Aplicação web para inscrições em cursos da Escola de Artes, com foco em fluxo público simples:
 
-## Link do Projeto
-Acesse o projeto em: [Escola de Arte](https://escola-arte.onrender.com/accounts/login/)
+- visitante acessa a página inicial
+- escolhe cursos e horários
+- envia inscrição sem cadastro/login público
 
-## Estrutura do Projeto
+O acesso autenticado ficou restrito ao painel administrativo.
 
-### Apps Django
-- **accounts**: Gerenciamento de usuários e autenticação
-- **inscricoes**: Core do sistema, gerencia inscrições, cursos e horários
+## Estado atual do projeto
 
-### Principais Arquivos
-- **settings.py**: Configurações do projeto
-- **urls.py**: Roteamento das URLs
-- **models.py**: Definição dos modelos de dados
-- **views.py**: Lógica de negócio
-- **forms.py**: Formulários do sistema
-- **templates/**: Templates HTML
-- **static/**: Arquivos estáticos (CSS, JS, imagens)
+- Framework: Django 4.2
+- Deploy: Render (web)
+- Banco atual no código: PostgreSQL via DATABASE_URL
+- Apps:
+  - inscricoes: cursos, turmas, vagas, formulário e dashboard
+  - accounts: legado de autenticação (não exposto no fluxo público)
 
-## Novas Funcionalidades e Melhorias
+## Fluxo de navegação
 
-### Sistema de Horários
-- Cadastro de horários específicos para cada curso
-- Seleção de horário durante a inscrição
-- Visualização de horários disponíveis por curso
-- Controle de vagas por horário
-- Sistema de validação para evitar conflitos de horários
+- / -> redireciona para /inscricoes/
+- /inscricoes/ -> página inicial pública
+- /inscricoes/inscrever/ -> formulário público (respeita INSCRICOES_ABERTAS)
+- /admin/ -> painel administrativo (somente superuser)
 
-### Interface Aprimorada
-- Design moderno e responsivo
-- Formulário de inscrição organizado em seções
-- Máscara de telefone automática (formato: (11) 91111-1111)
-- Feedback visual para ações do usuário
-- Ícones intuitivos para melhor navegação
-- Animações suaves para melhor experiência
+## Controle de inscrições
 
-### Dashboard Administrativo
-- Estatísticas em tempo real
-- Gráficos interativos
-- Tabela de inscrições com barra de rolagem
-- Busca em tempo real nas inscrições
-- Visualização detalhada dos dados
-- Exportação de dados em CSV
-- Filtros avançados
+Variável de ambiente:
 
-### Melhorias de Usabilidade
-- Validação de formulários em tempo real
-- Mensagens de feedback claras
-- Navegação intuitiva
-- Interface adaptativa para diferentes dispositivos
-- Suporte a temas claro/escuro
-- Acessibilidade melhorada
+- INSCRICOES_ABERTAS=True: formulário aberto
+- INSCRICOES_ABERTAS=False: formulário retorna mensagem de inscrições encerradas
 
-## Fluxo de Uso
+## Configuração local
 
-1. **Criar Conta**:
-   - Acesse o link do projeto
-   - Clique em "Criar uma conta"
-   - Preencha seus dados e crie sua conta
-   - Confirme seu email (opcional)
+1. Criar ambiente virtual
 
-2. **Acesso ao Sistema**:
-   - Faça login com suas credenciais
-   - Você será redirecionado para a página inicial
-   - Navegue pelo menu principal
+Windows:
 
-3. **Inscrição em Cursos**:
-   - Na página inicial, clique no botão "Inscrever-se"
-   - Preencha o formulário de inscrição com seus dados
-   - Selecione o curso desejado
-   - Escolha o horário disponível
-   - Revise suas escolhas
-   - Envie sua inscrição
-
-4. **Painel Administrativo**:
-   - Acesso exclusivo para administradores
-   - Visualização de estatísticas e dados das inscrições
-   - Gerenciamento de cursos, horários e usuários
-   - Controle de vagas por horário
-   - Geração de relatórios
-
-## Tecnologias Usadas
-
-### Backend
-- **Django 4.2**: Framework web Python para desenvolvimento rápido
-- **PostgreSQL**: Banco de dados relacional para armazenamento dos dados
-- **Django REST Framework**: Para construção da API (futuro)
-- **Celery**: Para tarefas assíncronas (futuro)
-
-### Frontend
-- **Bootstrap 5**: Framework CSS para design responsivo e moderno
-- **JavaScript**: Para interatividade e máscaras de formulário
-- **Chart.js**: Para visualização de dados e gráficos
-- **jQuery**: Para manipulação do DOM e AJAX
-- **Font Awesome**: Para ícones
-
-### DevOps
-- **Git & GitHub**: Controle de versão e repositório de código
-- **Render**: Plataforma de deploy e hospedagem
-- **GitHub Actions**: Para CI/CD (futuro)
-
-## Como Rodar o Projeto Localmente
-
-### 1. **Preparação do Ambiente**
-```bash
-# Crie um ambiente virtual
 python -m venv venv
-
-# Ative o ambiente virtual
-# Windows
 venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-```
 
-### 2. **Clone o repositório**
-```bash
-git clone https://github.com/Megadurck/escola_arte.git
-cd escola_arte
-```
+2. Instalar dependências
 
-### 3. **Instale as dependências**
-Com o ambiente virtual ativado, instale as dependências:
-```bash
 pip install -r requirements.txt
-```
 
-### 4. **Configure o banco de dados**
-O projeto utiliza PostgreSQL. Configure as variáveis de ambiente com suas credenciais do banco de dados:
-```bash
-# Crie um arquivo .env na raiz do projeto
-DATABASE_URL=postgresql://usuario:senha@host:porta/nome_do_banco
-SECRET_KEY=sua_chave_secreta
+3. Configurar variáveis de ambiente no arquivo .env
+
+Exemplo mínimo:
+
+SECRET_KEY=sua_chave
 DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgresql://usuario:senha@host:porta/banco
+INSCRICOES_ABERTAS=False
 
-# Segurança (recomendado em produção)
-SECURE_SSL_REDIRECT=True
-SECURE_HSTS_SECONDS=31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS=True
-SECURE_HSTS_PRELOAD=True
-SESSION_COOKIE_SECURE=True
-CSRF_COOKIE_SECURE=True
-SESSION_COOKIE_SAMESITE=Lax
-CSRF_COOKIE_SAMESITE=Lax
-```
+4. Rodar migrações
 
-### 5. **Execute as migrações**
-```bash
 python manage.py migrate
-```
 
-### 6. **Crie um superusuário**
-```bash
+5. Criar superusuário
+
 python manage.py createsuperuser
-```
 
-### 7. **Colete arquivos estáticos**
-```bash
-python manage.py collectstatic
-```
+6. Executar o projeto
 
-### 8. **Inicie o servidor**
-```bash
 python manage.py runserver
-```
 
 ## Deploy
 
-O projeto está hospedado na plataforma Render, que oferece:
-- Deploy automático a cada push no repositório
-- Banco de dados PostgreSQL gerenciado
-- SSL automático
-- Escalabilidade automática
-- Monitoramento de recursos
-- Logs em tempo real
+Build command (Render):
 
-### Processo de Deploy
-1. Push para o repositório
-2. Build automático no Render
-3. Execução de migrações
-4. Coleta de arquivos estáticos
-5. Atualização do serviço
+./build.sh
 
-## Contribuição
+Start command:
 
-Para contribuir com o projeto:
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Faça commit das suas alterações (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+gunicorn escola_arte.wsgi:application
 
-### Diretrizes de Contribuição
-- Siga o padrão de código existente
-- Documente novas funcionalidades
-- Adicione testes para novas features
-- Atualize o README se necessário
+## Limpeza feita nesta etapa
 
-## Roadmap
+- Removidas rotas públicas de login do fluxo principal
+- Ajustados templates base para navegação pública objetiva
+- Dashboard protegida via login admin
+- README atualizado para o escopo real do sistema
 
-### Próximas Features
-- [ ] Sistema de notificações por email
-- [ ] API REST para integração com outros sistemas
-- [ ] Área do aluno com progresso dos cursos
-- [ ] Sistema de pagamentos
-- [ ] App mobile
+## Próxima etapa (amanhã): migração para banco gratuito
 
-## Licença
+Objetivo: reativar o site com menor custo possível.
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Opções recomendadas:
 
-## Contato
+- Neon (PostgreSQL free)
+- Supabase (PostgreSQL free)
 
-Romário - [@megadurck](https://github.com/Megadurck)
+Plano resumido:
 
-Link do Projeto: [https://github.com/Megadurck/escola_arte](https://github.com/Megadurck/escola_arte)
+1. Criar banco gratuito
+2. Restaurar backup válido:
+   - backup_producao_20260420_1725.dump
+3. Atualizar DATABASE_URL no serviço web
+4. Validar formulário público e painel admin
+
+## Observações de segurança
+
+- Não versionar .env
+- Rotacionar credenciais antigas (SECRET_KEY e senha de app de e-mail, se expostas)
+- Em produção: DEBUG=False

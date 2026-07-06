@@ -22,37 +22,16 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                        {% if user.inscricao %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'inscricoes:dashboard' %}">
-                                    <i class="fas fa-user-graduate me-1"></i>Minha Inscrição
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'inscricoes:inscrever' %}">
-                                    <i class="fas fa-edit me-1"></i>Fazer Inscrição
-                                </a>
-                            </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'inscricoes:logout' %}">
-                                <i class="fas fa-sign-out-alt me-1"></i>Sair
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Entrar
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
-                                <i class="fas fa-user-plus me-1"></i>Criar Conta
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'inscricoes:pagina_inicial' %}">
+                            <i class="fas fa-house me-1"></i>Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'inscricoes:inscrever' %}">
+                            <i class="fas fa-edit me-1"></i>Fazer Inscrição
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

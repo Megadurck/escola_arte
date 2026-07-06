@@ -72,7 +72,7 @@ class SegurancaAdminTests(TestCase):
     def test_dashboard_exige_login(self):
         response = self.client.get(reverse("inscricoes:dashboard"))
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse("login"), response.url)
+        self.assertIn("/admin/login/", response.url)
 
 
 @override_settings(ALLOWED_HOSTS=["testserver", "localhost"], INSCRICOES_ABERTAS=False)

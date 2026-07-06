@@ -76,8 +76,10 @@ WSGI_APPLICATION = 'escola_arte.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+default_sqlite_url = f"sqlite:///{(BASE_DIR / 'db.sqlite3').as_posix()}"
+
 DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
+    'default': dj_database_url.parse(config('DATABASE_URL', default=default_sqlite_url))
 }
 
 # Password validation
@@ -160,9 +162,9 @@ CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=not DEBUG, cast=bool)
 INSCRICOES_ABERTAS = config('INSCRICOES_ABERTAS', default=False, cast=bool)
 
 # Configurações de autenticação
-LOGIN_URL = 'login'
+LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = 'inscricoes:pagina_inicial'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = '/'
 
 # Configurações do WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
