@@ -1,4 +1,3 @@
-from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -10,14 +9,19 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.conf import settings
 
+
+def _ano_letivo_atual():
+    return int(getattr(settings, 'ANO_LETIVO_ATUAL'))
+
 def inscrever(request):
     inscricoes_abertas = getattr(settings, 'INSCRICOES_ABERTAS', False)
+    ano_letivo_atual = _ano_letivo_atual()
     if not inscricoes_abertas:
         return HttpResponseForbidden("As inscrições estão encerradas.")
     # Mantém a regra atual para usuários autenticados, sem exigir login no fluxo público
     inscricao_existente = False
     if request.user.is_authenticated:
-        inscricao_existente = Inscricao.objects.filter(usuario=request.user).exists()
+        inscricao_existente = Inscricao.objects.filter(usuario=request.user, ano_letivo=ano_letivo_atual).exists()
     
     if inscricao_existente:
         messages.warning(request, 'Você já possui uma inscrição!')
@@ -36,17 +40,18 @@ def inscrever(request):
             return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
         
         # Atualiza o queryset do campo turmas com as turmas selecionadas
-        form.fields['turmas'].queryset = Turma.objects.filter(id__in=turmas_ids)
+        form.fields['turmas'].queryset = Turma.objects.filter(id__in=turmas_ids, ano_letivo=ano_letivo_atual)
         
         if form.is_valid():
             inscricao = form.save(commit=False)
+            inscricao.ano_letivo = ano_letivo_atual
             if request.user.is_authenticated:
                 inscricao.usuario = request.user
             inscricao.save()
             
             try:# Cria as relações InscricaoTurma
                 for turma_id in set(turmas_ids):
-                    turma = Turma.objects.get(id=turma_id)
+                    turma = Turma.objects.get(id=turma_id, ano_letivo=ano_letivo_atual)
                     InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
             except ValidationError as e:
                 messages.error(request, f'Erro ao inscrever em uma turma: {e}')
@@ -104,10 +109,11 @@ def dashboard(request):
     return render(request, 'inscricoes/dashboard.html', context)
 
 def get_turmas(request):
+    ano_letivo_atual = _ano_letivo_atual()
     curso_ids = request.GET.get('curso_id', '').split(',')
     curso_ids = [int(id) for id in curso_ids if id.isdigit()]
     
-    turmas = Turma.objects.filter(curso_id__in=curso_ids)
+    turmas = Turma.objects.filter(curso_id__in=curso_ids, ano_letivo=ano_letivo_atual)
     turmas_data = []
 
     for turma in turmas:

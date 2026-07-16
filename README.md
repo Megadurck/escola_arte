@@ -51,7 +51,8 @@ Exemplo mínimo:
 SECRET_KEY=sua_chave
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=postgresql://usuario:senha@host:porta/banco
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/escola_arte
+ANO_LETIVO_ATUAL=2026
 INSCRICOES_ABERTAS=False
 
 4. Rodar migrações
@@ -106,17 +107,21 @@ Após restaurar o banco em produção, execute:
 
 Pré-visualização (sem alterar dados):
 
-python manage.py limpar_inscricoes_ano
+python manage.py limpar_inscricoes_ano --ano 2025
 
 Execução real:
 
-python manage.py limpar_inscricoes_ano --confirmar
+python manage.py limpar_inscricoes_ano --ano 2025 --confirmar
+
+Exportação para CSV (abre no Excel) antes da limpeza:
+
+python manage.py limpar_inscricoes_ano --ano 2025 --exportar-csv inscricoes_2025.csv
 
 Este comando:
 
-- remove todas as inscrições antigas
-- restaura as vagas das turmas para vagas_originais
-- mantém cursos, turmas e funcionários
+- remove inscrições apenas do ano informado
+- restaura as vagas das turmas do ano informado
+- mantém histórico de outros anos
 
 ## Observações de segurança
 

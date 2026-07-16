@@ -41,13 +41,13 @@ class InscritosTurmaInline(admin.TabularInline):
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
-    list_display = ['nome_completo', 'cpf', 'telefone_whatsapp', 'data_inscricao', 'turmas_display']
+    list_display = ['nome_completo', 'cpf', 'ano_letivo', 'telefone_whatsapp', 'data_inscricao', 'turmas_display']
     search_fields = ['nome_completo', 'cpf']
-    list_filter = ['data_inscricao']
+    list_filter = ['ano_letivo', 'data_inscricao']
     inlines = [InscricaoTurmaInline]
     fieldsets = (
         ('Dados Pessoais', {
-            'fields': ('usuario', 'nome_completo', 'cpf', 'data_nascimento', 'telefone_whatsapp')
+            'fields': ('usuario', 'nome_completo', 'cpf', 'ano_letivo', 'data_nascimento', 'telefone_whatsapp')
         }),
         ('Endereço', {
             'fields': ('rua', 'bairro', 'numero')
@@ -79,8 +79,8 @@ class CursoAdmin(admin.ModelAdmin):
 # Registrar o modelo de Turma no admin
 @admin.register(Turma)
 class TurmaAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'curso', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count']
-    list_filter = ('curso', 'dia_semana')
+    list_display = ['nome', 'curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count']
+    list_filter = ('ano_letivo', 'curso', 'dia_semana')
     search_fields = ('nome', 'curso__nome')
     inlines = [InscritosTurmaInline]
     
@@ -136,7 +136,7 @@ admin.site.register(User, UserAdmin)  # Registra a versão personalizada
 @admin.register(InscricaoTurma)
 class InscricaoTurmaAdmin(admin.ModelAdmin):
     list_display = ['inscricao', 'turma', 'data_inscricao']
-    list_filter = ['turma', 'data_inscricao']
+    list_filter = ['turma__ano_letivo', 'turma', 'data_inscricao']
     search_fields = ['inscricao__nome_completo', 'turma__nome']
     readonly_fields = ['data_inscricao']
 

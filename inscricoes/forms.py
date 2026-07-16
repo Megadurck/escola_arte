@@ -3,6 +3,7 @@ from .models import Inscricao, Curso, Turma
 from django.core.exceptions import ValidationError
 import re
 import datetime
+from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -51,6 +52,7 @@ class InscricaoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.ano_letivo_atual = int(getattr(settings, 'ANO_LETIVO_ATUAL', datetime.date.today().year))
         # Desabilita o campo de turmas inicialmente
         self.fields['turmas'].widget.attrs['disabled'] = True
 
@@ -62,6 +64,9 @@ class InscricaoForm(forms.ModelForm):
         for turma in turmas:
             if turma.curso not in cursos_selecionados:
                 raise forms.ValidationError(f'A turma {turma} não pertence aos cursos selecionados.')
+
+            if turma.ano_letivo != self.ano_letivo_atual:
+                raise forms.ValidationError('As turmas selecionadas não pertencem ao ano letivo ativo.')
             
             # Verifica se há vagas disponíveis usando o método correto
             vagas_disponiveis = turma.vagas_disponiveis()
@@ -81,9 +86,9 @@ class InscricaoForm(forms.ModelForm):
         # Remove todos os caracteres não numéricos
         cpf = ''.join(filter(str.isdigit, cpf))
         
-        # Verifica se o CPF já está cadastrado
-        if Inscricao.objects.filter(cpf=cpf).exists():
-            raise forms.ValidationError('Este CPF já está cadastrado.')
+        # Verifica se o CPF já está cadastrado no ano letivo atual
+        if Inscricao.objects.filter(cpf=cpf, ano_letivo=self.ano_letivo_atual).exists():
+            raise forms.ValidationError('Este CPF já está cadastrado para o ano letivo atual.')
             
         if len(cpf) != 11:
             raise forms.ValidationError('CPF deve conter 11 dígitos.')
@@ -92,6 +97,7 @@ class InscricaoForm(forms.ModelForm):
 
     def save(self, commit=True):
         inscricao = super().save(commit=False)
+        inscricao.ano_letivo = self.ano_letivo_atual
         if commit:
             inscricao.save()
         return inscricao

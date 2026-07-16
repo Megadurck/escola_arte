@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -14,6 +15,10 @@ telefone_validator = RegexValidator(
     regex=r'^\d{10,11}$',
     message="O telefone deve conter entre 10 e 11 dígitos numéricos."
 )
+
+
+def ano_letivo_atual():
+    return timezone.now().year
 
 class Curso(models.Model):
     nome = models.CharField(max_length=100)
@@ -32,6 +37,11 @@ class Curso(models.Model):
 
 class Turma(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name='turmas')
+    ano_letivo = models.IntegerField(
+        default=ano_letivo_atual,
+        validators=[MinValueValidator(2000), MaxValueValidator(2100)],
+        db_index=True,
+    )
     nome = models.CharField(max_length=50)  # Ex: "Turma 1", "Turma 2"
     dia_semana = models.CharField(max_length=20)  # Ex: "Segunda-feira", "Terça-feira"
     horario_inicio = models.TimeField()
@@ -40,10 +50,10 @@ class Turma(models.Model):
     vagas_originais = models.IntegerField(default=30, help_text="Número original de vagas da turma")
     
     class Meta:
-        unique_together = ['curso', 'dia_semana', 'horario_inicio', 'horario_fim']
+        unique_together = ['curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim']
     
     def __str__(self):
-        return f"{self.curso.nome} - {self.nome} ({self.dia_semana})"
+        return f"{self.curso.nome} - {self.nome} ({self.dia_semana}/{self.ano_letivo})"
     
     def save(self, *args, **kwargs):
         # Se for uma nova turma, define o número original de vagas
@@ -68,7 +78,12 @@ class Turma(models.Model):
 class Inscricao(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     nome_completo = models.CharField(max_length=100)
-    cpf = models.CharField(max_length=11, unique=True)
+    cpf = models.CharField(max_length=11, validators=[cpf_validator], db_index=True)
+    ano_letivo = models.IntegerField(
+        default=ano_letivo_atual,
+        validators=[MinValueValidator(2000), MaxValueValidator(2100)],
+        db_index=True,
+    )
     data_nascimento = models.DateField()
     telefone_whatsapp = models.CharField(max_length=11)
     rua = models.CharField(max_length=100)
@@ -76,9 +91,14 @@ class Inscricao(models.Model):
     numero = models.CharField(max_length=10)
     data_inscricao = models.DateTimeField(auto_now_add=True)
     turmas = models.ManyToManyField(Turma, through='InscricaoTurma')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['cpf', 'ano_letivo'], name='uniq_inscricao_cpf_ano_letivo')
+        ]
     
     def __str__(self):
-        return f"{self.nome_completo} - {self.cpf}"
+        return f"{self.nome_completo} - {self.cpf} ({self.ano_letivo})"
         
     def delete(self, *args, **kwargs):
         # Não precisa mais atualizar o contador de vagas pois agora usamos vagas_originais
@@ -93,6 +113,9 @@ class InscricaoTurma(models.Model):
         unique_together = ['inscricao', 'turma']
     
     def save(self, *args, **kwargs):
+        if self.inscricao.ano_letivo != self.turma.ano_letivo:
+            raise ValidationError('A inscrição e a turma devem pertencer ao mesmo ano letivo.')
+
         vagas_disponiveis = self.turma.vagas_originais - self.turma.inscricaoturma_set.count()
         if vagas_disponiveis <= 0:
             raise ValidationError('Não há vagas disponíveis para esta turma.')

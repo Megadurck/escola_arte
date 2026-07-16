@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import datetime
 from decouple import config
 import dj_database_url
 # from django.contrib.sites.models import Site
@@ -76,10 +77,14 @@ WSGI_APPLICATION = 'escola_arte.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-default_sqlite_url = f"sqlite:///{(BASE_DIR / 'db.sqlite3').as_posix()}"
+default_postgres_url = (
+    f"postgresql://{config('PGUSER', default='postgres')}:{config('PGPASSWORD', default='postgres')}"
+    f"@{config('PGHOST', default='localhost')}:{config('PGPORT', default='5433')}"
+    f"/{config('PGDATABASE', default='escola_arte')}"
+)
 
 DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL', default=default_sqlite_url))
+    'default': dj_database_url.parse(config('DATABASE_URL', default=default_postgres_url))
 }
 
 # Password validation
@@ -160,6 +165,7 @@ CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=not DEBUG, cast=bool)
 
 # Controle de abertura de inscrições (definir INSCRICOES_ABERTAS=True no .env para abrir)
 INSCRICOES_ABERTAS = config('INSCRICOES_ABERTAS', default=False, cast=bool)
+ANO_LETIVO_ATUAL = config('ANO_LETIVO_ATUAL', default=datetime.date.today().year, cast=int)
 
 # Configurações de autenticação
 LOGIN_URL = '/admin/login/'
