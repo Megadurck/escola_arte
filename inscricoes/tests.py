@@ -106,11 +106,10 @@ class RegrasDeInscricaoTests(TestCase):
         InscricaoTurma.objects.create(inscricao=self.inscricao, turma=self.turma)
 
     @override_settings(INSCRICOES_ABERTAS=True)
-    def test_usuario_autenticado_com_inscricao_e_redirecionado(self):
+    def test_usuario_autenticado_com_inscricao_ainda_acessa_formulario_publico(self):
         self.client.login(username="usuario_teste", password="senha-forte-123")
         response = self.client.get(reverse("inscricoes:inscrever"))
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("inscricoes:pagina_inicial"))
+        self.assertEqual(response.status_code, 200)
 
 
 @override_settings(ALLOWED_HOSTS=["testserver", "localhost"], INSCRICOES_ABERTAS=True, ANO_LETIVO_ATUAL=2026)

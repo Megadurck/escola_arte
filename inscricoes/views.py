@@ -20,14 +20,7 @@ def inscrever(request):
     ano_letivo_atual = _ano_letivo_atual()
     if not inscricoes_abertas:
         return HttpResponseForbidden("As inscrições estão encerradas.")
-    # Mantém a regra atual para usuários autenticados, sem exigir login no fluxo público
     inscricao_existente = False
-    if request.user.is_authenticated:
-        inscricao_existente = Inscricao.objects.filter(usuario=request.user, ano_letivo=ano_letivo_atual).exists()
-    
-    if inscricao_existente:
-        messages.warning(request, 'Você já possui uma inscrição!')
-        return redirect('inscricoes:pagina_inicial')
         
     if request.method == 'POST':
         # Processa turmas enviadas (campo oculto e fallback para checkboxes)
