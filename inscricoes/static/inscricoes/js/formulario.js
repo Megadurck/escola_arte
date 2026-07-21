@@ -85,10 +85,14 @@ document.addEventListener('DOMContentLoaded', function() {
             valor = valor.substring(0, 8);
         }
 
-        if (valor.length > 4) {
+        if (valor.length >= 5) {
             campo.value = `${valor.substring(0, 2)}/${valor.substring(2, 4)}/${valor.substring(4)}`;
-        } else if (valor.length > 2) {
+        } else if (valor.length === 4) {
+            campo.value = `${valor.substring(0, 2)}/${valor.substring(2, 4)}/`;
+        } else if (valor.length >= 3) {
             campo.value = `${valor.substring(0, 2)}/${valor.substring(2)}`;
+        } else if (valor.length === 2) {
+            campo.value = `${valor}/`;
         } else {
             campo.value = valor;
         }
@@ -119,8 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Aplica formatação à data de nascimento
     const campoDataNascimento = document.getElementById('id_data_nascimento');
     if (campoDataNascimento) {
-        campoDataNascimento.addEventListener('input', function() {
-            formatarDataNascimento(this);
+        ['input', 'keyup', 'blur', 'paste'].forEach(function(eventName) {
+            campoDataNascimento.addEventListener(eventName, function() {
+                formatarDataNascimento(this);
+            });
         });
     }
 
