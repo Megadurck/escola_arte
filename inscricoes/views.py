@@ -74,14 +74,26 @@ def inscrever(request):
                         inscricao.usuario = request.user
                     inscricao.save()
 
+                    turmas_qs = Turma.objects.filter(
+                        id__in=set(turmas_ids),
+                        ano_letivo=ano_letivo_atual,
+                    )
+                    turmas_por_id = {turma.id: turma for turma in turmas_qs}
+                    ids_invalidos = set(turmas_ids) - set(turmas_por_id.keys())
+
+                    if ids_invalidos:
+                        raise ValidationError('Uma ou mais turmas selecionadas não são mais válidas. Atualize a página e tente novamente.')
+
                     for turma_id in set(turmas_ids):
-                        turma = Turma.objects.get(id=turma_id, ano_letivo=ano_letivo_atual)
-                        InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
+                        InscricaoTurma.objects.create(inscricao=inscricao, turma=turmas_por_id[turma_id])
             except ValidationError as e:
                 messages.error(request, f'Erro ao inscrever em uma turma: {e}')
                 return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
             except IntegrityError:
                 messages.error(request, 'CPF já cadastrado para este ano letivo. Verifique seus dados.')
+                return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
+            except Exception:
+                messages.error(request, 'Ocorreu um erro ao processar a inscrição. Tente novamente em instantes.')
                 return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
 
             messages.success(request, 'Inscrição realizada com sucesso!')
