@@ -198,3 +198,59 @@ class AnoLetivoInscricaoTests(TestCase):
             Inscricao.objects.filter(cpf="99999999999", ano_letivo=2026).count(),
             1,
         )
+
+    def test_reenvio_do_mesmo_formulario_nao_cria_duas_inscricoes(self):
+        dados = self._dados_validos("22233344455")
+
+        primeira_resposta = self.client.post(reverse("inscricoes:inscrever"), dados)
+        self.assertEqual(primeira_resposta.status_code, 302)
+
+        segunda_resposta = self.client.post(reverse("inscricoes:inscrever"), dados)
+        self.assertEqual(segunda_resposta.status_code, 200)
+        self.assertEqual(
+            Inscricao.objects.filter(cpf="22233344455", ano_letivo=2026).count(),
+            1,
+        )
+
+    def test_cpf_mascarado_tambem_e_bloqueado_quando_duplicado(self):
+        Inscricao.objects.create(
+            nome_completo="Aluno com CPF numerico",
+            cpf="12345678901",
+            ano_letivo=2026,
+            data_nascimento=date(1990, 1, 1),
+            telefone_whatsapp="11933334444",
+            rua="Rua C",
+            bairro="Bairro C",
+            numero="300",
+        )
+
+        response = self.client.post(reverse("inscricoes:inscrever"), self._dados_validos("123.456.789-01"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Inscricao.objects.filter(cpf="12345678901", ano_letivo=2026).count(),
+            1,
+        )
+
+    def test_post_com_turma_sem_cursos_explicitos_ainda_salva(self):
+        dados = self._dados_validos("55566677788")
+        dados.pop("cursos")
+
+        response = self.client.post(reverse("inscricoes:inscrever"), dados)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Inscricao.objects.filter(cpf="55566677788", ano_letivo=2026).exists())
+
+    def test_post_com_checkbox_turmas_sem_campo_oculto_ainda_salva(self):
+        dados = self._dados_validos("44455566677")
+        dados.pop("turmas_selecionadas")
+
+        response = self.client.post(reverse("inscricoes:inscrever"), dados)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Inscricao.objects.filter(cpf="44455566677", ano_letivo=2026).exists())
+
+    def test_cpf_com_mascara_e_espacos_e_normalizado_antes_da_validacao(self):
+        dados = self._dados_validos("11122233344")
+        dados["cpf"] = " 111.222.333-44  "
+
+        response = self.client.post(reverse("inscricoes:inscrever"), dados)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Inscricao.objects.filter(cpf="11122233344", ano_letivo=2026).exists())

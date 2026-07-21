@@ -5,9 +5,11 @@ from django.http import JsonResponse
 from .models import Inscricao, Curso, Turma, InscricaoTurma
 from .forms import InscricaoForm
 from django.db.models import Sum
+from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.conf import settings
+import re
 
 
 def _ano_letivo_atual():
@@ -28,11 +30,32 @@ def inscrever(request):
         return redirect('inscricoes:pagina_inicial')
         
     if request.method == 'POST':
-        form = InscricaoForm(request.POST)
-        
-        # Processa o campo oculto com os IDs das turmas selecionadas
-        turmas_ids = request.POST.get('turmas_selecionadas', '').split(',')
-        turmas_ids = [int(id) for id in turmas_ids if id.isdigit()]
+        # Processa turmas enviadas (campo oculto e fallback para checkboxes)
+        turmas_raw = request.POST.get('turmas_selecionadas', '')
+        turmas_ids = [int(id) for id in turmas_raw.split(',') if id.isdigit()]
+
+        if not turmas_ids:
+            turmas_ids = [int(id) for id in request.POST.getlist('turmas') if str(id).isdigit()]
+
+        post_data = request.POST.copy()
+
+        # Normaliza campos mascarados antes da validação do formulário.
+        if 'cpf' in post_data:
+            post_data['cpf'] = re.sub(r'\D', '', post_data.get('cpf', ''))
+        if 'telefone_whatsapp' in post_data:
+            post_data['telefone_whatsapp'] = re.sub(r'\D', '', post_data.get('telefone_whatsapp', ''))
+
+        # Garante consistência: se veio turma, injeta o(s) curso(s) correspondente(s).
+        if turmas_ids:
+            cursos_ids = list(
+                Turma.objects.filter(id__in=turmas_ids, ano_letivo=ano_letivo_atual)
+                .values_list('curso_id', flat=True)
+                .distinct()
+            )
+            if cursos_ids:
+                post_data.setlist('cursos', [str(curso_id) for curso_id in cursos_ids])
+
+        form = InscricaoForm(post_data)
         
         # Verifica se pelo menos uma turma foi selecionada
         if not turmas_ids:
@@ -43,23 +66,34 @@ def inscrever(request):
         form.fields['turmas'].queryset = Turma.objects.filter(id__in=turmas_ids, ano_letivo=ano_letivo_atual)
         
         if form.is_valid():
-            inscricao = form.save(commit=False)
-            inscricao.ano_letivo = ano_letivo_atual
-            if request.user.is_authenticated:
-                inscricao.usuario = request.user
-            inscricao.save()
-            
-            try:# Cria as relações InscricaoTurma
-                for turma_id in set(turmas_ids):
-                    turma = Turma.objects.get(id=turma_id, ano_letivo=ano_letivo_atual)
-                    InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
+            try:
+                with transaction.atomic():
+                    inscricao = form.save(commit=False)
+                    inscricao.ano_letivo = ano_letivo_atual
+                    if request.user.is_authenticated:
+                        inscricao.usuario = request.user
+                    inscricao.save()
+
+                    for turma_id in set(turmas_ids):
+                        turma = Turma.objects.get(id=turma_id, ano_letivo=ano_letivo_atual)
+                        InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
             except ValidationError as e:
                 messages.error(request, f'Erro ao inscrever em uma turma: {e}')
-                inscricao.delete()  # desfaz a inscrição criada
-                return render(request, 'inscricoes/inscrever.html', {'form': form})
+                return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
+            except IntegrityError:
+                messages.error(request, 'CPF já cadastrado para este ano letivo. Verifique seus dados.')
+                return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
 
             messages.success(request, 'Inscrição realizada com sucesso!')
             return redirect('inscricoes:pagina_inicial')
+        else:
+            primeiro_erro = None
+            for erros_campo in form.errors.values():
+                if erros_campo:
+                    primeiro_erro = erros_campo[0]
+                    break
+
+            messages.error(request, primeiro_erro or 'Não foi possível finalizar a inscrição. Revise os campos e tente novamente.')
     else:
         form = InscricaoForm()
     return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})

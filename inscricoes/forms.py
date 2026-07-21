@@ -9,6 +9,23 @@ from django.contrib.auth.models import User
 
 
 class InscricaoForm(forms.ModelForm):
+    cpf = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+    )
+
+    data_nascimento = forms.DateField(
+        input_formats=['%d/%m/%Y', '%Y-%m-%d'],
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'dd/mm/aaaa',
+                'inputmode': 'numeric',
+                'maxlength': '10',
+                'autocomplete': 'bday',
+            }
+        ),
+    )
+
     cursos = forms.ModelMultipleChoiceField(
         queryset=Curso.objects.all(),
         label='Cursos',
@@ -31,16 +48,7 @@ class InscricaoForm(forms.ModelForm):
         model = Inscricao
         fields = ['nome_completo', 'cpf', 'rua', 'bairro', 'numero', 'telefone_whatsapp', 'data_nascimento']
         widgets = {
-            'data_nascimento': forms.DateInput(
-                attrs={
-                    'type': 'date',
-                    'class': 'form-control',
-                    'min': '1900-01-01',
-                    'max': datetime.date.today().strftime('%Y-%m-%d')
-                }
-            ),
             'nome_completo': forms.TextInput(attrs={'class': 'form-control'}),
-            'cpf': forms.TextInput(attrs={'class': 'form-control'}),
             'rua': forms.TextInput(attrs={'class': 'form-control'}),
             'bairro': forms.TextInput(attrs={'class': 'form-control'}),
             'numero': forms.TextInput(attrs={'class': 'form-control'}),

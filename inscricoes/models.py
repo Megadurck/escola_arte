@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import transaction
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -116,10 +117,23 @@ class InscricaoTurma(models.Model):
         if self.inscricao.ano_letivo != self.turma.ano_letivo:
             raise ValidationError('A inscrição e a turma devem pertencer ao mesmo ano letivo.')
 
-        vagas_disponiveis = self.turma.vagas_originais - self.turma.inscricaoturma_set.count()
-        if vagas_disponiveis <= 0:
-            raise ValidationError('Não há vagas disponíveis para esta turma.')
-        super().save(*args, **kwargs)
+        if self.pk:
+            return super().save(*args, **kwargs)
+
+        # Serializa a criação por turma para não estourar vagas em acessos simultâneos.
+        with transaction.atomic():
+            turma = Turma.objects.select_for_update().get(pk=self.turma_id)
+            inscritos = InscricaoTurma.objects.filter(turma=turma).count()
+
+            if inscritos >= turma.vagas_originais:
+                raise ValidationError('Não há vagas disponíveis para esta turma.')
+
+            self.turma = turma
+            super().save(*args, **kwargs)
+
+            vagas_restantes = max(0, turma.vagas_originais - (inscritos + 1))
+            if turma.vagas != vagas_restantes:
+                Turma.objects.filter(pk=turma.pk).update(vagas=vagas_restantes)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

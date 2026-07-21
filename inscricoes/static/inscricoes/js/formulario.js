@@ -77,6 +77,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Função para formatar data no padrão dd/mm/yyyy
+    function formatarDataNascimento(campo) {
+        let valor = campo.value.replace(/\D/g, '');
+
+        if (valor.length > 8) {
+            valor = valor.substring(0, 8);
+        }
+
+        if (valor.length > 4) {
+            campo.value = `${valor.substring(0, 2)}/${valor.substring(2, 4)}/${valor.substring(4)}`;
+        } else if (valor.length > 2) {
+            campo.value = `${valor.substring(0, 2)}/${valor.substring(2)}`;
+        } else {
+            campo.value = valor;
+        }
+    }
+
     // Aplica formatação ao CPF
     const campoCPF = document.getElementById('id_cpf');
     if (campoCPF) {
@@ -97,6 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.log('Campo telefone NÃO encontrado');
+    }
+
+    // Aplica formatação à data de nascimento
+    const campoDataNascimento = document.getElementById('id_data_nascimento');
+    if (campoDataNascimento) {
+        campoDataNascimento.addEventListener('input', function() {
+            formatarDataNascimento(this);
+        });
     }
 
     // Função para carregar horários
@@ -249,6 +274,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Adicionando evento ao checkbox:', checkbox.id);
                 checkbox.addEventListener('change', carregarHorarios);
             });
+
+            // Se o navegador restaurou checkboxes marcados, carrega os horários imediatamente.
+            if (Array.from(cursosCheckboxes).some(checkbox => checkbox.checked)) {
+                carregarHorarios();
+            }
         }
     } else {
         console.error('Container de cursos não encontrado!');
@@ -262,6 +292,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Turmas selecionadas:', turmasSelecionadas);
     }
 
+    // Mantem compatibilidade com chamadas inline do template.
+    window.atualizarTurmasSelecionadas = atualizarTurmasSelecionadas;
+
     // Adiciona evento para atualizar as turmas selecionadas quando um checkbox é marcado/desmarcado
     document.addEventListener('change', function(event) {
         if (event.target.classList.contains('turma-checkbox')) {
@@ -273,6 +306,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const formulario = document.querySelector('form');
     if (formulario) {
         formulario.addEventListener('submit', function(event) {
+            // Recalcula no submit para não depender da ordem dos listeners.
+            atualizarTurmasSelecionadas();
+
             const turmasSelecionadas = document.getElementById('turmas_selecionadas').value;
             
             if (!turmasSelecionadas) {

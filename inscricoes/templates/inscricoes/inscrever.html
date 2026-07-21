@@ -80,8 +80,14 @@
                                         <label for="id_cpf" class="form-label">CPF</label>
                                         <input type="text" class="form-control form-control-lg" id="id_cpf" 
                                                name="cpf" required maxlength="14" 
-                                               placeholder="XXX.XXX.XXX-XX">
+                                               placeholder="XXX.XXX.XXX-XX"
+                                               value="{{ form.cpf.value|default_if_none:'' }}">
                                         <div class="form-text">Digite apenas números</div>
+                                        {% if form.cpf.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.cpf.errors }}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                     <div class="col-md-6">
                                         <label for="{{ form.data_nascimento.id_for_label }}" class="form-label">Data de Nascimento</label>
@@ -141,8 +147,14 @@
                                         <label for="id_telefone_whatsapp" class="form-label">Telefone/WhatsApp</label>
                                         <input type="tel" class="form-control form-control-lg" id="id_telefone_whatsapp" 
                                                name="telefone_whatsapp" required maxlength="15" 
-                                               placeholder="(XX) 9 XXXX-XXXX">
+                                               placeholder="(XX) 9 XXXX-XXXX"
+                                               value="{{ form.telefone_whatsapp.value|default_if_none:'' }}">
                                         <div class="form-text">Digite apenas números, incluindo o DDD</div>
+                                        {% if form.telefone_whatsapp.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.telefone_whatsapp.errors }}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -210,61 +222,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'inscricoes/js/formulario.js' %}"></script>
-<script>
-    // Script de depuração
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Script de depuração carregado');
-        
-        // Verifica se o container de cursos existe
-        const cursosContainer = document.getElementById('cursos-container');
-        if (cursosContainer) {
-            console.log('Container de cursos encontrado');
-            
-            // Verifica os checkboxes
-            const checkboxes = cursosContainer.querySelectorAll('input[type="checkbox"]');
-            console.log('Número de checkboxes encontrados:', checkboxes.length);
-            
-            // Adiciona evento de clique para depuração
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('click', function() {
-                    console.log('Checkbox clicado:', this.id, 'Valor:', this.value, 'Checked:', this.checked);
-                });
-            });
-        } else {
-            console.error('Container de cursos não encontrado!');
-        }
-        
-        // Verifica se o container de horários existe
-        const horariosContainer = document.getElementById('horarios-container');
-        if (horariosContainer) {
-            console.log('Container de horários encontrado');
-        } else {
-            console.error('Container de horários não encontrado!');
-        }
-        
-        // Adiciona evento de submit ao formulário para garantir que os campos sejam enviados corretamente
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(event) {
-                // Remove caracteres não numéricos do CPF antes de enviar
-                const cpfField = document.getElementById('id_cpf');
-                if (cpfField) {
-                    cpfField.value = cpfField.value.replace(/\D/g, '');
-                }
-                
-                // Remove caracteres não numéricos do telefone antes de enviar
-                const telefoneField = document.getElementById('id_telefone_whatsapp');
-                if (telefoneField) {
-                    telefoneField.value = telefoneField.value.replace(/\D/g, '');
-                }
-                
-                // Atualiza o campo oculto com os IDs das turmas selecionadas
-                atualizarTurmasSelecionadas();
-                
-                console.log('Formulário enviado com sucesso!');
-            });
-        }
-    });
-</script>
+<script src="{% static 'inscricoes/js/formulario.js' %}?v=20260720"></script>
 {% endblock %}
