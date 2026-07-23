@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Inscricao, Curso, Turma, InscricaoTurma
 from .forms import InscricaoForm
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
@@ -151,24 +151,79 @@ def get_turmas(request):
     ano_letivo_atual = _ano_letivo_atual()
     curso_ids = request.GET.get('curso_id', '').split(',')
     curso_ids = [int(id) for id in curso_ids if id.isdigit()]
-    
-    turmas = Turma.objects.filter(curso_id__in=curso_ids, ano_letivo=ano_letivo_atual)
-    turmas_data = []
+
+    if not curso_ids:
+        return JsonResponse({'turmas': []})
+
+    turmas = (
+        Turma.objects
+        .filter(curso_id__in=curso_ids, ano_letivo=ano_letivo_atual)
+        .select_related('curso')
+        .annotate(inscritos_count=Count('inscricaoturma'))
+        .order_by('curso__nome', 'nome', 'horario_inicio', 'horario_fim', 'dia_semana')
+    )
+    turmas_agrupadas = {}
+    ordem_dias = {
+        'Segunda-feira': 1,
+        'Terça-feira': 2,
+        'Quarta-feira': 3,
+        'Quinta-feira': 4,
+        'Sexta-feira': 5,
+        'Sábado': 6,
+        'Domingo': 7,
+    }
 
     for turma in turmas:
-        vagas_disponiveis = turma.vagas_disponiveis()
-        if vagas_disponiveis > 0:
-            turmas_data.append({
+        vagas_disponiveis = max(0, turma.vagas_originais - turma.inscritos_count)
+        if vagas_disponiveis <= 0:
+            continue
+
+        chave = (turma.curso_id, turma.nome, turma.horario_inicio, turma.horario_fim)
+        if chave not in turmas_agrupadas:
+            turmas_agrupadas[chave] = {
                 'id': turma.id,
+                'ids': [turma.id],
                 'nome': turma.nome,
-                'dia_semana': turma.dia_semana,
+                'dias': [turma.dia_semana],
                 'horario_inicio': turma.horario_inicio.strftime('%H:%M'),
                 'horario_fim': turma.horario_fim.strftime('%H:%M'),
                 'vagas_disponiveis': vagas_disponiveis,
                 'curso_id': turma.curso_id,
-                'curso_nome': turma.curso.nome
-            })
-    
+                'curso_nome': turma.curso.nome,
+            }
+        else:
+            grupo = turmas_agrupadas[chave]
+            grupo['ids'].append(turma.id)
+            grupo['dias'].append(turma.dia_semana)
+            grupo['vagas_disponiveis'] = min(grupo['vagas_disponiveis'], vagas_disponiveis)
+
+    turmas_data = []
+    for grupo in turmas_agrupadas.values():
+        dias_ordenados = sorted(
+            set(grupo['dias']),
+            key=lambda dia: ordem_dias.get(dia, 99)
+        )
+        turmas_data.append({
+            'id': grupo['id'],
+            'ids': grupo['ids'],
+            'nome': grupo['nome'],
+            'dia_semana': ', '.join(dias_ordenados),
+            'horario_inicio': grupo['horario_inicio'],
+            'horario_fim': grupo['horario_fim'],
+            'vagas_disponiveis': grupo['vagas_disponiveis'],
+            'curso_id': grupo['curso_id'],
+            'curso_nome': grupo['curso_nome'],
+        })
+
+    turmas_data.sort(
+        key=lambda turma: (
+            turma['curso_nome'],
+            turma['nome'],
+            turma['horario_inicio'],
+            turma['horario_fim'],
+        )
+    )
+
     return JsonResponse({'turmas': turmas_data})
 
 

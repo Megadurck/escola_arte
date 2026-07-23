@@ -130,50 +130,170 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Função para carregar horários
-    function carregarHorarios() {
-        console.log('Carregando horários - TESTE DE LOG');
-        
-        // Verifica se o container de cursos existe
+    const cacheTurmasPorCurso = new Map();
+    let requisicaoTurmasController = null;
+
+    // Função para renderizar as turmas dentro do bloco de cada curso.
+    function renderizarTurmasInline(turmas, selecionadasAntes) {
         const cursosContainer = document.getElementById('cursos-container');
         if (!cursosContainer) {
-            console.error('Container de cursos não encontrado!');
             return;
         }
-        
-        // Busca todos os checkboxes de cursos dentro do container
-        const cursosCheckboxes = cursosContainer.querySelectorAll('input[type="checkbox"]');
-        console.log('Checkboxes de cursos encontrados:', cursosCheckboxes.length);
-        
-        const cursosSelecionados = Array.from(cursosCheckboxes)
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
-        
-        console.log('Cursos selecionados:', cursosSelecionados);
-        
-        if (cursosSelecionados.length === 0) {
-            document.getElementById('horarios-container').innerHTML = '<p class="text-muted">Selecione pelo menos um curso para ver os horários disponíveis.</p>';
+        const cursoItems = cursosContainer.querySelectorAll('.curso-item');
+        const turmasPorCurso = {};
+
+        turmas.forEach(turma => {
+            if (!turmasPorCurso[turma.curso_id]) {
+                turmasPorCurso[turma.curso_id] = [];
+            }
+            turmasPorCurso[turma.curso_id].push(turma);
+        });
+
+        cursoItems.forEach(item => {
+            const checkboxCurso = item.querySelector('input[type="checkbox"][name="cursos"]');
+            const turmasCursoContainer = item.querySelector('.turmas-curso');
+
+            if (!checkboxCurso || !turmasCursoContainer) {
+                return;
+            }
+
+            turmasCursoContainer.innerHTML = '';
+
+            if (!checkboxCurso.checked) {
+                turmasCursoContainer.classList.add('d-none');
+                return;
+            }
+
+            turmasCursoContainer.classList.remove('d-none');
+
+            const cursoId = Number(checkboxCurso.value);
+            const turmasDoCurso = turmasPorCurso[cursoId] || [];
+
+            if (turmasDoCurso.length === 0) {
+                turmasCursoContainer.innerHTML = '<p class="text-muted mb-0 small">Nenhuma turma disponivel para este curso.</p>';
+                return;
+            }
+
+            turmasDoCurso.forEach(turma => {
+                const checked = selecionadasAntes.has(String(turma.id)) ? 'checked' : '';
+                const turmaIds = Array.isArray(turma.ids) && turma.ids.length > 0
+                    ? turma.ids.join(',')
+                    : String(turma.id);
+                const bloco = document.createElement('div');
+                bloco.className = 'form-check mb-2';
+                bloco.innerHTML = `
+                    <input class="form-check-input turma-checkbox" type="checkbox" name="turmas" value="${turma.id}" id="turma${turma.id}" data-curso-id="${turma.curso_id}" data-turma-ids="${turmaIds}" ${checked}>
+                    <label class="form-check-label" for="turma${turma.id}">
+                        ${turma.nome} (${turma.dia_semana} ${turma.horario_inicio}-${turma.horario_fim}) (${turma.vagas_disponiveis} vagas)
+                    </label>
+                `;
+                turmasCursoContainer.appendChild(bloco);
+            });
+
+            const marcadasNoCurso = turmasCursoContainer.querySelectorAll('.turma-checkbox:checked');
+            if (marcadasNoCurso.length > 0) {
+                const escolhida = marcadasNoCurso[0];
+                turmasCursoContainer.querySelectorAll('.turma-checkbox').forEach(checkbox => {
+                    if (checkbox !== escolhida) {
+                        checkbox.disabled = true;
+                    }
+                });
+            }
+        });
+
+        atualizarTurmasSelecionadas();
+    }
+
+    function obterTurmasDoCache(cursosSelecionados) {
+        const turmas = [];
+        cursosSelecionados.forEach(cursoId => {
+            const turmasCurso = cacheTurmasPorCurso.get(Number(cursoId)) || [];
+            turmas.push(...turmasCurso);
+        });
+        return turmas;
+    }
+
+    function exibirCarregandoNosCursos(cursosIds) {
+        const cursosContainer = document.getElementById('cursos-container');
+        if (!cursosContainer || cursosIds.length === 0) {
             return;
         }
 
-        const url = `/inscricoes/get_turmas/?curso_id=${cursosSelecionados.join(',')}`;
-        console.log('URL:', url);
-        
+        const idsSet = new Set(cursosIds.map(id => String(id)));
+        cursosContainer.querySelectorAll('.curso-item').forEach(item => {
+            const checkboxCurso = item.querySelector('input[type="checkbox"][name="cursos"]');
+            const turmasCursoContainer = item.querySelector('.turmas-curso');
+            if (!checkboxCurso || !checkboxCurso.checked || !turmasCursoContainer) {
+                return;
+            }
+
+            if (!idsSet.has(String(checkboxCurso.value))) {
+                return;
+            }
+
+            turmasCursoContainer.classList.remove('d-none');
+            turmasCursoContainer.innerHTML = '<p class="text-muted mb-0 small">Carregando turmas...</p>';
+        });
+    }
+
+    // Função para carregar turmas dos cursos marcados e exibir inline.
+    function carregarTurmasInline() {
+        const cursosContainer = document.getElementById('cursos-container');
+        if (!cursosContainer) {
+            return;
+        }
+
+        const cursosCheckboxes = cursosContainer.querySelectorAll('input[type="checkbox"][name="cursos"]');
+        const cursosSelecionados = Array.from(cursosCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        const selecionadasAntes = new Set(
+            Array.from(document.querySelectorAll('.turma-checkbox:checked')).map(checkbox => checkbox.value)
+        );
+
+        if (cursosSelecionados.length === 0) {
+            cursosContainer.querySelectorAll('.turmas-curso').forEach(turmaContainer => {
+                turmaContainer.classList.add('d-none');
+                turmaContainer.innerHTML = '';
+            });
+            atualizarTurmasSelecionadas();
+            return;
+        }
+
+        const cursosSemCache = cursosSelecionados.filter(cursoId => !cacheTurmasPorCurso.has(Number(cursoId)));
+        const turmasCache = obterTurmasDoCache(cursosSelecionados);
+        renderizarTurmasInline(turmasCache, selecionadasAntes);
+
+        if (cursosSemCache.length === 0) {
+            return;
+        }
+
+        exibirCarregandoNosCursos(cursosSemCache);
+
+        if (requisicaoTurmasController) {
+            requisicaoTurmasController.abort();
+        }
+
+        requisicaoTurmasController = new AbortController();
+        const controllerAtual = requisicaoTurmasController;
+
+        const url = `/inscricoes/get_turmas/?curso_id=${cursosSemCache.join(',')}`;
         fetch(url, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            credentials: 'same-origin' // Inclui cookies na requisição
+            credentials: 'same-origin',
+            signal: controllerAtual.signal
         })
             .then(response => {
-                console.log('Status da resposta:', response.status);
                 if (response.status === 403) {
-                    throw new Error('Você precisa estar logado para ver os horários.');
+                    throw new Error('Você precisa estar logado para ver as turmas.');
                 }
                 if (response.status === 404) {
-                    throw new Error('Página não encontrada. Verifique se a URL está correta.');
+                    throw new Error('Página não encontrada.');
                 }
                 if (!response.ok) {
                     throw new Error(`Erro do servidor: ${response.status}`);
@@ -181,87 +301,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log('Dados:', data);
-                const container = document.getElementById('horarios-container');
-                container.innerHTML = '';
-                
-                if (data.turmas && data.turmas.length > 0) {
-                    // Agrupa turmas por curso
-                    const turmasPorCurso = {};
-                    data.turmas.forEach(turma => {
-                        if (!turmasPorCurso[turma.curso_id]) {
-                            turmasPorCurso[turma.curso_id] = {
-                                nome: turma.curso_nome,
-                                turmas: []
-                            };
-                        }
-                        turmasPorCurso[turma.curso_id].turmas.push(turma);
-                    });
-                    
-                    // Cria elementos para cada curso
-                    Object.keys(turmasPorCurso).forEach(cursoId => {
-                        const curso = turmasPorCurso[cursoId];
-                        
-                        // Adiciona o título do curso
-                        const cursoTitle = document.createElement('h5');
-                        cursoTitle.className = 'mt-3 mb-2 text-primary';
-                        cursoTitle.textContent = curso.nome;
-                        container.appendChild(cursoTitle);
-                        
-                        // Adiciona as turmas do curso
-                        curso.turmas.forEach(turma => {
-                            const div = document.createElement('div');
-                            div.className = 'form-check mb-2';
-                            div.innerHTML = `
-                                <input class="form-check-input turma-checkbox" type="checkbox" name="turmas" 
-                                       value="${turma.id}" id="turma${turma.id}" data-curso-id="${turma.curso_id}">
-                                <label class="form-check-label" for="turma${turma.id}">
-                                    ${turma.nome} (${turma.dia_semana} ${turma.horario_inicio}-${turma.horario_fim}) 
-                                    (${turma.vagas_disponiveis} vagas)
-                                </label>
-                            `;
-                            container.appendChild(div);
-                        });
-                    });
-                    
-                    // Adiciona evento para desabilitar turmas do mesmo curso
-                    const turmasCheckboxes = container.querySelectorAll('.turma-checkbox');
-                    turmasCheckboxes.forEach(checkbox => {
-                        checkbox.addEventListener('change', function() {
-                            const cursoId = this.getAttribute('data-curso-id');
-                            
-                            // Se este checkbox foi marcado, desabilita os outros do mesmo curso
-                            if (this.checked) {
-                                turmasCheckboxes.forEach(otherCheckbox => {
-                                    if (otherCheckbox !== this && otherCheckbox.getAttribute('data-curso-id') === cursoId) {
-                                        otherCheckbox.disabled = true;
-                                        otherCheckbox.checked = false;
-                                    }
-                                });
-                            } else {
-                                // Se este checkbox foi desmarcado, habilita os outros do mesmo curso
-                                turmasCheckboxes.forEach(otherCheckbox => {
-                                    if (otherCheckbox.getAttribute('data-curso-id') === cursoId) {
-                                        otherCheckbox.disabled = false;
-                                    }
-                                });
-                            }
-                            
-                            // Atualiza o campo oculto com os IDs das turmas selecionadas
-                            atualizarTurmasSelecionadas();
-                        });
-                    });
-                } else {
-                    container.innerHTML = '<p class="text-muted">Nenhum horário disponível para os cursos selecionados.</p>';
-                }
+                const turmas = data.turmas || [];
+
+                const turmasPorCurso = {};
+                cursosSemCache.forEach(cursoId => {
+                    turmasPorCurso[cursoId] = [];
+                });
+
+                turmas.forEach(turma => {
+                    if (!turmasPorCurso[turma.curso_id]) {
+                        turmasPorCurso[turma.curso_id] = [];
+                    }
+                    turmasPorCurso[turma.curso_id].push(turma);
+                });
+
+                cursosSemCache.forEach(cursoId => {
+                    cacheTurmasPorCurso.set(Number(cursoId), turmasPorCurso[cursoId] || []);
+                });
+
+                const cursosAindaSelecionados = Array.from(cursosContainer.querySelectorAll('input[type="checkbox"][name="cursos"]'))
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+
+                renderizarTurmasInline(obterTurmasDoCache(cursosAindaSelecionados), selecionadasAntes);
             })
             .catch(error => {
-                console.error('Erro ao carregar horários:', error);
-                const container = document.getElementById('horarios-container');
-                if (error.message.includes('logado')) {
-                    container.innerHTML = '<p class="text-danger">Você precisa estar logado para ver os horários. <a href="/accounts/login/">Clique aqui para fazer login</a>.</p>';
-                } else {
-                    container.innerHTML = `<p class="text-danger">Erro ao carregar horários: ${error.message}</p>`;
+                if (error.name === 'AbortError') {
+                    return;
+                }
+
+                console.error('Erro ao carregar turmas:', error);
+                cursosContainer.querySelectorAll('.curso-item').forEach(item => {
+                    const checkboxCurso = item.querySelector('input[type="checkbox"][name="cursos"]');
+                    const turmasCursoContainer = item.querySelector('.turmas-curso');
+                    if (
+                        checkboxCurso &&
+                        checkboxCurso.checked &&
+                        turmasCursoContainer &&
+                        cursosSemCache.includes(checkboxCurso.value)
+                    ) {
+                        turmasCursoContainer.classList.remove('d-none');
+                        turmasCursoContainer.innerHTML = `<p class="text-danger mb-0 small">Erro ao carregar turmas: ${error.message}</p>`;
+                    }
+                });
+                atualizarTurmasSelecionadas();
+            })
+            .finally(() => {
+                if (requisicaoTurmasController === controllerAtual) {
+                    requisicaoTurmasController = null;
                 }
             });
     }
@@ -269,32 +356,36 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adiciona evento aos checkboxes de cursos
     const cursosContainer = document.getElementById('cursos-container');
     if (cursosContainer) {
-        console.log('Container de cursos encontrado');
-        const cursosCheckboxes = cursosContainer.querySelectorAll('input[type="checkbox"]');
-        console.log('Checkboxes de cursos encontrados:', cursosCheckboxes.length);
-        
-        if (cursosCheckboxes.length === 0) {
-            console.log('Nenhum checkbox de curso encontrado!');
-        } else {
-            cursosCheckboxes.forEach(checkbox => {
-                console.log('Adicionando evento ao checkbox:', checkbox.id);
-                checkbox.addEventListener('change', carregarHorarios);
-            });
+        const cursosCheckboxes = cursosContainer.querySelectorAll('input[type="checkbox"][name="cursos"]');
+        cursosCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', carregarTurmasInline);
+        });
 
-            // Se o navegador restaurou checkboxes marcados, carrega os horários imediatamente.
-            if (Array.from(cursosCheckboxes).some(checkbox => checkbox.checked)) {
-                carregarHorarios();
-            }
+        if (Array.from(cursosCheckboxes).some(checkbox => checkbox.checked)) {
+            carregarTurmasInline();
         }
-    } else {
-        console.error('Container de cursos não encontrado!');
     }
 
     // Função para atualizar o campo oculto com as turmas selecionadas
     function atualizarTurmasSelecionadas() {
         const turmasCheckboxes = document.querySelectorAll('.turma-checkbox:checked');
-        const turmasSelecionadas = Array.from(turmasCheckboxes).map(checkbox => checkbox.value);
-        document.getElementById('turmas_selecionadas').value = turmasSelecionadas.join(',');
+        const turmasSelecionadas = new Set();
+
+        Array.from(turmasCheckboxes).forEach(checkbox => {
+            const idsAgrupados = checkbox.getAttribute('data-turma-ids');
+            if (!idsAgrupados) {
+                turmasSelecionadas.add(checkbox.value);
+                return;
+            }
+
+            idsAgrupados
+                .split(',')
+                .map(id => id.trim())
+                .filter(id => id.length > 0)
+                .forEach(id => turmasSelecionadas.add(id));
+        });
+
+        document.getElementById('turmas_selecionadas').value = Array.from(turmasSelecionadas).join(',');
         console.log('Turmas selecionadas:', turmasSelecionadas);
     }
 
@@ -303,9 +394,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Adiciona evento para atualizar as turmas selecionadas quando um checkbox é marcado/desmarcado
     document.addEventListener('change', function(event) {
-        if (event.target.classList.contains('turma-checkbox')) {
-            atualizarTurmasSelecionadas();
+        if (!event.target.classList.contains('turma-checkbox')) {
+            return;
         }
+
+        const checkboxAtual = event.target;
+        const cursoId = checkboxAtual.getAttribute('data-curso-id');
+        const containerCurso = checkboxAtual.closest('.turmas-curso');
+        if (!containerCurso) {
+            atualizarTurmasSelecionadas();
+            return;
+        }
+
+        const checkboxesCurso = containerCurso.querySelectorAll(`.turma-checkbox[data-curso-id="${cursoId}"]`);
+        if (checkboxAtual.checked) {
+            checkboxesCurso.forEach(checkbox => {
+                if (checkbox !== checkboxAtual) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                }
+            });
+        } else {
+            checkboxesCurso.forEach(checkbox => {
+                checkbox.disabled = false;
+            });
+        }
+
+        atualizarTurmasSelecionadas();
     });
     
     // Adiciona validação ao formulário antes do envio
