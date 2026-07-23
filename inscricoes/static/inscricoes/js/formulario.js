@@ -133,6 +133,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const cacheTurmasPorCurso = new Map();
     let requisicaoTurmasController = null;
 
+    function normalizarTexto(valor) {
+        return (valor || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function obterRotuloTurma(cursoNome, totalTurmas, indiceTurma) {
+        const cursoNormalizado = normalizarTexto(cursoNome);
+        const usaPadraoInicianteAvancado = ['teatro', 'teclado', 'violao'].includes(cursoNormalizado);
+
+        if (usaPadraoInicianteAvancado && totalTurmas > 1) {
+            if (indiceTurma === 0) {
+                return 'Iniciante Turma 1';
+            }
+            if (indiceTurma === 1) {
+                return 'Avançado Turma 2';
+            }
+            return `Turma ${indiceTurma + 1}`;
+        }
+
+        if (totalTurmas <= 1) {
+            return 'Turma Única';
+        }
+
+        return `Turma ${indiceTurma + 1}`;
+    }
+
     // Função para renderizar as turmas dentro do bloco de cada curso.
     function renderizarTurmasInline(turmas, selecionadasAntes) {
         const cursosContainer = document.getElementById('cursos-container');
@@ -174,17 +202,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            turmasDoCurso.forEach(turma => {
+            turmasDoCurso.forEach((turma, indiceTurma) => {
                 const checked = selecionadasAntes.has(String(turma.id)) ? 'checked' : '';
                 const turmaIds = Array.isArray(turma.ids) && turma.ids.length > 0
                     ? turma.ids.join(',')
                     : String(turma.id);
+                const rotuloTurma = obterRotuloTurma(turma.curso_nome, turmasDoCurso.length, indiceTurma);
                 const bloco = document.createElement('div');
                 bloco.className = 'form-check mb-2';
                 bloco.innerHTML = `
                     <input class="form-check-input turma-checkbox" type="checkbox" name="turmas" value="${turma.id}" id="turma${turma.id}" data-curso-id="${turma.curso_id}" data-turma-ids="${turmaIds}" ${checked}>
                     <label class="form-check-label" for="turma${turma.id}">
-                        ${turma.nome} (${turma.dia_semana} ${turma.horario_inicio}-${turma.horario_fim}) (${turma.vagas_disponiveis} vagas)
+                        ${rotuloTurma}: ${turma.nome} (${turma.dia_semana} ${turma.horario_inicio}-${turma.horario_fim}) (${turma.vagas_disponiveis} vagas)
                     </label>
                 `;
                 turmasCursoContainer.appendChild(bloco);
