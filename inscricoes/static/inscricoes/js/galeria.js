@@ -1,7 +1,24 @@
 // Funções para a galeria de imagens
+function hydrateGalleryImages(gallery) {
+    if (!gallery || gallery.dataset.hydrated === '1') {
+        return;
+    }
+
+    const lazyImages = gallery.querySelectorAll('img[data-src]');
+    lazyImages.forEach((image) => {
+        const dataSrc = image.getAttribute('data-src');
+        if (dataSrc) {
+            image.src = dataSrc;
+        }
+    });
+
+    gallery.dataset.hydrated = '1';
+}
+
 function openGallery(courseId) {
     const gallery = document.getElementById(`${courseId}-gallery`);
     if (gallery) {
+        hydrateGalleryImages(gallery);
         document.querySelectorAll('.gallery-container').forEach(item => {
             if (item !== gallery) {
                 item.style.display = 'none';
