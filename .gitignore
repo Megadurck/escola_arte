@@ -23,6 +23,7 @@ logs/
 
 # 5️⃣ Pastas do Django que podem ser regeneradas
 staticfiles/
+staticfiles_local/
 media/
 node_modules/
 venv/

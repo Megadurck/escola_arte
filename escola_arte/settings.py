@@ -121,8 +121,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Diretório onde os arquivos estáticos serão coletados durante o deploy
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Em desenvolvimento, coleta em pasta separada para não sujar arquivos rastreados.
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_local')
+else:
+    # Diretório onde os arquivos estáticos serão coletados durante o deploy
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Pastas adicionais de estáticos do projeto (apps já são encontrados automaticamente).
 STATICFILES_DIRS = []
