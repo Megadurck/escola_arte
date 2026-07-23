@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}?v=20260723a">
+    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}?v=20260723zs">
     <!-- Outros links e metadados -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
 </head>
@@ -34,17 +34,20 @@
 
     <!-- Seção Banner -->
     <section class="banner">
-        <div class="banner-content">
-            <img src="{% static 'inscricoes/img/logo_escola.png' %}" class="img-fluid" id="logo_escola" alt="Logo da Escola de Artes">
-            <h1 class="titulo_banner" id="titulo">Bem-vindo à Escola de Artes</h1>
-            <p>Transforme sua criatividade em realidade.</p>
-            
-            {% if inscricoes_abertas %}
-                <a href="{% url 'inscricoes:inscrever' %}" class="btn btn-primary btn-lg inscrever" id="botao_inscrever">Inscreva-se</a>
-            {% else %}
-                <button class="btn btn-primary btn-lg inscrever" disabled>Inscrições Encerradas</button>
-            {% endif %}
+        <div class="banner-content banner-layout">
+            <div class="banner-copy">
+                <h1 class="titulo_banner" id="titulo">Bem-vindo à Escola de Artes</h1>
+                <p>Transforme sua criatividade em realidade.</p>
 
+                {% if inscricoes_abertas %}
+                    <a href="{% url 'inscricoes:inscrever' %}" class="btn btn-primary btn-lg inscrever" id="botao_inscrever">Inscreva-se</a>
+                {% else %}
+                    <button class="btn btn-primary btn-lg inscrever" disabled>Inscrições Encerradas</button>
+                {% endif %}
+            </div>
+            <div class="banner-art">
+                <img src="{% static 'inscricoes/img/logo_escola.png' %}?v=20260723zb" class="banner-logo img-fluid" alt="Logo Escola de Artes Cultura de Rua">
+            </div>
         </div>
     </section>
     {% if messages %}
@@ -133,7 +136,7 @@
                             <p><strong>Idade:</strong> 10 anos em diante</p>
                             <p><strong>Dias:</strong> Terça e Quarta</p>
                             <p><strong>Horário:</strong> 18:00 - 19:00</p>
-                            <p class="mb-0"><small>Iniciante Turma 1 | Avançado Turma 2</small></p>
+                            <p class="mb-0"><small>Infantil Turma 1 | Adulta Turma 2</small></p>
                         </div>
                     </div>
                 </div>
@@ -400,7 +403,9 @@
     <footer class="text-center py-4 bg-dark text-light">
         <div class="container text-center">
             <p class="mb-3">Parceiros e Apoio</p>
-            <img src="{% static 'inscricoes/img/rodape.png' %}" alt="Logos dos parceiros" class="img-fluid" style="max-height: 80px;">
+            <div class="rodape-branco-faixa">
+                <img src="{% static 'inscricoes/img/rodape.png' %}?v=20260723q" alt="Logos dos parceiros" class="rodape-logos img-fluid">
+            </div>
           </div>
         <div class="container">
             <p class="mb-0">&copy; {% now "Y" %} Escola de Artes - Todos os direitos reservados.</p>
@@ -409,6 +414,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'inscricoes/js/galeria.js' %}?v=20260723a"></script>
+    <script src="{% static 'inscricoes/js/galeria.js' %}?v=20260723b"></script>
 </body>
 </html>

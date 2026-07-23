@@ -140,9 +140,49 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/[\u0300-\u036f]/g, '');
     }
 
-    function obterRotuloTurma(cursoNome, totalTurmas, indiceTurma) {
+    function obterRotuloTurma(cursoNome, turmaNome, totalTurmas, indiceTurma) {
         const cursoNormalizado = normalizarTexto(cursoNome);
-        const usaPadraoInicianteAvancado = ['teatro', 'teclado', 'violao'].includes(cursoNormalizado);
+        const turmaNormalizada = normalizarTexto(turmaNome);
+        const isViolao = cursoNormalizado.includes('violao');
+        const usaPadraoInicianteAvancado = ['teatro', 'teclado']
+            .some(nomeCurso => cursoNormalizado.includes(nomeCurso));
+
+        if (isViolao) {
+            if (turmaNormalizada.includes('infantil') || turmaNormalizada.includes('iniciante')) {
+                return 'Infantil Turma 1';
+            }
+            if (turmaNormalizada.includes('adult') || turmaNormalizada.includes('avancad')) {
+                return 'Adulta Turma 2';
+            }
+            if (cursoNormalizado.includes('infantil') || cursoNormalizado.includes('iniciante')) {
+                return 'Infantil Turma 1';
+            }
+            if (cursoNormalizado.includes('adult') || cursoNormalizado.includes('avancad')) {
+                return 'Adulta Turma 2';
+            }
+            if (totalTurmas > 1) {
+                if (indiceTurma === 0) {
+                    return 'Infantil Turma 1';
+                }
+                if (indiceTurma === 1) {
+                    return 'Adulta Turma 2';
+                }
+                return `Turma ${indiceTurma + 1}`;
+            }
+        }
+
+        if (turmaNormalizada.includes('iniciante')) {
+            return 'Iniciante Turma 1';
+        }
+        if (turmaNormalizada.includes('avancad')) {
+            return 'Avançado Turma 2';
+        }
+        if (cursoNormalizado.includes('iniciante')) {
+            return 'Iniciante Turma 1';
+        }
+        if (cursoNormalizado.includes('avancad')) {
+            return 'Avançado Turma 2';
+        }
 
         if (usaPadraoInicianteAvancado && totalTurmas > 1) {
             if (indiceTurma === 0) {
@@ -159,6 +199,129 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         return `Turma ${indiceTurma + 1}`;
+    }
+
+    function formatarRotuloCurso(rotuloOriginal) {
+        const cursoNormalizado = normalizarTexto(rotuloOriginal);
+
+        if (cursoNormalizado.includes('teatro') && cursoNormalizado.includes('iniciante')) {
+            return 'TEATRO (INICIANTE - TURMA 1)';
+        }
+        if (cursoNormalizado.includes('teatro') && cursoNormalizado.includes('avancad')) {
+            return 'TEATRO (AVANÇADO - TURMA 2)';
+        }
+        if (cursoNormalizado.includes('teclado') && cursoNormalizado.includes('iniciante')) {
+            return 'TECLADO (INICIANTE - TURMA 1)';
+        }
+        if (cursoNormalizado.includes('teclado') && cursoNormalizado.includes('avancad')) {
+            return 'TECLADO (AVANÇADO - TURMA 2)';
+        }
+        if (cursoNormalizado.includes('violao') && (cursoNormalizado.includes('infantil') || cursoNormalizado.includes('iniciante'))) {
+            return 'VIOLÃO (INFANTIL - TURMA 1)';
+        }
+        if (cursoNormalizado.includes('violao') && (cursoNormalizado.includes('adult') || cursoNormalizado.includes('avancad'))) {
+            return 'VIOLÃO (ADULTA - TURMA 2)';
+        }
+
+        return rotuloOriginal;
+    }
+
+    function obterClasseTemaCurso(rotuloOriginal) {
+        const cursoNormalizado = normalizarTexto(rotuloOriginal);
+
+        if (cursoNormalizado.includes('capoeira')) {
+            return 'theme-capoeira';
+        }
+        if (cursoNormalizado.includes('teatro')) {
+            return 'theme-teatro';
+        }
+        if (cursoNormalizado.includes('danca do ventre') || cursoNormalizado.includes('ventre') || cursoNormalizado.includes('danca popular')) {
+            return 'theme-danca-ventre';
+        }
+        if (cursoNormalizado.includes('danca moderna')) {
+            return 'theme-danca-moderna';
+        }
+        if (cursoNormalizado.includes('bale') || cursoNormalizado.includes('ballet')) {
+            return 'theme-ballet';
+        }
+        if (cursoNormalizado.includes('violao')) {
+            return 'theme-violao';
+        }
+        if (cursoNormalizado.includes('teclado')) {
+            return 'theme-teclado';
+        }
+        if (cursoNormalizado.includes('bateria')) {
+            return 'theme-bateria';
+        }
+        if (cursoNormalizado.includes('percussao')) {
+            return 'theme-percussao';
+        }
+
+        return '';
+    }
+
+    function obterPrioridadeTurma(cursoNome, turmaNome) {
+        const cursoNormalizado = normalizarTexto(cursoNome);
+        const turmaNormalizada = normalizarTexto(turmaNome);
+
+        if (cursoNormalizado.includes('violao')) {
+            if (turmaNormalizada.includes('infantil') || turmaNormalizada.includes('iniciante')) {
+                return 1;
+            }
+            if (turmaNormalizada.includes('adult') || turmaNormalizada.includes('avancad')) {
+                return 2;
+            }
+        }
+
+        if (cursoNormalizado.includes('teatro') || cursoNormalizado.includes('teclado')) {
+            if (turmaNormalizada.includes('iniciante')) {
+                return 1;
+            }
+            if (turmaNormalizada.includes('avancad')) {
+                return 2;
+            }
+        }
+
+        return 99;
+    }
+
+    function aplicarRotulosNosCursos() {
+        const cursosContainer = document.getElementById('cursos-container');
+        if (!cursosContainer) {
+            return;
+        }
+
+        const themeClasses = [
+            'theme-capoeira',
+            'theme-teatro',
+            'theme-danca-ventre',
+            'theme-danca-moderna',
+            'theme-ballet',
+            'theme-violao',
+            'theme-teclado',
+            'theme-bateria',
+            'theme-percussao'
+        ];
+
+        const items = cursosContainer.querySelectorAll('.curso-item');
+        items.forEach(item => {
+            const label = item.querySelector('.form-check-label');
+            if (!label) {
+                return;
+            }
+
+            if (!label.dataset.originalLabel) {
+                label.dataset.originalLabel = label.textContent.trim();
+            }
+
+            label.textContent = formatarRotuloCurso(label.dataset.originalLabel);
+
+            item.classList.remove(...themeClasses);
+            const classeTema = obterClasseTemaCurso(label.dataset.originalLabel);
+            if (classeTema) {
+                item.classList.add(classeTema);
+            }
+        });
     }
 
     // Função para renderizar as turmas dentro do bloco de cada curso.
@@ -196,24 +359,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const cursoId = Number(checkboxCurso.value);
             const turmasDoCurso = turmasPorCurso[cursoId] || [];
+            const turmasOrdenadas = [...turmasDoCurso].sort((a, b) => {
+                const prioridadeA = obterPrioridadeTurma(a.curso_nome, a.nome);
+                const prioridadeB = obterPrioridadeTurma(b.curso_nome, b.nome);
 
-            if (turmasDoCurso.length === 0) {
+                if (prioridadeA !== prioridadeB) {
+                    return prioridadeA - prioridadeB;
+                }
+
+                const horarioA = String(a.horario_inicio || '');
+                const horarioB = String(b.horario_inicio || '');
+                if (horarioA !== horarioB) {
+                    return horarioA.localeCompare(horarioB);
+                }
+
+                return String(a.nome || '').localeCompare(String(b.nome || ''));
+            });
+
+            if (turmasOrdenadas.length === 0) {
                 turmasCursoContainer.innerHTML = '<p class="text-muted mb-0 small">Nenhuma turma disponivel para este curso.</p>';
                 return;
             }
 
-            turmasDoCurso.forEach((turma, indiceTurma) => {
+            turmasOrdenadas.forEach((turma, indiceTurma) => {
                 const checked = selecionadasAntes.has(String(turma.id)) ? 'checked' : '';
                 const turmaIds = Array.isArray(turma.ids) && turma.ids.length > 0
                     ? turma.ids.join(',')
                     : String(turma.id);
-                const rotuloTurma = obterRotuloTurma(turma.curso_nome, turmasDoCurso.length, indiceTurma);
+                const rotuloTurma = obterRotuloTurma(turma.curso_nome, turma.nome, turmasOrdenadas.length, indiceTurma);
+                const nomeTurmaNormalizado = normalizarTexto(turma.nome);
+                const complementoNomeTurma = nomeTurmaNormalizado === 'turma unica' ? '' : `: ${turma.nome}`;
                 const bloco = document.createElement('div');
                 bloco.className = 'form-check mb-2';
                 bloco.innerHTML = `
                     <input class="form-check-input turma-checkbox" type="checkbox" name="turmas" value="${turma.id}" id="turma${turma.id}" data-curso-id="${turma.curso_id}" data-turma-ids="${turmaIds}" ${checked}>
                     <label class="form-check-label" for="turma${turma.id}">
-                        ${rotuloTurma}: ${turma.nome} (${turma.dia_semana} ${turma.horario_inicio}-${turma.horario_fim}) (${turma.vagas_disponiveis} vagas)
+                        ${rotuloTurma}${complementoNomeTurma} (${turma.dia_semana} ${turma.horario_inicio}-${turma.horario_fim}) (${turma.vagas_disponiveis} vagas)
                     </label>
                 `;
                 turmasCursoContainer.appendChild(bloco);
@@ -385,6 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adiciona evento aos checkboxes de cursos
     const cursosContainer = document.getElementById('cursos-container');
     if (cursosContainer) {
+        aplicarRotulosNosCursos();
         const cursosCheckboxes = cursosContainer.querySelectorAll('input[type="checkbox"][name="cursos"]');
         cursosCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', carregarTurmasInline);

@@ -2,7 +2,13 @@
 function openGallery(courseId) {
     const gallery = document.getElementById(`${courseId}-gallery`);
     if (gallery) {
-        gallery.style.display = 'flex';
+        document.querySelectorAll('.gallery-container').forEach(item => {
+            if (item !== gallery) {
+                item.style.display = 'none';
+            }
+        });
+        gallery.style.display = 'grid';
+        gallery.scrollTop = 0;
         document.body.style.overflow = 'hidden'; // Previne rolagem do body
     }
 }

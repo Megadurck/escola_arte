@@ -5,8 +5,118 @@
 
 {% block content %}
 <style>
+    body {
+        background-color: #fff4dd;
+        background-image:
+            url('{% static "inscricoes/img/background-escola.png" %}'),
+            linear-gradient(135deg, rgba(255, 82, 82, 0.25) 0 34%, transparent 34% 100%),
+            linear-gradient(225deg, rgba(0, 174, 239, 0.24) 0 28%, transparent 28% 100%),
+            linear-gradient(180deg, rgba(255, 170, 0, 0.2) 0 22%, transparent 22% 100%),
+            radial-gradient(circle at 12% 24%, rgba(255, 48, 48, 0.32) 0 160px, transparent 162px),
+            radial-gradient(circle at 88% 36%, rgba(35, 192, 134, 0.3) 0 170px, transparent 172px),
+            radial-gradient(circle at 22% 78%, rgba(255, 129, 0, 0.28) 0 180px, transparent 182px),
+            radial-gradient(circle at 78% 86%, rgba(103, 58, 183, 0.3) 0 150px, transparent 152px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78));
+        background-repeat: no-repeat;
+        background-position: top center, -120px 260px, calc(100% + 90px) 420px, center 670px, -200px 980px, calc(100% + 140px) 1180px, -140px 1500px, calc(100% + 110px) 1740px, center;
+        background-size: 100% auto, 520px 320px, 540px 340px, 100% 220px, 560px 360px, 580px 360px, 560px 360px, 520px 320px, 100% 100%;
+        min-height: 100vh;
+    }
+
+    .card.shadow-lg {
+        backdrop-filter: blur(2px);
+        background: #c90f18;
+        border: 1px solid #a50c14;
+    }
+
+    .card.shadow-lg .card-body {
+        background: rgba(201, 15, 24, 0.94);
+        color: #ffffff;
+    }
+
+    .card.shadow-lg .form-label,
+    .card.shadow-lg .form-text,
+    .card.shadow-lg h4,
+    .card.shadow-lg p,
+    .card.shadow-lg .text-muted,
+    .card.shadow-lg .form-check-label {
+        color: #ffffff !important;
+    }
+
+    .card.shadow-lg .border-bottom {
+        border-color: rgba(255, 255, 255, 0.45) !important;
+    }
+
+    .card.shadow-lg .form-control,
+    .card.shadow-lg #cursos-container,
+    .card.shadow-lg .curso-item {
+        background: #fff8f8;
+        color: #2b1a1a;
+        border-color: #f1caca;
+    }
+
+    .card.shadow-lg #cursos-container {
+        background: rgba(255, 255, 255, 0.24);
+        border-color: rgba(255, 255, 255, 0.45) !important;
+    }
+
+    .card.shadow-lg .curso-item {
+        --curso-bg: #fff8f8;
+        --curso-text: #2b1a1a;
+        --curso-border: rgba(59, 25, 25, 0.2);
+        background: var(--curso-bg) !important;
+        border: 1px solid var(--curso-border) !important;
+    }
+
+    .card.shadow-lg .curso-item .form-check-label,
+    .card.shadow-lg .curso-item .text-muted,
+    .card.shadow-lg .curso-item .turmas-curso,
+    .card.shadow-lg .curso-item .turmas-curso .form-check-label {
+        color: var(--curso-text) !important;
+    }
+
+    .card.shadow-lg .curso-item .turmas-curso {
+        background: rgba(255, 255, 255, 0.42);
+        border-radius: 10px;
+        padding: 8px 10px;
+    }
+
+    .card.shadow-lg .curso-item .form-check-input {
+        border-color: rgba(28, 28, 28, 0.35);
+    }
+
+    .card.shadow-lg .curso-item.theme-capoeira { --curso-bg: #ffc93c; --curso-text: #402100; --curso-border: #e7aa20; }
+    .card.shadow-lg .curso-item.theme-teatro { --curso-bg: #5fb7ff; --curso-text: #06213f; --curso-border: #3497e8; }
+    .card.shadow-lg .curso-item.theme-danca-ventre { --curso-bg: #ff86c8; --curso-text: #4a0830; --curso-border: #e85aa8; }
+    .card.shadow-lg .curso-item.theme-danca-moderna { --curso-bg: #62e8b3; --curso-text: #043828; --curso-border: #3fcf96; }
+    .card.shadow-lg .curso-item.theme-ballet { --curso-bg: #ffd86d; --curso-text: #503100; --curso-border: #efbd3f; }
+    .card.shadow-lg .curso-item.theme-violao { --curso-bg: #b89cff; --curso-text: #25114f; --curso-border: #9a78f3; }
+    .card.shadow-lg .curso-item.theme-teclado { --curso-bg: #7cdfff; --curso-text: #063a52; --curso-border: #52c2e8; }
+    .card.shadow-lg .curso-item.theme-bateria { --curso-bg: #ff9f9f; --curso-text: #4d0000; --curso-border: #e97373; }
+    .card.shadow-lg .curso-item.theme-percussao { --curso-bg: #ffd270; --curso-text: #4a2e00; --curso-border: #e3ac39; }
+
+    .card.shadow-lg .btn-outline-secondary {
+        background: #ffffff;
+        border: 2px solid #ffffff;
+        color: #102a43;
+        font-weight: 700;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .card.shadow-lg .btn-outline-secondary:hover,
+    .card.shadow-lg .btn-outline-secondary:focus {
+        background: #ffe49a;
+        border-color: #ffe49a;
+        color: #102a43;
+    }
+
     /* Estilos para melhorar a usabilidade em dispositivos móveis */
     @media (max-width: 768px) {
+        body {
+            background-position: top center, -220px 230px, calc(100% + 180px) 420px, center 620px, -240px 920px, calc(100% + 180px) 1140px, -200px 1420px, calc(100% + 180px) 1650px, center;
+            background-size: 165% auto, 420px 260px, 420px 260px, 100% 160px, 440px 280px, 460px 280px, 430px 280px, 410px 260px, 100% 100%;
+        }
+
         input[type="date"] {
             font-size: 16px; /* Evita zoom automático em iOS */
             padding: 8px;
@@ -221,5 +331,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'inscricoes/js/formulario_v2.js' %}?v=20260723a"></script>
+<script src="{% static 'inscricoes/js/formulario_v2.js' %}?v=20260723g"></script>
 {% endblock %}
