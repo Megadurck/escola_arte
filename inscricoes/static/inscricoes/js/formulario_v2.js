@@ -132,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const cacheTurmasPorCurso = new Map();
     let requisicaoTurmasController = null;
+    let preCargaTurmasIniciada = false;
 
     function normalizarTexto(valor) {
         return (valor || '')
@@ -423,6 +424,66 @@ document.addEventListener('DOMContentLoaded', function() {
         return turmas;
     }
 
+    function preencherCacheTurmas(cursoIds, turmas) {
+        const turmasPorCurso = {};
+        cursoIds.forEach(cursoId => {
+            turmasPorCurso[cursoId] = [];
+        });
+
+        turmas.forEach(turma => {
+            if (!turmasPorCurso[turma.curso_id]) {
+                turmasPorCurso[turma.curso_id] = [];
+            }
+            turmasPorCurso[turma.curso_id].push(turma);
+        });
+
+        cursoIds.forEach(cursoId => {
+            cacheTurmasPorCurso.set(Number(cursoId), turmasPorCurso[cursoId] || []);
+        });
+    }
+
+    function preCarregarTurmasEmBackground(cursosCheckboxes) {
+        if (preCargaTurmasIniciada) {
+            return;
+        }
+
+        const todosCursosIds = Array.from(cursosCheckboxes).map(checkbox => checkbox.value);
+        const cursosSemCache = todosCursosIds.filter(cursoId => !cacheTurmasPorCurso.has(Number(cursoId)));
+        if (cursosSemCache.length === 0) {
+            return;
+        }
+
+        preCargaTurmasIniciada = true;
+        const agendar = window.requestIdleCallback || function(callback) {
+            return setTimeout(callback, 220);
+        };
+
+        agendar(function() {
+            const url = `/inscricoes/get_turmas/?curso_id=${cursosSemCache.join(',')}`;
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro do servidor: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    preencherCacheTurmas(cursosSemCache, data.turmas || []);
+                })
+                .catch(error => {
+                    console.warn('Pré-carga de turmas não concluída:', error.message);
+                    preCargaTurmasIniciada = false;
+                });
+        });
+    }
+
     function exibirCarregandoNosCursos(cursosIds) {
         const cursosContainer = document.getElementById('cursos-container');
         if (!cursosContainer || cursosIds.length === 0) {
@@ -512,22 +573,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 const turmas = data.turmas || [];
-
-                const turmasPorCurso = {};
-                cursosSemCache.forEach(cursoId => {
-                    turmasPorCurso[cursoId] = [];
-                });
-
-                turmas.forEach(turma => {
-                    if (!turmasPorCurso[turma.curso_id]) {
-                        turmasPorCurso[turma.curso_id] = [];
-                    }
-                    turmasPorCurso[turma.curso_id].push(turma);
-                });
-
-                cursosSemCache.forEach(cursoId => {
-                    cacheTurmasPorCurso.set(Number(cursoId), turmasPorCurso[cursoId] || []);
-                });
+                preencherCacheTurmas(cursosSemCache, turmas);
 
                 const cursosAindaSelecionados = Array.from(cursosContainer.querySelectorAll('input[type="checkbox"][name="cursos"]'))
                     .filter(checkbox => checkbox.checked)
@@ -571,6 +617,8 @@ document.addEventListener('DOMContentLoaded', function() {
         cursosCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', carregarTurmasInline);
         });
+
+        preCarregarTurmasEmBackground(cursosCheckboxes);
 
         if (Array.from(cursosCheckboxes).some(checkbox => checkbox.checked)) {
             carregarTurmasInline();

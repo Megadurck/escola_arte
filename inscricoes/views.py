@@ -159,6 +159,16 @@ def get_turmas(request):
         Turma.objects
         .filter(curso_id__in=curso_ids, ano_letivo=ano_letivo_atual)
         .select_related('curso')
+        .only(
+            'id',
+            'curso_id',
+            'nome',
+            'dia_semana',
+            'horario_inicio',
+            'horario_fim',
+            'vagas_originais',
+            'curso__nome',
+        )
         .annotate(inscritos_count=Count('inscricaoturma'))
         .order_by('curso__nome', 'nome', 'horario_inicio', 'horario_fim', 'dia_semana')
     )
