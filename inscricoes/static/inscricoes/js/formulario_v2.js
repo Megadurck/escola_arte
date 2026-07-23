@@ -149,47 +149,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isViolao) {
             if (turmaNormalizada.includes('infantil') || turmaNormalizada.includes('iniciante')) {
-                return 'Infantil Turma 1';
+                return 'Turma 1 Infantil';
             }
             if (turmaNormalizada.includes('adult') || turmaNormalizada.includes('avancad')) {
-                return 'Adulta Turma 2';
+                return 'Turma 2 Aduldo';
             }
             if (cursoNormalizado.includes('infantil') || cursoNormalizado.includes('iniciante')) {
-                return 'Infantil Turma 1';
+                return 'Turma 1 Infantil';
             }
             if (cursoNormalizado.includes('adult') || cursoNormalizado.includes('avancad')) {
-                return 'Adulta Turma 2';
+                return 'Turma 2 Aduldo';
             }
             if (totalTurmas > 1) {
                 if (indiceTurma === 0) {
-                    return 'Infantil Turma 1';
+                    return 'Turma 1 Infantil';
                 }
                 if (indiceTurma === 1) {
-                    return 'Adulta Turma 2';
+                    return 'Turma 2 Aduldo';
                 }
                 return `Turma ${indiceTurma + 1}`;
             }
         }
 
         if (turmaNormalizada.includes('iniciante')) {
-            return 'Iniciante Turma 1';
+            return 'Turma 1 Iniciante';
         }
         if (turmaNormalizada.includes('avancad')) {
-            return 'Avançado Turma 2';
+            return 'Turma 2 Avançado';
         }
         if (cursoNormalizado.includes('iniciante')) {
-            return 'Iniciante Turma 1';
+            return 'Turma 1 Iniciante';
         }
         if (cursoNormalizado.includes('avancad')) {
-            return 'Avançado Turma 2';
+            return 'Turma 2 Avançado';
         }
 
         if (usaPadraoInicianteAvancado && totalTurmas > 1) {
             if (indiceTurma === 0) {
-                return 'Iniciante Turma 1';
+                return 'Turma 1 Iniciante';
             }
             if (indiceTurma === 1) {
-                return 'Avançado Turma 2';
+                return 'Turma 2 Avançado';
             }
             return `Turma ${indiceTurma + 1}`;
         }
@@ -205,22 +205,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const cursoNormalizado = normalizarTexto(rotuloOriginal);
 
         if (cursoNormalizado.includes('teatro') && cursoNormalizado.includes('iniciante')) {
-            return 'TEATRO (INICIANTE - TURMA 1)';
+            return 'TEATRO (TURMA 1 INICIANTE)';
         }
         if (cursoNormalizado.includes('teatro') && cursoNormalizado.includes('avancad')) {
-            return 'TEATRO (AVANÇADO - TURMA 2)';
+            return 'TEATRO (TURMA 2 AVANÇADO)';
         }
         if (cursoNormalizado.includes('teclado') && cursoNormalizado.includes('iniciante')) {
-            return 'TECLADO (INICIANTE - TURMA 1)';
+            return 'TECLADO (TURMA 1 INICIANTE)';
         }
         if (cursoNormalizado.includes('teclado') && cursoNormalizado.includes('avancad')) {
-            return 'TECLADO (AVANÇADO - TURMA 2)';
+            return 'TECLADO (TURMA 2 AVANÇADO)';
         }
         if (cursoNormalizado.includes('violao') && (cursoNormalizado.includes('infantil') || cursoNormalizado.includes('iniciante'))) {
-            return 'VIOLÃO (INFANTIL - TURMA 1)';
+            return 'VIOLÃO (TURMA 1 INFANTIL)';
         }
         if (cursoNormalizado.includes('violao') && (cursoNormalizado.includes('adult') || cursoNormalizado.includes('avancad'))) {
-            return 'VIOLÃO (ADULTA - TURMA 2)';
+            return 'VIOLÃO (TURMA 2 ADULDO)';
         }
 
         return rotuloOriginal;
