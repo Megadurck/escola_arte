@@ -22,10 +22,10 @@ tmp/
 logs/
 
 # 5️⃣ Pastas do Django que podem ser regeneradas
-staticfiles/       # Arquivos estáticos compilados do Django (Coletados com 'collectstatic')
-media/             # Arquivos de mídia carregados pelos usuários
-node_modules/      # Caso use npm ou yarn para dependências de front-end
-venv/              # Ambiente Virtual (não versionar)
+staticfiles/
+media/
+node_modules/
+venv/
 
 # 6️⃣ Arquivos do editor de código
 .vscode/           # Editor Visual Studio Code
