@@ -124,10 +124,8 @@ STATIC_URL = '/static/'
 # Diretório onde os arquivos estáticos serão coletados durante o deploy
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Pastas adicionais onde o Django irá procurar arquivos estáticos
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'inscricoes', 'static'),
-]
+# Pastas adicionais de estáticos do projeto (apps já são encontrados automaticamente).
+STATICFILES_DIRS = []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -172,8 +170,8 @@ LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = 'inscricoes:pagina_inicial'
 LOGOUT_REDIRECT_URL = '/'
 
-# Configurações do WhiteNoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Configurações do WhiteNoise com nomes hashados para evitar cache antigo em produção
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SITE_ID = 1
 
