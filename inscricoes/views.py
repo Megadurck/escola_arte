@@ -9,12 +9,14 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.conf import settings
+from django.views.decorators.cache import never_cache
 import re
 
 
 def _ano_letivo_atual():
     return int(getattr(settings, 'ANO_LETIVO_ATUAL'))
 
+@never_cache
 def inscrever(request):
     inscricoes_abertas = getattr(settings, 'INSCRICOES_ABERTAS', False)
     ano_letivo_atual = _ano_letivo_atual()
@@ -48,7 +50,28 @@ def inscrever(request):
             if cursos_ids:
                 post_data.setlist('cursos', [str(curso_id) for curso_id in cursos_ids])
 
-        form = InscricaoForm(post_data)
+        cpf_normalizado = post_data.get('cpf', '')
+        inscricao_existente_mesmo_ano = Inscricao.objects.filter(
+            cpf=cpf_normalizado,
+            ano_letivo=ano_letivo_atual,
+        ).first()
+        inscricao_sem_turma = (
+            inscricao_existente_mesmo_ano is not None
+            and not inscricao_existente_mesmo_ano.inscricaoturma_set.exists()
+        )
+
+        if inscricao_existente_mesmo_ano and not inscricao_sem_turma:
+            messages.error(
+                request,
+                'CPF já cadastrado para este ano letivo. Se precisar alterar a inscrição, procure a coordenação.'
+            )
+            form = InscricaoForm(post_data)
+            return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
+
+        if inscricao_sem_turma:
+            form = InscricaoForm(post_data, instance=inscricao_existente_mesmo_ano)
+        else:
+            form = InscricaoForm(post_data)
         
         # Verifica se pelo menos uma turma foi selecionada
         if not turmas_ids:
@@ -66,6 +89,9 @@ def inscrever(request):
                     if request.user.is_authenticated:
                         inscricao.usuario = request.user
                     inscricao.save()
+
+                    if inscricao_sem_turma:
+                        InscricaoTurma.objects.filter(inscricao=inscricao).delete()
 
                     turmas_qs = Turma.objects.filter(
                         id__in=set(turmas_ids),
@@ -246,6 +272,7 @@ def get_turmas(request):
     return JsonResponse({'turmas': turmas_data})
 
 
+@never_cache
 def pagina_inicial(request):
     cursos = Curso.objects.all()
     inscricoes_abertas = getattr(settings, 'INSCRICOES_ABERTAS', False)

@@ -180,7 +180,7 @@ class AnoLetivoInscricaoTests(TestCase):
         )
 
     def test_cpf_duplicado_no_mesmo_ano_e_bloqueado(self):
-        Inscricao.objects.create(
+        inscricao_existente = Inscricao.objects.create(
             nome_completo="Aluno atual",
             cpf="99999999999",
             ano_letivo=2026,
@@ -190,6 +190,7 @@ class AnoLetivoInscricaoTests(TestCase):
             bairro="Bairro B",
             numero="200",
         )
+        InscricaoTurma.objects.create(inscricao=inscricao_existente, turma=self.turma_2026)
 
         response = self.client.post(reverse("inscricoes:inscrever"), self._dados_validos("99999999999"))
         self.assertEqual(response.status_code, 200)
@@ -212,7 +213,7 @@ class AnoLetivoInscricaoTests(TestCase):
         )
 
     def test_cpf_mascarado_tambem_e_bloqueado_quando_duplicado(self):
-        Inscricao.objects.create(
+        inscricao_existente = Inscricao.objects.create(
             nome_completo="Aluno com CPF numerico",
             cpf="12345678901",
             ano_letivo=2026,
@@ -222,6 +223,7 @@ class AnoLetivoInscricaoTests(TestCase):
             bairro="Bairro C",
             numero="300",
         )
+        InscricaoTurma.objects.create(inscricao=inscricao_existente, turma=self.turma_2026)
 
         response = self.client.post(reverse("inscricoes:inscrever"), self._dados_validos("123.456.789-01"))
         self.assertEqual(response.status_code, 200)
@@ -253,3 +255,27 @@ class AnoLetivoInscricaoTests(TestCase):
         response = self.client.post(reverse("inscricoes:inscrever"), dados)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Inscricao.objects.filter(cpf="11122233344", ano_letivo=2026).exists())
+
+    def test_cpf_com_inscricao_incompleta_e_reaproveitado(self):
+        inscricao_incompleta = Inscricao.objects.create(
+            nome_completo="Cadastro incompleto",
+            cpf="77766655544",
+            ano_letivo=2026,
+            data_nascimento=date(1991, 1, 1),
+            telefone_whatsapp="11988887777",
+            rua="Rua Antiga",
+            bairro="Bairro Antigo",
+            numero="999",
+        )
+
+        dados = self._dados_validos("77766655544")
+        dados["nome_completo"] = "Aluno Recuperado"
+        response = self.client.post(reverse("inscricoes:inscrever"), dados)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Inscricao.objects.filter(cpf="77766655544", ano_letivo=2026).count(), 1)
+
+        inscricao_atualizada = Inscricao.objects.get(pk=inscricao_incompleta.pk)
+        self.assertEqual(inscricao_atualizada.nome_completo, "Aluno Recuperado")
+        self.assertEqual(inscricao_atualizada.turmas.count(), 1)
+        self.assertEqual(inscricao_atualizada.turmas.first().id, self.turma_2026.id)

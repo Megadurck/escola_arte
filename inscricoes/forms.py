@@ -93,9 +93,14 @@ class InscricaoForm(forms.ModelForm):
         cpf = self.cleaned_data.get('cpf', '')
         # Remove todos os caracteres não numéricos
         cpf = ''.join(filter(str.isdigit, cpf))
-        
+
+        # Em edição, ignora a própria instância para permitir atualização segura.
+        filtro_cpf = Inscricao.objects.filter(cpf=cpf, ano_letivo=self.ano_letivo_atual)
+        if self.instance and self.instance.pk:
+            filtro_cpf = filtro_cpf.exclude(pk=self.instance.pk)
+
         # Verifica se o CPF já está cadastrado no ano letivo atual
-        if Inscricao.objects.filter(cpf=cpf, ano_letivo=self.ano_letivo_atual).exists():
+        if filtro_cpf.exists():
             raise forms.ValidationError('Este CPF já está cadastrado para o ano letivo atual.')
             
         if len(cpf) != 11:
