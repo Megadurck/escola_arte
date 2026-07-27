@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django import forms
+import re
 from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -107,6 +108,13 @@ class InscricaoAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.prefetch_related('inscricaoturma_set__turma', 'inscricaoturma_set__turma__curso')
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        cpf_numerico = re.sub(r'\D', '', search_term or '')
+        if cpf_numerico:
+            queryset |= self.model.objects.filter(cpf__icontains=cpf_numerico)
+        return queryset, use_distinct
 
     def adicionar_turma_link(self, obj):
         url = reverse('admin:inscricoes_inscricaoturma_add')
