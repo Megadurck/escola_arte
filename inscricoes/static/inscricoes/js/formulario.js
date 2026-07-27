@@ -397,8 +397,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     ? turma.ids.join(',')
                     : String(turma.id);
                 const rotuloTurma = obterRotuloTurma(turma.curso_nome, turma.nome, turmasOrdenadas.length, indiceTurma);
-                const nomeTurmaNormalizado = normalizarTexto(turma.nome);
-                const complementoNomeTurma = nomeTurmaNormalizado === 'turma unica' ? '' : `: ${turma.nome}`;
+                const cursoNormalizado = normalizarTexto(turma.curso_nome);
+                const nomeTurmaOriginal = String(turma.nome || '');
+                const nomeTurmaNormalizado = normalizarTexto(nomeTurmaOriginal);
+                const nomeTurmaExibicao = (
+                    cursoNormalizado.includes('teclado') && nomeTurmaNormalizado.includes('avancad')
+                )
+                    ? nomeTurmaOriginal.replace(/avançado|avancado/i, 'Intermediário')
+                    : nomeTurmaOriginal;
+                const complementoNomeTurma = normalizarTexto(nomeTurmaExibicao) === 'turma unica' ? '' : `: ${nomeTurmaExibicao}`;
                 const bloco = document.createElement('div');
                 bloco.className = 'form-check mb-2';
                 bloco.innerHTML = `

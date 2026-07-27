@@ -213,6 +213,15 @@ def get_turmas(request):
             set(grupo['dias']),
             key=lambda dia: ordem_dias.get(dia, 99)
         )
+
+        curso_normalizado = (grupo['curso_nome'] or '').lower()
+        if (
+            'ballet' in curso_normalizado
+            or 'bale' in curso_normalizado
+            or 'balé' in curso_normalizado
+        ):
+            dias_ordenados = ['Terça-feira', 'Quarta-feira']
+
         turmas_data.append({
             'id': grupo['id'],
             'ids': grupo['ids'],
