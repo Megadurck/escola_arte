@@ -1,15 +1,23 @@
-<!-- templates/admin/base_site.html -->
-{% extends "admin/base_site.html" %}
-{% block title %}Administração Personalizada{% endblock %}
+{% extends "admin/base.html" %}
 
-{% block nav-global %}
-    {{ block.super }}
-    <a href="/inscricoes/dashboard/" style="margin-left:12px;font-weight:600;">Dashboard de Inscrições</a>
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Administração Escola de Artes{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Administração Escola de Artes</a></h1>
+{% if user.is_anonymous %}
+    {% include "admin/color_theme_toggle.html" %}
+{% endif %}
 {% endblock %}
 
-{% block content %}
-    <div class="custom-admin-header">
-        <h1>Bem-vindo ao painel de administração</h1>
-    </div>
+{% block userlinks %}
+    <a href="{% url 'inscricoes:dashboard' %}" style="font-weight:600;">Dashboard</a> /
     {{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">Admin</a>
+        &rsaquo; <a href="{% url 'inscricoes:dashboard' %}">Dashboard</a>
+        {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
 {% endblock %}
