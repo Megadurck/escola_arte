@@ -279,3 +279,23 @@ class AnoLetivoInscricaoTests(TestCase):
         self.assertEqual(inscricao_atualizada.nome_completo, "Aluno Recuperado")
         self.assertEqual(inscricao_atualizada.turmas.count(), 1)
         self.assertEqual(inscricao_atualizada.turmas.first().id, self.turma_2026.id)
+
+    def test_cpf_invalido_retorna_erro_de_tamanho_e_nao_duplicidade(self):
+        Inscricao.objects.create(
+            nome_completo="Aluno existente",
+            cpf="12345678901",
+            ano_letivo=2026,
+            data_nascimento=date(1992, 2, 2),
+            telefone_whatsapp="11911112222",
+            rua="Rua X",
+            bairro="Bairro X",
+            numero="1",
+        )
+
+        dados = self._dados_validos("123")
+        response = self.client.post(reverse("inscricoes:inscrever"), dados)
+
+        self.assertEqual(response.status_code, 200)
+        mensagens = [str(msg) for msg in response.context["messages"]]
+        self.assertTrue(any("CPF deve conter 11 dígitos." in mensagem for mensagem in mensagens))
+        self.assertFalse(any("já cadastrado" in mensagem for mensagem in mensagens))

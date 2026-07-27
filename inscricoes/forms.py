@@ -94,6 +94,9 @@ class InscricaoForm(forms.ModelForm):
         # Remove todos os caracteres não numéricos
         cpf = ''.join(filter(str.isdigit, cpf))
 
+        if len(cpf) != 11:
+            raise forms.ValidationError('CPF deve conter 11 dígitos.')
+
         # Em edição, ignora a própria instância para permitir atualização segura.
         filtro_cpf = Inscricao.objects.filter(cpf=cpf, ano_letivo=self.ano_letivo_atual)
         if self.instance and self.instance.pk:
@@ -102,9 +105,6 @@ class InscricaoForm(forms.ModelForm):
         # Verifica se o CPF já está cadastrado no ano letivo atual
         if filtro_cpf.exists():
             raise forms.ValidationError('Este CPF já está cadastrado para o ano letivo atual.')
-            
-        if len(cpf) != 11:
-            raise forms.ValidationError('CPF deve conter 11 dígitos.')
             
         return cpf
 

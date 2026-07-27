@@ -51,22 +51,18 @@ def inscrever(request):
                 post_data.setlist('cursos', [str(curso_id) for curso_id in cursos_ids])
 
         cpf_normalizado = post_data.get('cpf', '')
-        inscricao_existente_mesmo_ano = Inscricao.objects.filter(
-            cpf=cpf_normalizado,
-            ano_letivo=ano_letivo_atual,
-        ).first()
-        inscricao_sem_turma = (
-            inscricao_existente_mesmo_ano is not None
-            and not inscricao_existente_mesmo_ano.inscricaoturma_set.exists()
-        )
+        inscricao_existente_mesmo_ano = None
+        inscricao_sem_turma = False
 
-        if inscricao_existente_mesmo_ano and not inscricao_sem_turma:
-            messages.error(
-                request,
-                'CPF já cadastrado para este ano letivo. Se precisar alterar a inscrição, procure a coordenação.'
+        if len(cpf_normalizado) == 11:
+            inscricao_existente_mesmo_ano = Inscricao.objects.filter(
+                cpf=cpf_normalizado,
+                ano_letivo=ano_letivo_atual,
+            ).first()
+            inscricao_sem_turma = (
+                inscricao_existente_mesmo_ano is not None
+                and not inscricao_existente_mesmo_ano.inscricaoturma_set.exists()
             )
-            form = InscricaoForm(post_data)
-            return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})
 
         if inscricao_sem_turma:
             form = InscricaoForm(post_data, instance=inscricao_existente_mesmo_ano)
