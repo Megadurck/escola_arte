@@ -82,7 +82,7 @@ class InscritosTurmaInline(admin.TabularInline):
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
-    list_display = ['nome_completo', 'cpf', 'ano_letivo', 'telefone_whatsapp', 'data_inscricao', 'turmas_display', 'adicionar_turma_link']
+    list_display = ['nome_completo', 'cpf', 'ano_letivo', 'telefone_whatsapp', 'data_inscricao', 'turmas_display', 'adicionar_turma_link', 'gerenciar_turmas_link']
     search_fields = ['nome_completo', 'cpf']
     list_filter = ['ano_letivo', 'data_inscricao']
     inlines = [InscricaoTurmaInline]
@@ -99,8 +99,15 @@ class InscricaoAdmin(admin.ModelAdmin):
         # Obtém as turmas através da relação InscricaoTurma
         inscricoes_turma = InscricaoTurma.objects.filter(inscricao=obj).select_related('turma', 'turma__curso')
         if inscricoes_turma:
+            linhas = []
+            for relacao in inscricoes_turma:
+                delete_url = reverse('admin:inscricoes_inscricaoturma_delete', args=[relacao.pk])
+                linhas.append(
+                    f"{relacao.turma.curso.nome} - {relacao.turma.nome} "
+                    f"<a href='{delete_url}' style='color:#b42318; font-weight:600;'>Remover</a>"
+                )
             return format_html(
-                '<br>'.join([f"{insc.turma.curso.nome} - {insc.turma.nome}" for insc in inscricoes_turma])
+                '<br>'.join(linhas)
             )
         return format_html('<span style="color: red; font-weight: bold;">Nenhuma turma</span>')
     turmas_display.short_description = 'Turmas Inscritas'
@@ -124,6 +131,15 @@ class InscricaoAdmin(admin.ModelAdmin):
             obj.pk,
         )
     adicionar_turma_link.short_description = 'Ação'
+
+    def gerenciar_turmas_link(self, obj):
+        url = reverse('admin:inscricoes_inscricaoturma_changelist')
+        return format_html(
+            '<a class="button" href="{}?inscricao__id__exact={}">Gerenciar turmas</a>',
+            url,
+            obj.pk,
+        )
+    gerenciar_turmas_link.short_description = 'Turmas'
 
 # Registrar o modelo de Curso no admin
 @admin.register(Curso)
