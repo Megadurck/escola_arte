@@ -1,9 +1,49 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
+from django import forms
 from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+
+
+class InscricaoTurmaAdminForm(forms.ModelForm):
+    class Meta:
+        model = InscricaoTurma
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        inscricao = None
+        turma = None
+
+        inscricao_id = self.data.get('inscricao') or self.initial.get('inscricao')
+        turma_id = self.data.get('turma') or self.initial.get('turma')
+
+        if self.instance and self.instance.pk:
+            inscricao = self.instance.inscricao
+            turma = self.instance.turma
+
+        if inscricao is None and inscricao_id:
+            try:
+                inscricao = Inscricao.objects.get(pk=inscricao_id)
+            except (Inscricao.DoesNotExist, ValueError, TypeError):
+                inscricao = None
+
+        if turma is None and turma_id:
+            try:
+                turma = Turma.objects.get(pk=turma_id)
+            except (Turma.DoesNotExist, ValueError, TypeError):
+                turma = None
+
+        if inscricao is not None:
+            turmas_indisponiveis = InscricaoTurma.objects.filter(inscricao=inscricao).values_list('turma_id', flat=True)
+            self.fields['turma'].queryset = Turma.objects.filter(ano_letivo=inscricao.ano_letivo).exclude(pk__in=turmas_indisponiveis)
+
+        if turma is not None:
+            inscricoes_indisponiveis = InscricaoTurma.objects.filter(turma=turma).values_list('inscricao_id', flat=True)
+            self.fields['inscricao'].queryset = Inscricao.objects.filter(ano_letivo=turma.ano_letivo).exclude(pk__in=inscricoes_indisponiveis)
 
 class TurmaInline(admin.TabularInline):
     model = Turma
@@ -41,7 +81,7 @@ class InscritosTurmaInline(admin.TabularInline):
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
 class InscricaoAdmin(admin.ModelAdmin):
-    list_display = ['nome_completo', 'cpf', 'ano_letivo', 'telefone_whatsapp', 'data_inscricao', 'turmas_display']
+    list_display = ['nome_completo', 'cpf', 'ano_letivo', 'telefone_whatsapp', 'data_inscricao', 'turmas_display', 'adicionar_turma_link']
     search_fields = ['nome_completo', 'cpf']
     list_filter = ['ano_letivo', 'data_inscricao']
     inlines = [InscricaoTurmaInline]
@@ -68,6 +108,15 @@ class InscricaoAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         return qs.prefetch_related('inscricaoturma_set__turma', 'inscricaoturma_set__turma__curso')
 
+    def adicionar_turma_link(self, obj):
+        url = reverse('admin:inscricoes_inscricaoturma_add')
+        return format_html(
+            '<a class="button" href="{}?inscricao={}">Adicionar turma</a>',
+            url,
+            obj.pk,
+        )
+    adicionar_turma_link.short_description = 'Ação'
+
 # Registrar o modelo de Curso no admin
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
@@ -79,7 +128,7 @@ class CursoAdmin(admin.ModelAdmin):
 # Registrar o modelo de Turma no admin
 @admin.register(Turma)
 class TurmaAdmin(admin.ModelAdmin):
-    list_display = ['nome', 'curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count']
+    list_display = ['nome', 'curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count', 'adicionar_inscricao_link']
     list_filter = ('ano_letivo', 'curso', 'dia_semana')
     search_fields = ('nome', 'curso__nome')
     inlines = [InscritosTurmaInline]
@@ -91,6 +140,15 @@ class TurmaAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.prefetch_related('inscricaoturma_set__inscricao')
+
+    def adicionar_inscricao_link(self, obj):
+        url = reverse('admin:inscricoes_inscricaoturma_add')
+        return format_html(
+            '<a class="button" href="{}?turma={}">Adicionar inscrição</a>',
+            url,
+            obj.pk,
+        )
+    adicionar_inscricao_link.short_description = 'Ação'
 
 # Registrar o modelo de Funcionario no admin
 @admin.register(Funcionario)
@@ -135,9 +193,11 @@ admin.site.register(User, UserAdmin)  # Registra a versão personalizada
 # Registrar o modelo de InscricaoTurma no admin
 @admin.register(InscricaoTurma)
 class InscricaoTurmaAdmin(admin.ModelAdmin):
+    form = InscricaoTurmaAdminForm
     list_display = ['inscricao', 'turma', 'data_inscricao']
     list_filter = ['turma__ano_letivo', 'turma', 'data_inscricao']
     search_fields = ['inscricao__nome_completo', 'turma__nome']
     readonly_fields = ['data_inscricao']
+    autocomplete_fields = ['inscricao', 'turma']
 
 
