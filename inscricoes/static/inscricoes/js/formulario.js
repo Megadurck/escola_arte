@@ -176,12 +176,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return 'Turma 1 Iniciante';
         }
         if (turmaNormalizada.includes('avancad')) {
+            if (cursoNormalizado.includes('teclado')) {
+                return 'Turma 2 Intermediário';
+            }
             return 'Turma 2 Avançado';
         }
         if (cursoNormalizado.includes('iniciante')) {
             return 'Turma 1 Iniciante';
         }
         if (cursoNormalizado.includes('avancad')) {
+            if (cursoNormalizado.includes('teclado')) {
+                return 'Turma 2 Intermediário';
+            }
             return 'Turma 2 Avançado';
         }
 
@@ -190,6 +196,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return 'Turma 1 Iniciante';
             }
             if (indiceTurma === 1) {
+                if (cursoNormalizado.includes('teclado')) {
+                    return 'Turma 2 Intermediário';
+                }
                 return 'Turma 2 Avançado';
             }
             return `Turma ${indiceTurma + 1}`;
@@ -215,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return 'TECLADO (TURMA 1 INICIANTE)';
         }
         if (cursoNormalizado.includes('teclado') && cursoNormalizado.includes('avancad')) {
-            return 'TECLADO (TURMA 2 AVANÇADO)';
+            return 'TECLADO (TURMA 2 INTERMEDIÁRIO)';
         }
         if (cursoNormalizado.includes('violao') && (cursoNormalizado.includes('infantil') || cursoNormalizado.includes('iniciante'))) {
             return 'VIOLÃO (TURMA 1 INFANTIL)';
