@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django import forms
+from django.db.models import Count, Prefetch
 import re
 from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
@@ -85,6 +86,8 @@ class InscricaoAdmin(admin.ModelAdmin):
     list_display = ['nome_completo', 'cpf', 'ano_letivo', 'telefone_whatsapp', 'data_inscricao', 'turmas_display', 'adicionar_turma_link', 'gerenciar_turmas_link']
     search_fields = ['nome_completo', 'cpf']
     list_filter = ['ano_letivo', 'data_inscricao']
+    list_per_page = 25
+    show_full_result_count = False
     inlines = [InscricaoTurmaInline]
     fieldsets = (
         ('Dados Pessoais', {
@@ -96,8 +99,10 @@ class InscricaoAdmin(admin.ModelAdmin):
     )
     
     def turmas_display(self, obj):
-        # Obtém as turmas através da relação InscricaoTurma
-        inscricoes_turma = InscricaoTurma.objects.filter(inscricao=obj).select_related('turma', 'turma__curso')
+        inscricoes_turma = getattr(obj, 'inscricoes_turma_prefetch', None)
+        if inscricoes_turma is None:
+            inscricoes_turma = obj.inscricaoturma_set.select_related('turma', 'turma__curso').all()
+
         if inscricoes_turma:
             linhas = []
             for relacao in inscricoes_turma:
@@ -114,7 +119,10 @@ class InscricaoAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related('inscricaoturma_set__turma', 'inscricaoturma_set__turma__curso')
+        inscricoes_turma_qs = InscricaoTurma.objects.select_related('turma', 'turma__curso')
+        return qs.prefetch_related(
+            Prefetch('inscricaoturma_set', queryset=inscricoes_turma_qs, to_attr='inscricoes_turma_prefetch')
+        )
 
     def get_search_results(self, request, queryset, search_term):
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
@@ -155,15 +163,18 @@ class TurmaAdmin(admin.ModelAdmin):
     list_display = ['nome', 'curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count', 'adicionar_inscricao_link']
     list_filter = ('ano_letivo', 'curso', 'dia_semana')
     search_fields = ('nome', 'curso__nome')
+    list_select_related = ('curso',)
+    list_per_page = 25
+    show_full_result_count = False
     inlines = [InscritosTurmaInline]
     
     def inscritos_count(self, obj):
-        return obj.inscricaoturma_set.count()
+        return getattr(obj, 'inscritos_total', 0)
     inscritos_count.short_description = 'Número de Inscritos'
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related('inscricaoturma_set__inscricao')
+        return qs.select_related('curso').annotate(inscritos_total=Count('inscricaoturma'))
 
     def adicionar_inscricao_link(self, obj):
         url = reverse('admin:inscricoes_inscricaoturma_add')
@@ -180,6 +191,8 @@ class FuncionarioAdmin(admin.ModelAdmin):
     list_display = ['nome', 'cargo', 'email', 'telefone']
     search_fields = ('nome', 'email')
     list_filter = ('cargo',)
+    list_per_page = 25
+    show_full_result_count = False
     filter_horizontal = ('cursos',)
 
 # Personalização do UserAdmin
@@ -188,6 +201,8 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = ('is_active', 'is_staff', 'is_superuser', 'groups')
     ordering = ('-date_joined',)
+    list_per_page = 25
+    show_full_result_count = False
     
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
@@ -223,5 +238,8 @@ class InscricaoTurmaAdmin(admin.ModelAdmin):
     search_fields = ['inscricao__nome_completo', 'turma__nome']
     readonly_fields = ['data_inscricao']
     autocomplete_fields = ['inscricao', 'turma']
+    list_select_related = ['inscricao', 'turma', 'turma__curso']
+    list_per_page = 25
+    show_full_result_count = False
 
 
