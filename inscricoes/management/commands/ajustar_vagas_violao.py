@@ -44,11 +44,13 @@ class Command(BaseCommand):
         for turma in turmas.select_related("curso"):
             vagas_antes = turma.vagas
             vagas_originais_antes = turma.vagas_originais
+            inscritos = turma.inscricaoturma_set.count()
+            vagas_disponiveis_novas = max(0, vagas_alvo - inscritos)
 
-            if vagas_antes == vagas_alvo and vagas_originais_antes == vagas_alvo:
+            if vagas_antes == vagas_disponiveis_novas and vagas_originais_antes == vagas_alvo:
                 continue
 
-            turma.vagas = vagas_alvo
+            turma.vagas = vagas_disponiveis_novas
             turma.vagas_originais = vagas_alvo
             turma.save(update_fields=["vagas", "vagas_originais"])
             atualizadas += 1
@@ -56,7 +58,8 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.SUCCESS(
                     f"Turma {turma.id} - {turma.curso.nome} / {turma.nome}: "
-                    f"vagas {vagas_antes} -> {vagas_alvo}, "
+                    f"inscritos {inscritos}, "
+                    f"vagas_disponiveis {vagas_antes} -> {vagas_disponiveis_novas}, "
                     f"vagas_originais {vagas_originais_antes} -> {vagas_alvo}"
                 )
             )

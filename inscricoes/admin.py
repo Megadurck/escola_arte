@@ -204,10 +204,19 @@ class TurmaAdmin(admin.ModelAdmin):
             Q(nome__icontains='adult')
             | Q(nome__icontains='aduldo')
             | Q(nome__icontains='infantil')
-        )
+        ).annotate(inscritos_total=Count('inscricaoturma'))
 
         total = turmas.count()
-        atualizadas = turmas.exclude(vagas=40, vagas_originais=40).update(vagas=40, vagas_originais=40)
+        atualizadas = 0
+        for turma in turmas:
+            vagas_disponiveis_novas = max(0, 40 - turma.inscritos_total)
+            if turma.vagas == vagas_disponiveis_novas and turma.vagas_originais == 40:
+                continue
+
+            turma.vagas = vagas_disponiveis_novas
+            turma.vagas_originais = 40
+            turma.save(update_fields=['vagas', 'vagas_originais'])
+            atualizadas += 1
 
         if total == 0:
             self.message_user(
