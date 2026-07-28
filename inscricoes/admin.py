@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.utils.html import format_html
-from django.urls import reverse
+from django.urls import path, reverse
 from django import forms
-from django.db.models import Count, Prefetch
+from django.db.models import Count, Prefetch, Q
 import re
 from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
@@ -160,6 +162,7 @@ class CursoAdmin(admin.ModelAdmin):
 # Registrar o modelo de Turma no admin
 @admin.register(Turma)
 class TurmaAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/inscricoes/turma/change_list.html'
     list_display = ['nome', 'curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count', 'adicionar_inscricao_link']
     list_filter = ('ano_letivo', 'curso', 'dia_semana')
     search_fields = ('nome', 'curso__nome')
@@ -167,6 +170,59 @@ class TurmaAdmin(admin.ModelAdmin):
     list_per_page = 25
     show_full_result_count = False
     inlines = [InscritosTurmaInline]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'ajustar-vagas-violao/',
+                self.admin_site.admin_view(self.ajustar_vagas_violao_view),
+                name='inscricoes_turma_ajustar_vagas_violao',
+            ),
+        ]
+        return custom_urls + urls
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['ajustar_vagas_violao_url'] = reverse(
+            'admin:inscricoes_turma_ajustar_vagas_violao'
+        )
+        return super().changelist_view(request, extra_context=extra_context)
+
+    def ajustar_vagas_violao_view(self, request):
+        if request.method != 'POST':
+            self.message_user(
+                request,
+                'Use o botao da listagem para executar este ajuste.',
+                level=messages.WARNING,
+            )
+            return HttpResponseRedirect(reverse('admin:inscricoes_turma_changelist'))
+
+        turmas = Turma.objects.filter(
+            curso__nome__icontains='viol',
+        ).filter(
+            Q(nome__icontains='adult')
+            | Q(nome__icontains='aduldo')
+            | Q(nome__icontains='infantil')
+        )
+
+        total = turmas.count()
+        atualizadas = turmas.exclude(vagas=40, vagas_originais=40).update(vagas=40, vagas_originais=40)
+
+        if total == 0:
+            self.message_user(
+                request,
+                'Nenhuma turma de Violao Adulto/Infantil foi encontrada.',
+                level=messages.WARNING,
+            )
+        else:
+            self.message_user(
+                request,
+                f'Ajuste concluido. Turmas encontradas: {total}. Turmas atualizadas: {atualizadas}.',
+                level=messages.SUCCESS,
+            )
+
+        return HttpResponseRedirect(reverse('admin:inscricoes_turma_changelist'))
     
     def inscritos_count(self, obj):
         return getattr(obj, 'inscritos_total', 0)

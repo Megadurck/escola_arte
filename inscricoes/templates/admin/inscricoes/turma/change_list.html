@@ -1,0 +1,15 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  {{ block.super }}
+  {% if ajustar_vagas_violao_url %}
+    <li>
+      <form method="post" action="{{ ajustar_vagas_violao_url }}" style="display:inline; margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="button" style="background:#1f6feb; border-color:#1f6feb; color:#fff; cursor:pointer;">
+          Ajustar vagas Violao (40)
+        </button>
+      </form>
+    </li>
+  {% endif %}
+{% endblock %}
