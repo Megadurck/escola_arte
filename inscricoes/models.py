@@ -76,6 +76,37 @@ class Turma(models.Model):
             
         return vagas_disponiveis
 
+    def listar_encontros(self):
+        """Compatibilidade: usa encontros normalizados quando existirem."""
+        encontros_qs = self.encontros.all().order_by('dia_semana', 'horario_inicio')
+        if encontros_qs.exists():
+            return encontros_qs
+        return [
+            EncontroTurma(
+                turma=self,
+                dia_semana=self.dia_semana,
+                horario_inicio=self.horario_inicio,
+                horario_fim=self.horario_fim,
+            )
+        ]
+
+
+class EncontroTurma(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='encontros')
+    dia_semana = models.CharField(max_length=20)
+    horario_inicio = models.TimeField()
+    horario_fim = models.TimeField()
+
+    class Meta:
+        unique_together = ['turma', 'dia_semana', 'horario_inicio', 'horario_fim']
+        ordering = ['dia_semana', 'horario_inicio']
+
+    def __str__(self):
+        return (
+            f"{self.turma.curso.nome} - {self.turma.nome} - "
+            f"{self.dia_semana} ({self.horario_inicio} - {self.horario_fim})"
+        )
+
 class Inscricao(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     nome_completo = models.CharField(max_length=100)

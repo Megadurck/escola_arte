@@ -16,6 +16,16 @@ import re
 def _ano_letivo_atual():
     return int(getattr(settings, 'ANO_LETIVO_ATUAL'))
 
+
+def _chave_turma_logica(turma):
+    return (
+        turma.curso_id,
+        turma.ano_letivo,
+        (turma.nome or '').strip().lower(),
+        turma.horario_inicio,
+        turma.horario_fim,
+    )
+
 @never_cache
 def inscrever(request):
     inscricoes_abertas = getattr(settings, 'INSCRICOES_ABERTAS', False)
@@ -99,8 +109,16 @@ def inscrever(request):
                     if ids_invalidos:
                         raise ValidationError('Uma ou mais turmas selecionadas não são mais válidas. Atualize a página e tente novamente.')
 
+                    turmas_logicas = {}
                     for turma_id in set(turmas_ids):
-                        InscricaoTurma.objects.create(inscricao=inscricao, turma=turmas_por_id[turma_id])
+                        turma = turmas_por_id[turma_id]
+                        chave_logica = _chave_turma_logica(turma)
+                        turma_atual = turmas_logicas.get(chave_logica)
+                        if turma_atual is None or turma.id < turma_atual.id:
+                            turmas_logicas[chave_logica] = turma
+
+                    for turma in turmas_logicas.values():
+                        InscricaoTurma.objects.create(inscricao=inscricao, turma=turma)
             except ValidationError as e:
                 messages.error(request, f'Erro ao inscrever em uma turma: {e}')
                 return render(request, 'inscricoes/inscrever.html', {'form': form, 'inscricao_existente': inscricao_existente})

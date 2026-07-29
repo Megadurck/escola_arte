@@ -393,9 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             turmasOrdenadas.forEach((turma, indiceTurma) => {
                 const checked = selecionadasAntes.has(String(turma.id)) ? 'checked' : '';
-                const turmaIds = Array.isArray(turma.ids) && turma.ids.length > 0
-                    ? turma.ids.join(',')
-                    : String(turma.id);
+                const turmaIds = String(turma.id);
                 const rotuloTurma = obterRotuloTurma(turma.curso_nome, turma.nome, turmasOrdenadas.length, indiceTurma);
                 const cursoNormalizado = normalizarTexto(turma.curso_nome);
                 const nomeTurmaOriginal = String(turma.nome || '');
@@ -647,17 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const turmasSelecionadas = new Set();
 
         Array.from(turmasCheckboxes).forEach(checkbox => {
-            const idsAgrupados = checkbox.getAttribute('data-turma-ids');
-            if (!idsAgrupados) {
-                turmasSelecionadas.add(checkbox.value);
-                return;
-            }
-
-            idsAgrupados
-                .split(',')
-                .map(id => id.trim())
-                .filter(id => id.length > 0)
-                .forEach(id => turmasSelecionadas.add(id));
+            turmasSelecionadas.add(checkbox.value);
         });
 
         document.getElementById('turmas_selecionadas').value = Array.from(turmasSelecionadas).join(',');

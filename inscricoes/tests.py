@@ -130,6 +130,15 @@ class AnoLetivoInscricaoTests(TestCase):
             horario_fim=time(20, 0),
             vagas=5,
         )
+        self.turma_2026_dia2 = Turma.objects.create(
+            curso=self.curso,
+            nome="Turma 2026",
+            ano_letivo=2026,
+            dia_semana="Sexta-feira",
+            horario_inicio=time(18, 0),
+            horario_fim=time(20, 0),
+            vagas=5,
+        )
         Turma.objects.create(
             curso=self.curso,
             nome="Turma 2025",
@@ -299,3 +308,18 @@ class AnoLetivoInscricaoTests(TestCase):
         mensagens = [str(msg) for msg in response.context["messages"]]
         self.assertTrue(any("CPF deve conter 11 dígitos." in mensagem for mensagem in mensagens))
         self.assertFalse(any("já cadastrado" in mensagem for mensagem in mensagens))
+
+    def test_post_com_ids_de_dias_duplicados_cria_apenas_um_vinculo_por_turma_logica(self):
+        dados = self._dados_validos("88877766655")
+        dados["turmas"] = [str(self.turma_2026.id), str(self.turma_2026_dia2.id)]
+        dados["turmas_selecionadas"] = f"{self.turma_2026.id},{self.turma_2026_dia2.id}"
+
+        response = self.client.post(reverse("inscricoes:inscrever"), dados)
+
+        self.assertEqual(response.status_code, 302)
+        inscricao = Inscricao.objects.get(cpf="88877766655", ano_letivo=2026)
+        self.assertEqual(InscricaoTurma.objects.filter(inscricao=inscricao).count(), 1)
+        self.assertIn(
+            InscricaoTurma.objects.get(inscricao=inscricao).turma_id,
+            {self.turma_2026.id, self.turma_2026_dia2.id},
+        )
