@@ -3,6 +3,20 @@
 
 {% block content %}
 <div class="container-fluid py-4">
+    <div class="row mb-3">
+        <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h4 class="mb-0">Dashboard de Inscrições</h4>
+            <form method="get" class="d-flex align-items-center gap-2">
+                <label for="ano" class="form-label mb-0">Ano letivo</label>
+                <select id="ano" name="ano" class="form-select" onchange="this.form.submit()">
+                    {% for ano in anos_disponiveis %}
+                        <option value="{{ ano }}" {% if ano == ano_selecionado %}selected{% endif %}>{{ ano }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
     <!-- Cards de Estatísticas -->
     <div class="row mb-4">
         <div class="col-md-3">
@@ -32,8 +46,8 @@
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-warning">Horários Cadastrados</h5>
-                    <h2 class="mb-0">{{ total_horarios }}</h2>
+                    <h5 class="card-title text-warning">Turmas no Ano</h5>
+                    <h2 class="mb-0">{{ total_turmas }}</h2>
                 </div>
             </div>
         </div>
@@ -44,7 +58,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">Inscrições por Curso</h5>
+                    <h5 class="card-title mb-0">Inscrições por Curso ({{ ano_selecionado }})</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="inscricoesPorCurso"></canvas>
@@ -54,7 +68,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0">Vagas Disponíveis por Curso</h5>
+                    <h5 class="card-title mb-0">Vagas Disponíveis por Curso ({{ ano_selecionado }})</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="vagasPorCurso"></canvas>
@@ -82,7 +96,7 @@
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>Curso</th>
-                            <th>Horário</th>
+                            <th>Turma/Horário</th>
                             <th>Data Inscrição</th>
                             <th>Status</th>
                         </tr>
@@ -93,13 +107,13 @@
                             <td>{{ inscricao.nome_completo }}</td>
                             <td>{{ inscricao.cpf }}</td>
                             <td>
-                                {% for curso in inscricao.cursos.all %}
-                                    {{ curso.nome }}{% if not forloop.last %}, {% endif %}
+                                {% for turma in inscricao.turmas.all %}
+                                    {{ turma.curso.nome }}{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </td>
                             <td>
-                                {% for horario in inscricao.horarios_selecionados.all %}
-                                    {{ horario.get_dia_semana_display }} - {{ horario.horario_inicio|time:"H:i" }} às {{ horario.horario_fim|time:"H:i" }}{% if not forloop.last %}<br>{% endif %}
+                                {% for turma in inscricao.turmas.all %}
+                                    {{ turma.nome }} - {{ turma.dia_semana }} ({{ turma.horario_inicio|time:"H:i" }} às {{ turma.horario_fim|time:"H:i" }}){% if not forloop.last %}<br>{% endif %}
                                 {% endfor %}
                             </td>
                             <td>{{ inscricao.data_inscricao|date:"d/m/Y H:i" }}</td>

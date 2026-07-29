@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Inscricao, Curso, Turma, InscricaoTurma
 from .forms import InscricaoForm
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Prefetch
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
@@ -131,35 +131,69 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def dashboard(request):
-    # Obtém todas as inscrições para administradores
-    inscricoes = Inscricao.objects.all().prefetch_related('usuario', 'turmas')
-    
-    # Estatísticas gerais
+    ano_letivo_atual = _ano_letivo_atual()
+    ano_param = request.GET.get('ano', str(ano_letivo_atual))
+    try:
+        ano_selecionado = int(ano_param)
+    except (TypeError, ValueError):
+        ano_selecionado = ano_letivo_atual
+
+    anos_inscricoes = Inscricao.objects.values_list('ano_letivo', flat=True).distinct()
+    anos_turmas = Turma.objects.values_list('ano_letivo', flat=True).distinct()
+    anos_disponiveis = sorted({*anos_inscricoes, *anos_turmas, ano_letivo_atual}, reverse=True)
+
+    turmas_do_ano = (
+        Turma.objects.filter(ano_letivo=ano_selecionado)
+        .select_related('curso')
+        .annotate(inscritos_total=Count('inscricaoturma'))
+        .order_by('curso__nome', 'nome', 'horario_inicio')
+    )
+
+    inscricoes = (
+        Inscricao.objects.filter(ano_letivo=ano_selecionado)
+        .prefetch_related(
+            Prefetch(
+                'turmas',
+                queryset=Turma.objects.select_related('curso').filter(ano_letivo=ano_selecionado),
+            )
+        )
+        .order_by('-data_inscricao')
+    )
+
     total_inscricoes = inscricoes.count()
-    total_vagas = Turma.objects.aggregate(total_vagas=Sum('vagas'))['total_vagas'] or 0
-    total_cursos = Curso.objects.count()
-    total_turmas = Turma.objects.count()
-    
-    # Dados para o gráfico de inscrições por curso
-    inscricoes_por_curso = []
-    for curso in Curso.objects.all():
-        num_inscritos = curso.turmas.filter(inscricao__isnull=False).count()
-        inscricoes_por_curso.append({
-            'curso': curso.nome,
-            'total': num_inscritos
-        })
-    
-    # Dados para o gráfico de vagas por curso
-    vagas_por_curso = []
-    for curso in Curso.objects.all():
-        vagas = curso.turmas.aggregate(total_vagas=Sum('vagas'))['total_vagas'] or 0
-        vagas_por_curso.append({
-            'curso': curso.nome,
-            'vagas': vagas
-        })
-    
+    total_turmas = turmas_do_ano.count()
+    total_cursos = turmas_do_ano.values('curso_id').distinct().count()
+
+    agregados_por_curso = {}
+    total_vagas = 0
+    for turma in turmas_do_ano:
+        curso_nome = turma.curso.nome
+        vagas_disponiveis = max(0, turma.vagas_originais - turma.inscritos_total)
+        total_vagas += vagas_disponiveis
+
+        if curso_nome not in agregados_por_curso:
+            agregados_por_curso[curso_nome] = {
+                'inscricoes': 0,
+                'vagas': 0,
+            }
+
+        agregados_por_curso[curso_nome]['inscricoes'] += turma.inscritos_total
+        agregados_por_curso[curso_nome]['vagas'] += vagas_disponiveis
+
+    inscricoes_por_curso = [
+        {'curso': curso_nome, 'total': dados['inscricoes']}
+        for curso_nome, dados in sorted(agregados_por_curso.items(), key=lambda item: item[0])
+    ]
+
+    vagas_por_curso = [
+        {'curso': curso_nome, 'vagas': dados['vagas']}
+        for curso_nome, dados in sorted(agregados_por_curso.items(), key=lambda item: item[0])
+    ]
+
     context = {
         'inscricoes': inscricoes,
+        'ano_selecionado': ano_selecionado,
+        'anos_disponiveis': anos_disponiveis,
         'total_inscricoes': total_inscricoes,
         'total_vagas': total_vagas,
         'total_cursos': total_cursos,
