@@ -24,6 +24,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Aplica mudancas no banco. Sem esta flag, executa apenas simulacao.",
         )
+        parser.add_argument(
+            "--manter-secundarias",
+            action="store_true",
+            help="Mantem turmas secundarias (nao recomendado).",
+        )
 
     @staticmethod
     def _chave_grupo(turma):
@@ -38,6 +43,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         ano = options["ano"]
         confirmar = options["confirmar"]
+        manter_secundarias = options["manter_secundarias"]
 
         if not ano:
             self.stdout.write(self.style.ERROR("Informe um ano valido com --ano."))
@@ -60,6 +66,7 @@ class Command(BaseCommand):
         total_encontros_criados = 0
         total_relacoes_movidas = 0
         total_relacoes_duplicadas_removidas = 0
+        total_turmas_secundarias_removidas = 0
 
         for _, grupo_turmas in grupos.items():
             if len(grupo_turmas) <= 1:
@@ -94,6 +101,10 @@ class Command(BaseCommand):
                         f"relacoes_atual={relacoes_atuais}, relacoes_pos_normalizacao={relacoes_unicas}"
                     )
                 )
+                if not manter_secundarias:
+                    self.stdout.write(
+                        f"  dry-run: turmas_secundarias_a_remover={len(turmas_secundarias)}"
+                    )
                 continue
 
             with transaction.atomic():
@@ -134,12 +145,20 @@ class Command(BaseCommand):
                 turma_principal.vagas = max(0, vagas_originais_grupo - inscritos_principal)
                 turma_principal.save(update_fields=["vagas_originais", "vagas"])
 
+                if not manter_secundarias:
+                    ids_secundarias = [t.id for t in turmas_secundarias]
+                    total_turmas_secundarias_removidas += len(ids_secundarias)
+                    Turma.objects.filter(id__in=ids_secundarias).delete()
+
         self.stdout.write("\nResumo:")
         self.stdout.write(f"- Grupos multi-dia processados: {total_grupos_processados}")
         self.stdout.write(f"- Encontros criados: {total_encontros_criados}")
         self.stdout.write(f"- Relacoes movidas para turma principal: {total_relacoes_movidas}")
         self.stdout.write(
             f"- Relacoes duplicadas removidas: {total_relacoes_duplicadas_removidas}"
+        )
+        self.stdout.write(
+            f"- Turmas secundarias removidas: {total_turmas_secundarias_removidas}"
         )
 
         if confirmar:

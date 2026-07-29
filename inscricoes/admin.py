@@ -163,7 +163,7 @@ class CursoAdmin(admin.ModelAdmin):
 @admin.register(Turma)
 class TurmaAdmin(admin.ModelAdmin):
     change_list_template = 'admin/inscricoes/turma/change_list.html'
-    list_display = ['nome', 'curso', 'ano_letivo', 'dia_semana', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count', 'adicionar_inscricao_link']
+    list_display = ['nome', 'curso', 'ano_letivo', 'dias_atuacao', 'horario_inicio', 'horario_fim', 'vagas', 'inscritos_count', 'adicionar_inscricao_link']
     list_filter = ('ano_letivo', 'curso', 'dia_semana')
     search_fields = ('nome', 'curso__nome')
     list_select_related = ('curso',)
@@ -236,10 +236,24 @@ class TurmaAdmin(admin.ModelAdmin):
     def inscritos_count(self, obj):
         return getattr(obj, 'inscritos_total', 0)
     inscritos_count.short_description = 'Número de Inscritos'
+
+    def dias_atuacao(self, obj):
+        encontros = getattr(obj, 'encontros_prefetch', None)
+        if encontros is None:
+            encontros = obj.encontros.all()
+
+        if encontros:
+            dias = sorted({encontro.dia_semana for encontro in encontros})
+            return ', '.join(dias)
+
+        return obj.dia_semana
+    dias_atuacao.short_description = 'Dias de Atuação'
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related('curso').annotate(inscritos_total=Count('inscricaoturma'))
+        return qs.select_related('curso').prefetch_related(
+            Prefetch('encontros', to_attr='encontros_prefetch')
+        ).annotate(inscritos_total=Count('inscricaoturma'))
 
     def adicionar_inscricao_link(self, obj):
         url = reverse('admin:inscricoes_inscricaoturma_add')

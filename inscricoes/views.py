@@ -242,6 +242,7 @@ def get_turmas(request):
         Turma.objects
         .filter(curso_id__in=curso_ids, ano_letivo=ano_letivo_atual)
         .select_related('curso')
+        .prefetch_related('encontros')
         .only(
             'id',
             'curso_id',
@@ -271,13 +272,16 @@ def get_turmas(request):
         if vagas_disponiveis <= 0:
             continue
 
+        encontros = list(turma.encontros.all())
+        dias_turma = [encontro.dia_semana for encontro in encontros] if encontros else [turma.dia_semana]
+
         chave = (turma.curso_id, turma.nome, turma.horario_inicio, turma.horario_fim)
         if chave not in turmas_agrupadas:
             turmas_agrupadas[chave] = {
                 'id': turma.id,
                 'ids': [turma.id],
                 'nome': turma.nome,
-                'dias': [turma.dia_semana],
+                'dias': list(dias_turma),
                 'horario_inicio': turma.horario_inicio.strftime('%H:%M'),
                 'horario_fim': turma.horario_fim.strftime('%H:%M'),
                 'vagas_disponiveis': vagas_disponiveis,
@@ -287,7 +291,7 @@ def get_turmas(request):
         else:
             grupo = turmas_agrupadas[chave]
             grupo['ids'].append(turma.id)
-            grupo['dias'].append(turma.dia_semana)
+            grupo['dias'].extend(dias_turma)
             grupo['vagas_disponiveis'] = min(grupo['vagas_disponiveis'], vagas_disponiveis)
 
     turmas_data = []
