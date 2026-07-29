@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Inscricao, Curso, Turma, InscricaoTurma
 from .forms import InscricaoForm
-from django.db.models import Sum, Count, Prefetch
+from django.db.models import Sum, Count, Prefetch, Min, Max
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
@@ -160,10 +160,15 @@ def dashboard(request):
     anos_turmas = Turma.objects.values_list('ano_letivo', flat=True).distinct()
     anos_disponiveis = sorted({*anos_inscricoes, *anos_turmas, ano_letivo_atual}, reverse=True)
 
-    turmas_do_ano = (
-        Turma.objects.filter(ano_letivo=ano_selecionado)
-        .select_related('curso')
-        .annotate(inscritos_total=Count('inscricaoturma'))
+    turmas_logicas = list(
+        Turma.objects
+        .filter(ano_letivo=ano_selecionado)
+        .values('curso_id', 'curso__nome', 'nome', 'horario_inicio', 'horario_fim')
+        .annotate(
+            turma_principal_id=Min('id'),
+            vagas_originais_max=Max('vagas_originais'),
+            inscritos_unicos=Count('inscricaoturma__inscricao_id', distinct=True),
+        )
         .order_by('curso__nome', 'nome', 'horario_inicio')
     )
 
@@ -179,23 +184,14 @@ def dashboard(request):
     )
 
     total_inscricoes = inscricoes.count()
-    total_turmas = turmas_do_ano.count()
-    total_cursos = turmas_do_ano.values('curso_id').distinct().count()
+    total_turmas = len(turmas_logicas)
+    total_cursos = len({grupo['curso_id'] for grupo in turmas_logicas})
 
     agregados_por_curso = {}
-    inscricoes_unicas_por_curso = {
-        item['turma__curso__nome']: item['total']
-        for item in (
-            InscricaoTurma.objects
-            .filter(turma__ano_letivo=ano_selecionado)
-            .values('turma__curso__nome')
-            .annotate(total=Count('inscricao_id', distinct=True))
-        )
-    }
     total_vagas = 0
-    for turma in turmas_do_ano:
-        curso_nome = turma.curso.nome
-        vagas_disponiveis = max(0, turma.vagas_originais - turma.inscritos_total)
+    for grupo in turmas_logicas:
+        curso_nome = grupo['curso__nome']
+        vagas_disponiveis = max(0, grupo['vagas_originais_max'] - grupo['inscritos_unicos'])
         total_vagas += vagas_disponiveis
 
         if curso_nome not in agregados_por_curso:
@@ -204,11 +200,11 @@ def dashboard(request):
                 'vagas': 0,
             }
 
-        agregados_por_curso[curso_nome]['inscricoes'] += turma.inscritos_total
+        agregados_por_curso[curso_nome]['inscricoes'] += grupo['inscritos_unicos']
         agregados_por_curso[curso_nome]['vagas'] += vagas_disponiveis
 
     inscricoes_por_curso = [
-        {'curso': curso_nome, 'total': inscricoes_unicas_por_curso.get(curso_nome, 0)}
+        {'curso': curso_nome, 'total': dados['inscricoes']}
         for curso_nome, dados in sorted(agregados_por_curso.items(), key=lambda item: item[0])
     ]
 
