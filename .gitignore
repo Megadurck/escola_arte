@@ -20,6 +20,7 @@ __pycache__/
 *.bak
 tmp/
 logs/
+backups/
 
 # 5️⃣ Pastas do Django que podem ser regeneradas
 staticfiles/
