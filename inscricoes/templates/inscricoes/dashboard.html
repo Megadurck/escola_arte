@@ -5,17 +5,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}?v=20260729a">
 <style>
-    .navbar .nav-link[href*="{% url 'inscricoes:inscrever' %}"] {
-        display: none;
+    body {
+        background: radial-gradient(circle at top right, rgba(77, 166, 255, 0.2), transparent 38%),
+                    radial-gradient(circle at bottom left, rgba(28, 108, 180, 0.16), transparent 36%),
+                    #f2f7ff;
     }
 
     .dashboard-page {
         font-family: 'Montserrat', sans-serif;
-        background: linear-gradient(180deg, #f3f7ff 0%, #ffffff 48%, #f7fbff 100%);
+        background: linear-gradient(145deg, #ffffff 0%, #f3f8ff 48%, #edf5ff 100%);
         border-radius: 22px;
         padding: 1.5rem;
-        box-shadow: 0 14px 36px rgba(22, 62, 114, 0.08);
+        border: 1px solid #d9e7fb;
+        box-shadow: 0 18px 40px rgba(20, 66, 123, 0.14);
     }
 
     .dashboard-title {
@@ -25,25 +29,47 @@
     }
 
     .dashboard-page .card {
-        border: 1px solid #e5edf8;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #d8e7fb;
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(14, 52, 94, 0.08);
+        box-shadow: 0 10px 28px rgba(14, 52, 94, 0.1);
     }
 
     .dashboard-page .card-header {
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
         font-weight: 700;
+        letter-spacing: 0.2px;
+    }
+
+    .dashboard-page .card-header.bg-primary {
+        background: linear-gradient(90deg, #0f4c8a, #1563b0) !important;
+    }
+
+    .dashboard-page .card-header.bg-success {
+        background: linear-gradient(90deg, #157347, #1d9d60) !important;
     }
 
     .dashboard-page .table thead th {
         color: #12406f;
         font-weight: 700;
+        background-color: #eef5ff;
     }
 
     .dashboard-page .badge {
         border-radius: 999px;
         padding: 0.4rem 0.7rem;
+    }
+
+    .dashboard-page .form-select,
+    .dashboard-page .form-control {
+        border-color: #b9d3f4;
+    }
+
+    .dashboard-page .form-select:focus,
+    .dashboard-page .form-control:focus {
+        border-color: #4a8ed8;
+        box-shadow: 0 0 0 0.2rem rgba(36, 122, 210, 0.16);
     }
 
     @media (max-width: 768px) {

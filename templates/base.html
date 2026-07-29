@@ -27,11 +27,13 @@
                             <i class="fas fa-house me-1"></i>Início
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inscricoes:inscrever' %}">
-                            <i class="fas fa-edit me-1"></i>Fazer Inscrição
-                        </a>
-                    </li>
+                    {% if request.resolver_match.view_name != 'inscricoes:dashboard' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'inscricoes:inscrever' %}">
+                                <i class="fas fa-edit me-1"></i>Fazer Inscrição
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
