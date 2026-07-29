@@ -165,6 +165,15 @@ def dashboard(request):
     total_cursos = turmas_do_ano.values('curso_id').distinct().count()
 
     agregados_por_curso = {}
+    inscricoes_unicas_por_curso = {
+        item['turma__curso__nome']: item['total']
+        for item in (
+            InscricaoTurma.objects
+            .filter(turma__ano_letivo=ano_selecionado)
+            .values('turma__curso__nome')
+            .annotate(total=Count('inscricao_id', distinct=True))
+        )
+    }
     total_vagas = 0
     for turma in turmas_do_ano:
         curso_nome = turma.curso.nome
@@ -181,7 +190,7 @@ def dashboard(request):
         agregados_por_curso[curso_nome]['vagas'] += vagas_disponiveis
 
     inscricoes_por_curso = [
-        {'curso': curso_nome, 'total': dados['inscricoes']}
+        {'curso': curso_nome, 'total': inscricoes_unicas_por_curso.get(curso_nome, 0)}
         for curso_nome, dados in sorted(agregados_por_curso.items(), key=lambda item: item[0])
     ]
 

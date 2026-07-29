@@ -1,11 +1,65 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    .navbar .nav-link[href*="{% url 'inscricoes:inscrever' %}"] {
+        display: none;
+    }
+
+    .dashboard-page {
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(180deg, #f3f7ff 0%, #ffffff 48%, #f7fbff 100%);
+        border-radius: 22px;
+        padding: 1.5rem;
+        box-shadow: 0 14px 36px rgba(22, 62, 114, 0.08);
+    }
+
+    .dashboard-title {
+        font-family: 'Merriweather', serif;
+        color: #0d3b66;
+        font-weight: 700;
+    }
+
+    .dashboard-page .card {
+        border: 1px solid #e5edf8;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(14, 52, 94, 0.08);
+    }
+
+    .dashboard-page .card-header {
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        font-weight: 700;
+    }
+
+    .dashboard-page .table thead th {
+        color: #12406f;
+        font-weight: 700;
+    }
+
+    .dashboard-page .badge {
+        border-radius: 999px;
+        padding: 0.4rem 0.7rem;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-page {
+            border-radius: 14px;
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container-fluid py-4 dashboard-page">
     <div class="row mb-3">
         <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h4 class="mb-0">Dashboard de Inscrições</h4>
+            <h4 class="mb-0 dashboard-title">Dashboard de Inscrições</h4>
             <form method="get" class="d-flex align-items-center gap-2">
                 <label for="ano" class="form-label mb-0">Ano letivo</label>
                 <select id="ano" name="ano" class="form-select" onchange="this.form.submit()">
@@ -58,7 +112,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">Inscrições por Curso ({{ ano_selecionado }})</h5>
+                    <h5 class="card-title mb-0">Inscritos Únicos por Curso ({{ ano_selecionado }})</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="inscricoesPorCurso"></canvas>
@@ -146,7 +200,7 @@
         data: {
             labels: inscricoesPorCursoData.map(item => item.curso),
             datasets: [{
-                label: 'Inscrições',
+                label: 'Inscritos Únicos',
                 data: inscricoesPorCursoData.map(item => item.total),
                 backgroundColor: 'rgba(13, 110, 253, 0.5)',
                 borderColor: 'rgb(13, 110, 253)',
