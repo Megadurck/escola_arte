@@ -22,7 +22,7 @@ class CustomSessionMiddleware:
         admin_csrf_cookie = getattr(settings, 'ADMIN_CSRF_COOKIE_NAME', settings.CSRF_COOKIE_NAME)
 
         if request.path.startswith('/admin'):
-            request.session.set_expiry(0)  # Expira a sessão quando o navegador é fechado
+            request.session.set_expiry(getattr(settings, 'SESSION_COOKIE_AGE', 600))
             request.session[settings.SESSION_COOKIE_NAME] = admin_session_cookie
             request.META['CSRF_COOKIE'] = admin_csrf_cookie
         else:
