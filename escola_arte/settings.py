@@ -143,7 +143,7 @@ AUTHENTICATION_BACKENDS = [
 
 SESSION_COOKIE_NAME = 'sessionid_user'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', default=600, cast=int)
+SESSION_COOKIE_AGE = config('SESSION_COOKIE_AGE', default=300, cast=int)  # 5 min de inatividade
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
