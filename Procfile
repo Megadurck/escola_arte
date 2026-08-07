@@ -1,1 +1,1 @@
-web: gunicorn escola_arte.wsgi:application 
+web: gunicorn escola_arte.wsgi:application --workers 1 --threads 4 --worker-class gthread --timeout 60

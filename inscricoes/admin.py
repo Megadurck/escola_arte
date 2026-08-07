@@ -71,6 +71,7 @@ class InscricaoAdmin(admin.ModelAdmin):
     list_filter = ['ano_letivo', 'data_inscricao']
     list_per_page = 25
     show_full_result_count = False
+    autocomplete_fields = ['usuario']
     inlines = [InscricaoTurmaInline]
     fieldsets = (
         ('Dados Pessoais', {
