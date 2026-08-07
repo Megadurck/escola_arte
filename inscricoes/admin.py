@@ -59,32 +59,9 @@ class InscricaoTurmaInline(admin.TabularInline):
     verbose_name = "Turma"
     verbose_name_plural = "Turmas"
 
-class InscritosTurmaInline(admin.TabularInline):
-    model = InscricaoTurma
-    extra = 0
-    readonly_fields = ('inscricao_info', 'data_inscricao')
-    can_delete = False
-    verbose_name = "Inscrito"
-    verbose_name_plural = "Inscritos"
-    
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def get_queryset(self, request):
-        # Evita N+1 (uma query por inscrito) que causava timeout/502 em turmas cheias
-        return super().get_queryset(request).select_related('inscricao')
-
-    def inscricao_info(self, obj):
-        inscricao = obj.inscricao
-        return format_html(
-            '<strong>Nome:</strong> {}<br>'
-            '<strong>Telefone:</strong> {}<br>'
-            '<strong>CPF:</strong> {}',
-            inscricao.nome_completo,
-            inscricao.telefone_whatsapp,
-            inscricao.cpf
-        )
-    inscricao_info.short_description = 'Informações do Inscrito'
+# Nota: os inscritos são exibidos via TurmaAdmin.inscritos_lista (campo somente leitura).
+# Um TabularInline foi evitado aqui porque monta um Form/widget completo por linha,
+# o que fica lento (timeout/502) em turmas com muitos inscritos.
 
 # Registrar o modelo de Inscrição no admin
 @admin.register(Inscricao)
@@ -173,7 +150,7 @@ class TurmaAdmin(admin.ModelAdmin):
     list_select_related = ('curso',)
     list_per_page = 25
     show_full_result_count = False
-    inlines = [InscritosTurmaInline]
+    readonly_fields = ('inscritos_lista',)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -267,6 +244,25 @@ class TurmaAdmin(admin.ModelAdmin):
             obj.pk,
         )
     adicionar_inscricao_link.short_description = 'Ação'
+
+    def inscritos_lista(self, obj):
+        if not obj.pk:
+            return '-'
+        relacoes = InscricaoTurma.objects.filter(turma=obj).select_related('inscricao').order_by('inscricao__nome_completo')
+        if not relacoes:
+            return format_html('<span style="color: red; font-weight: bold;">Nenhum inscrito</span>')
+
+        linhas = []
+        for relacao in relacoes:
+            inscricao = relacao.inscricao
+            delete_url = reverse('admin:inscricoes_inscricaoturma_delete', args=[relacao.pk])
+            linhas.append(
+                f"<strong>{inscricao.nome_completo}</strong> - "
+                f"Tel: {inscricao.telefone_whatsapp} - CPF: {inscricao.cpf} "
+                f"<a href='{delete_url}' style='color:#b42318; font-weight:600;'>Remover</a>"
+            )
+        return format_html('<br>'.join(linhas))
+    inscritos_lista.short_description = 'Inscritos'
 
 # Registrar o modelo de Funcionario no admin
 @admin.register(Funcionario)
