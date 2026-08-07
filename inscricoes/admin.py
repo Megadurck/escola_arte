@@ -69,7 +69,11 @@ class InscritosTurmaInline(admin.TabularInline):
     
     def has_add_permission(self, request, obj=None):
         return False
-        
+
+    def get_queryset(self, request):
+        # Evita N+1 (uma query por inscrito) que causava timeout/502 em turmas cheias
+        return super().get_queryset(request).select_related('inscricao')
+
     def inscricao_info(self, obj):
         inscricao = obj.inscricao
         return format_html(

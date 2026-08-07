@@ -86,7 +86,13 @@ default_postgres_url = (
 )
 
 DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL', default=default_postgres_url))
+    'default': dj_database_url.parse(
+        config('DATABASE_URL', default=default_postgres_url),
+        # Reaproveita conexões entre requisições (evita handshake TCP/SSL a cada request,
+        # principal causa da lentidão de navegação no admin).
+        conn_max_age=config('DB_CONN_MAX_AGE', default=600, cast=int),
+        conn_health_checks=True,
+    )
 }
 
 # Password validation
