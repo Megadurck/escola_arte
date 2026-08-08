@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.urls import path, reverse
 from django import forms
 from django.db.models import Count, Prefetch, Q
@@ -249,20 +249,37 @@ class TurmaAdmin(admin.ModelAdmin):
     def inscritos_lista(self, obj):
         if not obj.pk:
             return '-'
-        relacoes = InscricaoTurma.objects.filter(turma=obj).select_related('inscricao').order_by('inscricao__nome_completo')
+        # ordem de inscrição (mais antigo primeiro), não alfabética
+        relacoes = InscricaoTurma.objects.filter(turma=obj).select_related('inscricao').order_by('data_inscricao', 'id')
         if not relacoes:
             return format_html('<span style="color: red; font-weight: bold;">Nenhum inscrito</span>')
 
-        linhas = []
-        for relacao in relacoes:
-            inscricao = relacao.inscricao
-            delete_url = reverse('admin:inscricoes_inscricaoturma_delete', args=[relacao.pk])
-            linhas.append(
-                f"<strong>{inscricao.nome_completo}</strong> - "
-                f"Tel: {inscricao.telefone_whatsapp} - CPF: {inscricao.cpf} "
-                f"<a href='{delete_url}' style='color:#b42318; font-weight:600;'>Remover</a>"
-            )
-        return format_html('<br>'.join(linhas))
+        linhas = format_html_join(
+            '',
+            '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td>'
+            "<td><a href='{}' style='color:#b42318; font-weight:600;'>Remover</a></td></tr>",
+            (
+                (
+                    posicao,
+                    relacao.inscricao.nome_completo,
+                    relacao.inscricao.telefone_whatsapp,
+                    relacao.inscricao.cpf,
+                    reverse('admin:inscricoes_inscricaoturma_delete', args=[relacao.pk]),
+                )
+                for posicao, relacao in enumerate(relacoes, start=1)
+            ),
+        )
+        return format_html(
+            "<table style='border-collapse: collapse; width: 100%;'>"
+            "<thead><tr>"
+            "<th style='text-align:left; padding:4px 8px;'>#</th>"
+            "<th style='text-align:left; padding:4px 8px;'>Nome</th>"
+            "<th style='text-align:left; padding:4px 8px;'>Telefone</th>"
+            "<th style='text-align:left; padding:4px 8px;'>CPF</th>"
+            "<th style='text-align:left; padding:4px 8px;'>Ação</th>"
+            "</tr></thead><tbody>{}</tbody></table>",
+            linhas,
+        )
     inscritos_lista.short_description = 'Inscritos'
 
 # Registrar o modelo de Funcionario no admin
