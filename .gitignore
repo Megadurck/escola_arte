@@ -35,4 +35,4 @@ venv/
 *.swp              # Arquivos temporários do Vim
 *.swo
 *.swn
-
+graphify-out/
