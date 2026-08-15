@@ -1,16 +1,19 @@
-from django.shortcuts import render, redirect
+import mimetypes
+import os
+import re
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.http import JsonResponse
-from .models import Inscricao, Curso, Turma, InscricaoTurma
+from django.http import JsonResponse, FileResponse, Http404, HttpResponseForbidden
+from django.urls import reverse
+from .models import Inscricao, Curso, Turma, InscricaoTurma, DocumentoTransparencia
 from .forms import InscricaoForm
 from django.db.models import Sum, Count, Prefetch, Min, Max
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseForbidden
 from django.conf import settings
 from django.views.decorators.cache import never_cache
-import re
 
 
 def _ano_letivo_atual():
@@ -337,3 +340,48 @@ def pagina_inicial(request):
 
     return render(request, 'inscricoes/pagina_inicial.html', {'cursos': cursos, 'inscricoes_abertas': inscricoes_abertas})
 
+
+def documento_transparencia_preview(request, pk):
+    documento = get_object_or_404(DocumentoTransparencia, pk=pk, ativo=True)
+    if not documento.arquivo:
+        raise Http404("Arquivo indisponível.")
+
+    context = {
+        'documento': documento,
+        'arquivo_url': request.build_absolute_uri(
+            reverse('inscricoes:documento_transparencia_arquivo', args=[documento.pk])
+        ),
+    }
+    return render(request, 'inscricoes/transparencia_preview.html', context)
+
+
+def documento_transparencia_arquivo(request, pk):
+    documento = get_object_or_404(DocumentoTransparencia, pk=pk, ativo=True)
+
+    if not documento.arquivo:
+        raise Http404("Arquivo indisponível.")
+
+    file_path = documento.arquivo.path
+    if not os.path.exists(file_path):
+        raise Http404("Arquivo não encontrado.")
+
+    content_type, _ = mimetypes.guess_type(file_path)
+    response = FileResponse(open(file_path, 'rb'), as_attachment=False, content_type=content_type or 'application/octet-stream')
+    filename = os.path.basename(file_path)
+    response['Content-Disposition'] = f'inline; filename="{filename}"'
+    response['X-Content-Type-Options'] = 'nosniff'
+    response['Cache-Control'] = 'no-store'
+    return response
+
+
+def transparencia(request):
+    documentos = DocumentoTransparencia.objects.filter(ativo=True).order_by('ordem', '-data_publicacao')
+
+    context = {
+        'documentos': documentos,
+        'WHATSAPP_URL_1': settings.WHATSAPP_URL_1,
+        'WHATSAPP_URL_2': settings.WHATSAPP_URL_2,
+        'WHATSAPP_URL_3': settings.WHATSAPP_URL_3,
+        'EMAIL_CONTATO': settings.EMAIL_CONTATO,
+    }
+    return render(request, 'inscricoes/transparencia.html', context)

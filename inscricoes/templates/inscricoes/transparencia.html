@@ -1,0 +1,423 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparência - Escola de Artes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'inscricoes/css/style.css' %}?v=20260815_transparencia">
+    <style>
+        body.pagina-inicial {
+            background-color: #fff4dd;
+            background-image:
+                url('{% static "inscricoes/img/background-escola.png" %}'),
+                linear-gradient(25deg, transparent 0 34%, #ff4d2d 34% 52%, transparent 52% 100%),
+                linear-gradient(-32deg, transparent 0 45%, #12c8eb 45% 64%, transparent 64% 100%),
+                linear-gradient(0deg, transparent 0 42%, #ffbf00 42% 58%, transparent 58% 100%),
+                linear-gradient(65deg, transparent 0 35%, #8fd100 35% 54%, transparent 54% 100%),
+                linear-gradient(-58deg, transparent 0 30%, #007fc8 30% 48%, transparent 48% 100%),
+                linear-gradient(12deg, transparent 0 40%, #ff3e56 40% 60%, transparent 60% 100%),
+                linear-gradient(-15deg, transparent 0 44%, #ff7a00 44% 62%, transparent 62% 100%),
+                linear-gradient(38deg, transparent 0 36%, #8e3dff 36% 55%, transparent 55% 100%),
+                linear-gradient(-40deg, transparent 0 40%, #ff2fae 40% 58%, transparent 58% 100%),
+                linear-gradient(72deg, transparent 0 35%, #00c6a8 35% 53%, transparent 53% 100%),
+                linear-gradient(-70deg, transparent 0 39%, #74d600 39% 55%, transparent 55% 100%),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0) 0 64px, rgba(255,255,255,0.22) 64px 74px),
+                repeating-linear-gradient(0deg, rgba(255,255,255,0) 0 56px, rgba(255,255,255,0.16) 56px 66px);
+            background-repeat: no-repeat;
+            background-position: top center, -120px 320px, calc(100% + 120px) 500px, center 760px, -180px 1120px, calc(100% + 100px) 1380px, 0 1720px, 100% 1940px, -80px 620px, calc(100% + 90px) 880px, -140px 1480px, calc(100% + 120px) 1650px, center 900px, center 900px;
+            background-size: 100% auto, 560px 360px, 580px 360px, 100% 230px, 620px 380px, 580px 360px, 700px 420px, 640px 380px, 440px 300px, 460px 320px, 500px 320px, 460px 320px, 100% 2800px, 100% 2800px;
+        }
+
+        body.pagina-inicial .section-shell {
+            width: min(1280px, calc(100% - 18px));
+            margin: 18px auto 0;
+        }
+
+        body.pagina-inicial #cursos {
+            background: #fff4dd;
+            padding: 18px 0 32px;
+        }
+
+        body.pagina-inicial .container-cursos {
+            width: min(1280px, calc(100% - 18px));
+            margin: 0 auto;
+        }
+
+        body.pagina-inicial .document-card {
+            border: 0;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.96);
+            box-shadow: 0 12px 26px rgba(27, 39, 51, 0.12);
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        body.pagina-inicial #documentos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        @media (max-width: 991px) {
+            body.pagina-inicial #documentos-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 767px) {
+            body.pagina-inicial #documentos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        body.pagina-inicial .document-card .card-body {
+            padding: 20px 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        body.pagina-inicial .document-type {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            background: #fff4d8;
+            color: #7d4b00;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        body.pagina-inicial .document-card h3 {
+            margin: 0;
+            color: #1f2d3d;
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: clamp(1.2rem, 2vw, 1.7rem);
+        }
+
+        body.pagina-inicial .document-card p {
+            margin: 0;
+            color: #49576a;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        body.pagina-inicial .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        body.pagina-inicial .meta-pill {
+            border-radius: 999px;
+            background: #eef5f8;
+            color: #163a5d;
+            padding: 6px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        body.pagina-inicial .document-card .btn-primary {
+            margin-top: 8px;
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #ffbf00 0%, #ff7a00 100%);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        body.pagina-inicial .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 10px !important;
+        }
+
+        body.pagina-inicial .contact-card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 24px rgba(27,39,51,0.12);
+            margin-bottom: 0;
+        }
+
+        body.pagina-inicial .contact-card h4 {
+            font-family: 'Merriweather', Georgia, serif;
+            color: #1f2d3d;
+            margin-bottom: 10px;
+        }
+
+        body.pagina-inicial .contact-card a,
+        body.pagina-inicial .contact-card span {
+            display: block;
+            color: #2b4867;
+            text-decoration: none;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        body.pagina-inicial .contact-card a:hover {
+            color: #005ad6;
+        }
+
+        @media (max-width: 767px) {
+            body.pagina-inicial .document-card {
+                min-height: unset;
+            }
+        }
+    </style>
+</head>
+<body class="pagina-inicial">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container" id="cabecalho">
+            <a class="navbar-brand" href="{% url 'inscricoes:pagina_inicial' %}" id="titulo">Escola de Artes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'inscricoes:pagina_inicial' %}">Início</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'inscricoes:inscrever' %}">Inscrever-se</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'inscricoes:transparencia' %}">Transparência</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="banner section-shell">
+        <div class="banner-content banner-layout">
+            <div class="banner-copy">
+                <h1 id="titulo">Transparência</h1>
+                <p>Documentos oficiais, relatórios e informações institucionais da Escola de Artes.</p>
+            </div>
+            <div class="banner-art">
+                <img src="{% static 'inscricoes/img/logo_escola.png' %}" class="banner-logo img-fluid" alt="Logo Escola de Artes Cultura de Rua">
+            </div>
+        </div>
+    </section>
+
+    <section class="section-shell my-5">
+        <div class="description-box p-4 rounded shadow mt-4">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <h2 id="titulo">Nossa história</h2>
+                    <p>
+                        O Grupo Cultura de Rua foi fundado em 2005 por jovens da cidade de Floriano, no Piauí.
+                        Ao longo da trajetória de mais de 20 anos, consolidou-se como referência cultural da região,
+                        promovendo atividades socioculturais, montagens teatrais, apresentações de dança e ações de
+                        formação artística gratuitas para a comunidade.
+                    </p>
+                    <p>
+                        A Escola de Artes Cultura de Rua nasceu para fortalecer esse papel histórico, ampliar o acesso à cultura,
+                        valorizar o patrimônio local e garantir ações transparentes, públicas e acessíveis a toda a comunidade.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cursos" class="py-5">
+        <div class="container-cursos">
+            <h2 class="text-center mb-4" id="titulo">Documentos</h2>
+
+            {% if documentos %}
+                <div id="documentos-grid">
+                    {% for documento in documentos %}
+                        <div class="document-card">
+                            <div class="card-body">
+                                <span class="document-type">{{ documento.get_categoria_display }}</span>
+                                <h3>{{ documento.titulo }}</h3>
+                                <p>{{ documento.descricao|default:'Documento oficial disponibilizado pela instituição.' }}</p>
+
+                                <div class="document-meta">
+                                    {% if documento.ano_referencia %}
+                                        <span class="meta-pill">Ano: {{ documento.ano_referencia }}</span>
+                                    {% endif %}
+                                    {% if documento.data_publicacao %}
+                                        <span class="meta-pill">{{ documento.data_publicacao|date:'d/m/Y' }}</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if documento.arquivo %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary document-preview-trigger"
+                                        data-documento-url="{% url 'inscricoes:documento_transparencia_arquivo' documento.pk %}"
+                                        data-documento-titulo="{{ documento.titulo|escapejs }}"
+                                        data-documento-categoria="{{ documento.get_categoria_display|escapejs }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#documentoPreviewModal">
+                                        Visualizar documento
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-primary" type="button" disabled>Documento em breve</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-light text-center mb-0" role="alert">
+                    Nenhum documento de transparência foi publicado no momento.
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="section-shell pt-4 pb-0">
+        <div class="description-box p-4 rounded shadow mt-0 mb-0">
+            <h2 id="titulo">Entre em contato</h2>
+            <div class="contact-grid mt-4">
+                <div class="contact-card">
+                    <h4>WhatsApp</h4>
+                    <a href="{{ WHATSAPP_URL_1|default:'#' }}" target="_blank" rel="noopener noreferrer" class="btn btn-success mb-2 w-100">
+                        Conversar no WhatsApp 1
+                    </a>
+                    <a href="{{ WHATSAPP_URL_2|default:'#' }}" target="_blank" rel="noopener noreferrer" class="btn btn-success mb-2 w-100">
+                        Conversar no WhatsApp 2
+                    </a>
+                    <a href="{{ WHATSAPP_URL_3|default:'#' }}" target="_blank" rel="noopener noreferrer" class="btn btn-success w-100">
+                        Conversar no WhatsApp 3
+                    </a>
+                </div>
+
+                <div class="contact-card">
+                    <h4>E-mail</h4>
+                    <a href="mailto:{{ EMAIL_CONTATO|default:'contato@escola.org' }}">{{ EMAIL_CONTATO|default:'contato@escola.org' }}</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center py-4 bg-dark text-light mt-0">
+        <div class="container text-center">
+            <p class="mb-3">Parceiros e Apoio</p>
+            <div class="rodape-branco-faixa">
+                <img src="{% static 'inscricoes/img/rodape.png' %}?v=20260723q" alt="Logos dos parceiros" class="rodape-logos img-fluid" loading="lazy" decoding="async" fetchpriority="low">
+            </div>
+        </div>
+        <div class="container mt-3">
+            <p class="mb-0">© 2026 Escola de Artes Cultura de Rua. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="documentoPreviewModal" tabindex="-1" aria-labelledby="documentoPreviewLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="documentoPreviewLabel">Visualizar documento</h5>
+                        <span class="document-preview-badge" id="documentoPreviewBadge">Documento</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="pdf-preview-shell">
+                        <canvas id="documentoPreviewCanvas"></canvas>
+                        <div id="documentoPreviewStatus" class="pdf-preview-status">Carregando documento...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('documentoPreviewModal');
+            const canvas = document.getElementById('documentoPreviewCanvas');
+            const contexto = canvas.getContext('2d');
+            const label = document.getElementById('documentoPreviewLabel');
+            const badge = document.getElementById('documentoPreviewBadge');
+            const status = document.getElementById('documentoPreviewStatus');
+
+            if (window.pdfjsLib) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+
+            let currentPdf = null;
+
+            function limparCanvas() {
+                contexto.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.width = 0;
+                canvas.height = 0;
+            }
+
+            function renderizarPdf(url) {
+                if (!window.pdfjsLib) {
+                    status.textContent = 'Seu navegador não suportou a visualização interna do PDF.';
+                    return;
+                }
+
+                limparCanvas();
+                status.textContent = 'Carregando documento...';
+
+                fetch(url)
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('Arquivo indisponível para visualização.');
+                        }
+                        return response.arrayBuffer();
+                    })
+                    .then(function (arrayBuffer) {
+                        return pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    })
+                    .then(function (pdf) {
+                        currentPdf = pdf;
+                        return pdf.getPage(1);
+                    })
+                    .then(function (page) {
+                        const viewport = page.getViewport({ scale: 1.2 });
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+
+                        const renderContext = {
+                            canvasContext: contexto,
+                            viewport: viewport,
+                        };
+
+                        return page.render(renderContext).promise;
+                    })
+                    .then(function () {
+                        status.textContent = 'Documento em visualização';
+                    })
+                    .catch(function (error) {
+                        console.error('Erro ao renderizar PDF:', error);
+                        status.textContent = 'Não foi possível carregar este documento no visualizador interno.';
+                    });
+            }
+
+            document.querySelectorAll('.document-preview-trigger').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const url = button.dataset.documentoUrl;
+                    const titulo = button.dataset.documentoTitulo || 'Documento';
+                    const categoria = button.dataset.documentoCategoria || 'Documento';
+
+                    label.textContent = titulo;
+                    badge.textContent = categoria;
+                    renderizarPdf(url);
+                });
+            });
+
+            modal.addEventListener('hidden.bs.modal', function () {
+                currentPdf = null;
+                limparCanvas();
+                status.textContent = 'Carregando documento...';
+            });
+        });
+    </script>
+</body>
+</html>

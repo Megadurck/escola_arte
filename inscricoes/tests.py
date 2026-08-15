@@ -1,10 +1,12 @@
 from datetime import date, time
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import Curso, Inscricao, InscricaoTurma, Turma
+from .models import Curso, DocumentoTransparencia, Inscricao, InscricaoTurma, Turma
 
 
 @override_settings(ALLOWED_HOSTS=["testserver", "localhost"], INSCRICOES_ABERTAS=False)
@@ -60,6 +62,75 @@ class FluxoPublicoInscricoesTests(TestCase):
     def test_pagina_inicial_exibe_inscricoes_encerradas_quando_fechado(self):
         response = self.client.get(reverse("inscricoes:pagina_inicial"))
         self.assertContains(response, "Inscri\u00e7\u00f5es Encerradas")
+
+    def test_documento_transparencia_serve_em_preview_inline(self):
+        documento = DocumentoTransparencia.objects.create(
+            titulo="Balancete 2026",
+            categoria="financeiro",
+            descricao="Balancete anual",
+            arquivo=SimpleUploadedFile("balancete.pdf", b"%PDF-1.4\n...", content_type="application/pdf"),
+            ano_referencia=2026,
+            ativo=True,
+            ordem=1,
+        )
+
+        response = self.client.get(reverse("inscricoes:documento_transparencia_arquivo", args=[documento.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("inline", response.headers.get("Content-Disposition", "").lower())
+        self.assertNotIn("attachment", response.headers.get("Content-Disposition", "").lower())
+
+    def test_documento_transparencia_exibe_pagina_de_visualizacao(self):
+        documento = DocumentoTransparencia.objects.create(
+            titulo="Relatório 2026",
+            categoria="institucional",
+            descricao="Relatório anual",
+            arquivo=SimpleUploadedFile("relatorio.pdf", b"%PDF-1.4\n...", content_type="application/pdf"),
+            ano_referencia=2026,
+            ativo=True,
+            ordem=2,
+        )
+
+        response = self.client.get(reverse("inscricoes:documento_transparencia_preview", args=[documento.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "iframe")
+        self.assertContains(response, reverse("inscricoes:documento_transparencia_arquivo", args=[documento.pk]))
+
+    def test_pagina_transparencia_usa_modal_interno_para_visualizar_documentos(self):
+        DocumentoTransparencia.objects.create(
+            titulo="Documento interno",
+            categoria="administrativo",
+            descricao="Documento de uso interno",
+            arquivo=SimpleUploadedFile("documento.pdf", b"%PDF-1.4\n...", content_type="application/pdf"),
+            ano_referencia=2026,
+            ativo=True,
+            ordem=3,
+        )
+
+        response = self.client.get(reverse("inscricoes:transparencia"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="documentoPreviewModal"')
+        self.assertContains(response, 'data-documento-url=')
+        self.assertContains(response, 'documentoPreviewCanvas')
+        self.assertContains(response, 'pdfjsLib')
+        self.assertContains(response, 'class="btn btn-primary document-preview-trigger"')
+        self.assertNotContains(response, 'document-preview-trigger" target="_blank"')
+
+    def test_documento_transparencia_aceita_apenas_pdf(self):
+        documento = DocumentoTransparencia(
+            titulo="Arquivo inválido",
+            categoria="administrativo",
+            descricao="Tentativa de upload não permitido",
+            arquivo=SimpleUploadedFile("arquivo.docx", b"conteudo", content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+            ano_referencia=2026,
+            ativo=True,
+            ordem=4,
+        )
+
+        with self.assertRaises(ValidationError):
+            documento.full_clean()
 
 
 @override_settings(ALLOWED_HOSTS=["testserver", "localhost"])

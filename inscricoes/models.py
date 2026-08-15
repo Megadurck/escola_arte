@@ -1,10 +1,11 @@
 from django.db import models
 from django.db import transaction
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator, RegexValidator, MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 
 
 cpf_validator = RegexValidator(
@@ -187,3 +188,33 @@ class Funcionario(models.Model):
 
     def __str__(self):
         return f"{self.nome} - {self.get_cargo_display()}"
+
+class DocumentoTransparencia(models.Model):
+    CATEGORIA_CHOICES = [
+        ("institucional", "Institucional"),
+        ("financeiro", "Financeiro"),
+        ("regularidade", "Regularidade"),
+        ("administrativo", "Administrativo"),
+    ]
+
+    titulo = models.CharField("Título", max_length=200)
+    categoria = models.CharField("Categoria", max_length=20, choices=CATEGORIA_CHOICES)
+    descricao = models.TextField("Descrição", blank=True)
+    arquivo = models.FileField(
+        "Arquivo",
+        upload_to='documentos_transparencia/',
+        validators=[FileExtensionValidator(['pdf'])],
+    )
+    ano_referencia = models.IntegerField("Ano de Referência", blank=True, null=True)
+    data_publicacao = models.DateField("Data de Publicação", blank=True, null=True)
+    ativo = models.BooleanField("Ativo", default=True)
+    ordem = models.PositiveIntegerField("Ordem na tela", default=0)
+    criado_em = models.DateTimeField("Criado em", auto_now_add=True)
+
+    class Meta:
+        ordering = ["ordem", "-data_publicacao", "titulo"]
+        verbose_name = "Documento"
+        verbose_name_plural = "Documentos"
+
+    def __str__(self):
+        return self.titulo
