@@ -9,6 +9,7 @@ import re
 from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import Inscricao, Curso, Funcionario, Turma, InscricaoTurma, DocumentoTransparencia
 
 
 class InscricaoTurmaAdminForm(forms.ModelForm):
@@ -140,6 +141,22 @@ class CursoAdmin(admin.ModelAdmin):
     search_fields = ('nome',)
     inlines = [TurmaInline]
     list_editable = ['vagas_total']
+
+@admin.register(DocumentoTransparencia)
+class DocumentoTransparenciaAdmin(admin.ModelAdmin):
+    list_display = ['titulo', 'categoria', 'ano_referencia', 'data_publicacao', 'ativo', 'ordem']
+    list_filter = ['categoria', 'ativo', 'ano_referencia']
+    search_fields = ['titulo', 'descricao']
+    list_editable = ['ativo', 'ordem']
+    ordering = ['ordem', '-data_publicacao', 'titulo']
+    fieldsets = (
+        ('Documento', {
+            'fields': ('titulo', 'categoria', 'arquivo', 'descricao')
+        }),
+        ('Publicação', {
+            'fields': ('ano_referencia', 'data_publicacao', 'ativo', 'ordem')
+        }),
+    )
 
 # Registrar o modelo de Turma no admin
 @admin.register(Turma)

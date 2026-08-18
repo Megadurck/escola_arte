@@ -188,8 +188,11 @@ LOGOUT_REDIRECT_URL = '/'
 # Configurações do WhiteNoise com nomes hashados para evitar cache antigo em produção
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# SITE_ID = 1
+# Configurações de contato da escola
+WHATSAPP_URL_1 = config("WHATSAPP_URL_1")
+WHATSAPP_URL_2 = config("WHATSAPP_URL_2")
+WHATSAPP_URL_3 = config("WHATSAPP_URL_3")
+EMAIL_CONTATO = config("EMAIL_CONTATO")
 
-# Remova ou comente esta linha
-# Site.objects.get_or_create(id=1, defaults={'domain': 'localhost:8000', 'name': 'localhost'})
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
