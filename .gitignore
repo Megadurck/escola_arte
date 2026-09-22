@@ -27,7 +27,7 @@ staticfiles/
 staticfiles_local/
 media/
 node_modules/
-venv/
+.venv/
 
 # 6️⃣ Arquivos do editor de código
 .vscode/           # Editor Visual Studio Code
