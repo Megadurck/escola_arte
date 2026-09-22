@@ -36,7 +36,7 @@ body {
 body.pagina-inicial {
     background-color: #fff4dd;
     background-image:
-        url('../img/background-escola.png'),
+        url('../img/background-escola.webp'),
         linear-gradient(25deg, transparent 0 34%, #ff4d2d 34% 52%, transparent 52% 100%),
         linear-gradient(-32deg, transparent 0 45%, #12c8eb 45% 64%, transparent 64% 100%),
         linear-gradient(0deg, transparent 0 42%, #ffbf00 42% 58%, transparent 58% 100%),
